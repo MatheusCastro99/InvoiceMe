@@ -27,7 +27,7 @@ const ProfilePage = () => {
         try {
             setIsLoading(true);
             const response = await axios.get("http://localhost:3000/api/generateInvoice");
-            console.log(response.data);
+            //console.log(response.data);
             setInvoices(response.data);
             setIsLoading(false);
           } catch (error) {
@@ -36,7 +36,7 @@ const ProfilePage = () => {
           }
     }
 
-    const getCustomer = async () => { //ADD VALIDATION TO CHECK FORMAT OF FIELDS ON UPDATE BUTTON CLICKED
+    const getCustomer = async () => {
         setIsLoading(true);
         try {
         const response = await axios.get(`http://localhost:3000/api/customer/${id}`);

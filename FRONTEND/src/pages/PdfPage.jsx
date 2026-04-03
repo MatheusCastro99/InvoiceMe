@@ -94,7 +94,7 @@ const PdfPage = () => {
                     invoiceNumber = {invoiceNumber}/>
             </PDFViewer>
         </div>
-    )
+    );
 }
 export default PdfPage
 

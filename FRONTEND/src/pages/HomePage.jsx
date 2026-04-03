@@ -7,8 +7,9 @@ import Divider from '@mui/material/Divider';
 import Collapsible from 'react-collapsible';
 import TableInvoice from "../components/TableInvoice";
 
-//HOME PAGE: CHECKBOX(Deleted?) ON INVOICES TABLE (IN CASE OF DELETED COMPANY)
-//EVERYWHERE: IMPLEMENT VERIFICATIONS/VALIDATIONS/DATA FORMATTING (DATES, PRICES, ETC)
+//EVERYWHERE: NON-OPERATIONAL NUMBERS (PHONE NUMBERS, DATES, INVOICE NUMBERS) ARE TO BE TREATED AS STRINGS
+//EVERYWHERE: OPERATIONAL NUMBERS (PRICES, TAXES) ARE TO BE TREATED AS INT/FLOATS
+//EVERYWHERE: IMPLEMENT VERIFICATIONS/VALIDATIONS/DATA FORMATTING (DATES, PRICES, PHONE NUMBER, EMAILS, ETC) REGEX
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,7 @@ const HomePage = () => {
     try {
       setIsLoading(true);
       const response = await axios.get("http://localhost:3000/api/customer");
-      console.log(response.data)
+      //console.log(response.data)
       setCustomers(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -32,7 +33,7 @@ const HomePage = () => {
       try {
           setIsLoading(true);
           const response = await axios.get("http://localhost:3000/api/generateInvoice");
-          console.log(response.data);
+          //console.log(response.data);
           setInvoices(response.data);
           setIsLoading(false);
         } catch (error) {
