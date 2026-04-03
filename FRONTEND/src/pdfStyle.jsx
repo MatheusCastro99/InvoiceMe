@@ -134,4 +134,39 @@ const footerBox = StyleSheet.create({
     }
 })
 
-export {pageBox, headerBox, jobInfoBox, priceInfoBox, companyInfoBox, footerBox}
+const tableDataStyle = StyleSheet.create({
+    viewer: {
+      width: "100%",
+      height: "880px",
+    },
+    table: {
+      display: 'table',
+      width: 'auto',
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: '#000',
+    },
+    tableRow: {
+      flexDirection: 'row',
+    },
+    tableColHeader: {
+      width: '33.33%',
+      borderStyle: 'solid',
+      borderBottomWidth: 1,
+      backgroundColor: '#f2f2f2',
+      padding: 5,
+      fontWeight: 'bold',
+    },
+    tableCol: {
+      width: '33.33%',
+      borderStyle: 'solid',
+      borderBottomWidth: 1,
+      padding: 5,
+    },
+    tableCell: {
+      margin: 5,
+      fontSize: 10,
+    },
+  });
+
+export {pageBox, headerBox, jobInfoBox, priceInfoBox, companyInfoBox, footerBox, tableDataStyle}

@@ -8,13 +8,14 @@
     "api": "node server.js",
     "dev": "nodemon server.js",
     "userInterface": "start http://localhost:5173/ && cd ../FRONTEND && npm run page",
-    "start": "npm run api | npm run userInterface"
+    "start": "concurrently -n \"UI,API\" \"npm run userInterface\" \"cd ../NODEAPI && npm run api\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
+    "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",

@@ -66,7 +66,7 @@ const ProfilePage = () => {
 
 
     return(
-        <div className="max-w-2xl bg-white shadow-lg mx-auto p-5 rounded mt-6">
+        <div className="max-w-3xl bg-white shadow-lg mx-auto p-5 rounded mt-6">
             <div>
                 <CustomerProfile customer={customer}/>
             </div>

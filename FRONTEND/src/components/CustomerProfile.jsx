@@ -1,15 +1,30 @@
 import React from "react";
+import axios from "axios";
 import Collapsible from 'react-collapsible';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 
 const CustomerProfile = ({ customer }) => {
+    const navigate = useNavigate()
+
     const deleteCustomer = async (id) => {
         const result = await Swal.fire({
         title: "This will delete the customer permanently",
         showCancelButton: true,
         confirmButtonText: "Delete",
-        })};
+        })
+    
+        if (result.isConfirmed) {
+            try {
+              await axios.delete(`http://localhost:3000/api/customer/${id}`);
+              toast.success(`Deleted ${customer.companyName} Successfully`);
+              navigate("/")
+            } catch (error) {
+              toast.error(error.message);
+            }
+        }
+    };
 
     return (
         <div> 

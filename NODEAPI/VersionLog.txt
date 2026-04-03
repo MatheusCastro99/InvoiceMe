@@ -1,0 +1,97 @@
+VERSION LOG AND CONTROL
+
+versioning is going to progress as follows:
++0.01 for small bugs fixes, visual effects implementations, user experience improvements, small code refactoring
++0.1 for bigger implementations, big code refactoring, big changes in the program logic
++1 if complete new functionality/page is added, or for massive changes being deployed at once
+
+V1.00 06/26/2024
+{
+    Web aplication released to production with the following capabilities:
+    - Create, Read, Update, and Delete customers through MongoDB
+        Customer Info includes Company Name, Email, Phone Number, Profile pic, Contact name,
+        street address, city address, state address, and zip code
+    - Create, Read, and Delete invoices through MongoDB
+        Invoice info includes: Customer info, date of service, invoice number, subtotal, tax percentage, corresponding tax, total price
+        Currently, 5 states are available for auto tax calculation. They are:
+        - NJ
+        - NY
+        - PA
+        - CT
+        - FL
+        For states othen than those, tax calculation is not available
+    - Access individual customers profile, where it is possible to Read, Update, and Delete their personal information
+        as well as read and delete their corresponding invoices.
+    - Access Invoices from the main page, where they are organized by Recent to Old order
+        Even invoices that had their corresponding company deleted can be accessed and downloaded
+    - On the PDF page, it is possible to download the current invoice to a local directory, and it is not possible to save
+        the pdf twice to prevent duplicates
+    - Nav bar at the top with top of the page and home options is  available on all pages
+    - Home Page Components:
+        - Line block to create Customers, Generate Invoice, and go to the invoices part
+        - Customers Card part where is possible to access their profile page, edit, and delete their information
+        - Invoices List part with all invoices organized recent to Old
+    - Customers Profile Page Components:
+        - Full customers info with options to update and delete their info
+        - Invoices list with all the invoices that corresponds to the customer being accessed
+    - Create Customer Page components:
+        - Fields to enter all customer info, with checks and validations to essential fields, and formatting rules to some fields
+        - Essential fields are: Company Name, Phone number, Email, Zip Code, Contact Name
+        - The following fields require specific formats that are specified to the user: Phone number, Email, Zip Code
+    - Edit Customer Page components:
+        - Fields to edit every Customer Info
+        - Same checks, validity, and formatting rules as in the Create Customer page
+    - Generate Invoice Page components:
+        - Ability to generate Invoices with pre-loaded Customer information
+        - Update button that allows customer info to be changed before Invoice generation
+        - fields for all invoice info and operations
+        - generate button that directs the customer to the PDF page for a last check
+    - PDF Page components:
+        - Options to save invoice in the DB and edit it if any mistake is seen
+        - Visualization of the final PDF with zoom, navigations, download options, and print options
+}
+
+V1.01
+{
+    - Added Version Log and Control to keep track of implementations and bugs fixed
+    - "file-saver" dependency was added
+    - PDF Page:
+        - A download button was added so the file is downloaded with a personalized name that follows #invoice number - company name
+            pattern for better organization
+        - Fixed a bug that would crash the page if the user hit the home button while having information loaded
+        - PDF title now also follows the pattern of #invoice number - company name
+        - Save Invoice Button now becomes disabled after user saves it once to prevent duplicates
+    - Create Customer page: 
+        - New rules for company name were added, these rules excludes characters that are not allowed by Windows directory.
+            This change was made to prevent conflict when saving invoices
+        - Visual effects for errors in formatting/verification were improved to help user see specifically which field is failing validation
+        - Company Name is now a mandatory field for customer creation, while contact name is no longer a requirement
+    - Edit Customer page:
+        - Company name field were adapted to the new rules of windows directory characters
+        - Visual effects for errors in formatting/verification were improved to help user see specifically which field is failing validation
+        - Company Name is now a mandatory field, while contact name is no longer a requirement
+}
+
+V1.11
+{
+    Invoice Page:
+        - Introduced Table form as a alternative to Job Description. This is intended to make it easier to "itemize" and organize the invoice.
+        - All necessary corrections and adjustments were done to support this new feature.
+    
+    PdfPage:
+        - Adjusted the pdf format to display, dynamically, the table content or the Job Description, depending on how the invoice was created.
+}
+
+v1.21
+{
+    Table Invoice Component:
+        - added a month filter component that will filter the invoices based on the month selected out of the calendar.
+        - added download invoice option within the table, which is compatible with the month filtering and profile page invoices.
+    Create Page / Edit Page:
+        - Phone number field now allows the input of 10 straight digits (XXXXXXXXXX) and will format it once unfocused.
+        - All of 50 US States are now supported in this web application. All tax information was imported and is now available to use.
+    taxController:
+        - refactored switch case function to a taxRateDictionary for cleaningness and effectiveness purposes.
+    PdfPage:
+        - refactored the table styles components.
+}

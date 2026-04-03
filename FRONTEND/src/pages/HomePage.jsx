@@ -10,6 +10,14 @@ import TableInvoice from "../components/TableInvoice";
 //EVERYWHERE: NON-OPERATIONAL NUMBERS (PHONE NUMBERS, DATES, INVOICE NUMBERS) ARE TO BE TREATED AS STRINGS
 //EVERYWHERE: OPERATIONAL NUMBERS (PRICES, TAXES) ARE TO BE TREATED AS INT/FLOATS
 //EVERYWHERE: IMPLEMENT VERIFICATIONS/VALIDATIONS/DATA FORMATTING (DATES, PRICES, PHONE NUMBER, EMAILS, ETC) REGEX
+//CREATE PAGE: IMPLEMENT VERIFICATION TO PREVENT CUSTOMERS DUPLICATES
+      //Verification can be done on server side when new customer info is sent to customerController
+      //Same logic will also serve as basis to refactor some validation on server side as well
+//HOME PAGE: ADD A SEARCHBAR / AUTOCOMPLETE BY GENERATE INVOICE INTENDED TO FILTER CUSTOMERS
+//INVOICE PAGE: ADD A SEARCHBAR / AUTOCOMPLETE BY GENERATE INVOICE INTENDED TO FILTER CUSTOMERS
+//INVOICE PAGE: ADD A "TODAY" OPTION FOR DATE OF SERVICE THAT WILL AUTOMATICALLY IMPORT THE CURRENT DAY
+      //Can be done through dayjs();
+//TABLE DESCRIPTION / INVOICE PAGE: ADD A DISCOUNT OPTION (% OFF THE SUBTOTAL)
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +41,6 @@ const HomePage = () => {
       try {
           setIsLoading(true);
           const response = await axios.get("http://localhost:3000/api/generateInvoice");
-          //console.log(response.data);
           setInvoices(response.data);
           setIsLoading(false);
         } catch (error) {
@@ -47,8 +54,8 @@ const HomePage = () => {
     getInvoices();
   }, []);
 
-  return ( //ADD A SEARCHBAR BY GENERATE INVOICE SIDE
-    <div id="home" className="">
+  return (
+    <div className="">
       <div className="flex justify-between">
         <div className="inline-block">
         <Link
@@ -112,7 +119,7 @@ const HomePage = () => {
             </Divider>
           }>
           <TableInvoice 
-            invoices={invoices} 
+            invoices={[...invoices].reverse()}
             getInvoices={getInvoices}
             customers={customers}
           />

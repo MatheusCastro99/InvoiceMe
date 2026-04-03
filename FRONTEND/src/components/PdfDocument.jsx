@@ -18,10 +18,11 @@ const MyDocument = (info) => {
     const {finalPrice} = info;
     const {dateOfService} = info;
     const {invoiceNumber} = info;
-    console.log(customerInfo)
+    const handlaTableData = info.handleTableData;
+    console.log(customerInfo, info)
 
     return (
-            <Document file = "FRONTEND\src\components\output.pdf">
+            <Document title={`#${invoiceNumber} / ${customerInfo?.companyName||companyName}`}>
                 <Page size="a4" style={pageBox.page}>
             <View style={headerBox.header}>
                 <Image style={headerBox.logo} src= {Logo}/>
@@ -63,15 +64,15 @@ const MyDocument = (info) => {
             <View style={jobInfoBox.jobInfoFields}>
                 <Text style={jobInfoBox.title}>Job Breakdown:</Text>
                 <View>
-                    <Text style={jobInfoBox.jobDescription}>{jobDescription}</Text>
+                    {jobDescription===undefined?handlaTableData:<Text style={jobInfoBox.jobDescription}>{jobDescription}</Text>}
                 </View>
             </View>
             <View style={priceInfoBox.fields}>
                 <Text style={priceInfoBox.title}>Price:</Text>
                 <View>
-                    <Text style={priceInfoBox.text}>Subtotal: ${subtotal}</Text>
+                    <Text style={priceInfoBox.text}>Subtotal: ${Number(subtotal).toFixed(2)}</Text>
                     <Text style={priceInfoBox.text}>Tax Rate ({taxRate}%): ${(subtotal*(taxRate/100)).toFixed(2)}</Text>
-                    <Text style={priceInfoBox.text}>Total: ${finalPrice}</Text>
+                    <Text style={priceInfoBox.text}>Total: ${Number(finalPrice).toFixed(2)}</Text>
                 </View>
             </View>
             <View>

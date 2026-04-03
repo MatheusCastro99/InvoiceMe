@@ -15,7 +15,7 @@ const getInvoice = asyncHandler(async (req, res) => {
 
 const postInvoice = asyncHandler(async (req, res) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     var invoice = await InvoiceModel.create(req.body);
     res.status(200);
     res.json(invoice);

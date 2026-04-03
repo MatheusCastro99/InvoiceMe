@@ -7,9 +7,13 @@ import Swal from "sweetalert2";
 const Customer = ({ customer, getCustomers }) => {
   const deleteCustomer = async (id) => {
     const result = await Swal.fire({
-      title: "Do you want to delete the customer?",
+      title: "Do you want to delete this Customer?",
+      text: "You will not be able to revert this change.",
+      icon: "warning",
       showCancelButton: true,
+      cancelButtonColor:"#aaa",
       confirmButtonText: "Delete",
+      confirmButtonColor:"#3085d6"
     });
 
     if (result.isConfirmed) {
