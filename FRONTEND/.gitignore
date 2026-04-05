@@ -1,3 +1,13 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Production builds
+dist/
+dist-ssr/
+*.local
+
 # Logs
 logs
 *.log
@@ -7,18 +17,31 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Environment variables - NEVER commit these
+.env
+.env.local
+.env.*.local
+.env.production.local
 
-# Editor directories and files
+# IDE & Editor
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
+*.sln
+*.sw?
+
+# OS
+Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+#environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

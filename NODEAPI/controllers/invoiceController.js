@@ -1,43 +1,68 @@
+/**
+ * Invoice Controller
+ * Handles invoice generation and management
+ * API v1.0+
+ */
+
 const asyncHandler = require("express-async-handler");
 const InvoiceModel = require("../models/invoiceModel");
+const { NotFoundError } = require("../utils/errors");
+const { RESPONSE_MESSAGES } = require("../utils/constants");
 
-const invoiceNumber = 500;
-
+/**
+ * Get all invoices
+ * @route GET /api/v1/invoices
+ * @returns {Array} List of all invoices
+ */
 const getInvoice = asyncHandler(async (req, res) => {
-  try {
-    const invoice = await InvoiceModel.find({});
-    res.status(200).json(invoice);
-  } catch (error) {
-    res.status(500);
-    throw new Error("Something broke, please shed a tear for your dev friend");
-  }
+  const invoices = await InvoiceModel.find({}).sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    data: invoices,
+    count: invoices.length,
+  });
 });
 
+/**
+ * Create new invoice
+ * @route POST /api/v1/invoices
+ * @body {string} companyName - Required
+ * @body {string} phoneNumber - Required
+ * @body {string} dateOfService - Required
+ * @body {number} finalPrice - Required
+ * @returns {Object} Created invoice
+ */
 const postInvoice = asyncHandler(async (req, res) => {
-  try {
-    //console.log(req.body);
-    var invoice = await InvoiceModel.create(req.body);
-    res.status(200);
-    res.json(invoice);
-  } catch (error) {
-    res.status(500);
-    throw new Error("Could not generate invoice at this time");
-  }
+  const invoice = await InvoiceModel.create(req.body);
+
+  res.status(201).json({
+    success: true,
+    message: RESPONSE_MESSAGES.INVOICE_CREATED,
+    data: invoice,
+  });
 });
 
+/**
+ * Delete invoice
+ * @route DELETE /api/v1/invoices/:id
+ * @param {string} id - Invoice ID
+ * @returns {Object} Deleted invoice
+ */
 const delInvoice = asyncHandler(async (req, res) => {
-  try {
-    const { id } = req.params;
-    const invoice = await InvoiceModel.findByIdAndDelete(id);
-    if (!invoice) {
-      res.status(404);
-      throw new Error("Invoice not found");
-    }
-    res.status(200).json(invoice);
-  } catch (error) {
-    res.status(500);
-    throw new Error("Could not delete Invoice at this time");
+  const { id } = req.params;
+
+  const invoice = await InvoiceModel.findByIdAndDelete(id);
+
+  if (!invoice) {
+    throw new NotFoundError(RESPONSE_MESSAGES.INVOICE_NOT_FOUND);
   }
+
+  res.status(200).json({
+    success: true,
+    message: RESPONSE_MESSAGES.INVOICE_DELETED,
+    data: invoice,
+  });
 });
 
 module.exports = { getInvoice, postInvoice, delInvoice };

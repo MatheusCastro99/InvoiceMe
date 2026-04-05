@@ -1,59 +1,90 @@
+/**
+ * Ken-Tech Maintenance API
+ * Express Server Configuration
+ * API v1.0+
+ */
+
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const customerRoute = require("./routes/customerRoute");
 const taxRoute = require("./routes/taxRoute");
 const invoiceRoute = require("./routes/invoiceRoute");
 const errorMiddleware = require("./middlewares/errorMiddleware");
-const cors = require("cors");
 
+// Configuration
 const MONGO_URL = process.env.MONGO_URL;
-const PORT = process.env.PORT;
-const NODE_ENV = process.env.NODE_ENV;
-const FRONTEND = process.env.FRONTEND;
+const PORT = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || "development";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
+// Initialize Express App
 const app = express();
-const corsAddress = {
-  origin: FRONTEND, //can be used in array[] form to allow multiple origins
-  successStatus: 200, //204 for some legacy browsers
+
+// CORS Configuration
+const corsOptions = {
+  origin: FRONTEND_URL,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200,
 };
-//Middlewares
 
+// Middleware
 app.use(express.json());
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-app.use(cors(corsAddress));
+app.use(express.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
 
-//Route path, this is all server functionalities
-app.use("/api/customer", customerRoute);
-app.use("/api/taxinfo", taxRoute);
-app.use("/api/taxinfo/getTaxRate", taxRoute);
-app.use("/api/taxinfo/getTaxAmount", taxRoute);
-app.use("/api/generateInvoice", invoiceRoute);
-
+// Health Check Routes
 app.get("/", (req, res) => {
-  res.send("NODE API");
+  res.status(200).json({
+    success: true,
+    message: "Ken-Tech Maintenance API",
+    version: "v1.0",
+    status: "running",
+  });
 });
 
-app.get("/welcome", (req, res) => {
-  res.send("Welcome to my node training");
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Health check passed",
+    timestamp: new Date().toISOString(),
+  });
 });
 
+// API Routes - v1.0
+app.use("/api/v1/customers", customerRoute);
+app.use("/api/v1/tax", taxRoute);
+app.use("/api/v1/invoices", invoiceRoute);
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+    path: req.originalUrl,
+  });
+});
+
+// Global Error Handler (MUST be last)
+app.use(errorMiddleware);
+
+// Database Connection & Server Startup
 mongoose
   .connect(MONGO_URL)
   .then(() => {
+    console.log("✓ Connected to MongoDB");
     app.listen(PORT, () => {
-      console.log("Node API running on port", PORT);
+      console.log(`✓ Ken-Tech API running on port ${PORT}`);
+      console.log(`✓ Environment: ${NODE_ENV}`);
+      console.log(`✓ Frontend URL: ${FRONTEND_URL}`);
     });
-    console.log("Connected to MongoDB");
   })
   .catch((error) => {
-    console.log(error);
+    console.error("✗ MongoDB Connection Error:", error.message);
+    process.exit(1);
   });
 
-app.use(errorMiddleware);
-
-//https://www.youtube.com/watch?v=v_pcW65DGu8 @ 3320
+module.exports = app;

@@ -1,75 +1,143 @@
+/**
+ * Customer Controller
+ * Handles all customer-related operations
+ * API v1.0+
+ */
+
 const CustomerModel = require("../models/customerModel");
 const asyncHandler = require("express-async-handler");
+const {
+  NotFoundError,
+  ConflictError,
+  RESPONSE_MESSAGES,
+} = require("../utils/errors");
+const { RESPONSE_MESSAGES: MESSAGES } = require("../utils/constants");
 
-//All the actual logic goes in a Controller, and the is exported to other areas
-
-//Read (GET) logic
+/**
+ * Get all customers with pagination
+ * @route GET /api/v1/customers
+ * @param {number} page - Page number (default: 1)
+ * @param {number} limit - Items per page (default: 20)
+ */
 const getCustomers = asyncHandler(async (req, res) => {
-  try {
-    const customer = await CustomerModel.find({});
-    res.status(200).json(customer);
-  } catch (error) {
-    res.status(500);
-    throw new Error("Something broke, please shed a tear for your dev friend");
-  }
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  const customers = await CustomerModel.find({})
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  const total = await CustomerModel.countDocuments();
+
+  res.status(200).json({
+    success: true,
+    data: customers,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  });
 });
 
+/**
+ * Get customer by ID
+ * @route GET /api/v1/customers/:id
+ */
 const getCustomerByID = asyncHandler(async (req, res) => {
-  try {
-    const { id } = req.params;
-    const customer = await CustomerModel.findById(id);
-    res.status(200).json(customer);
-  } catch (error) {
-    //Regular errorMiddleware will not work inside async functions, use async express route error handler
-    res.status(500);
-    throw new Error("Customer not found");
+  const { id } = req.params;
+  const customer = await CustomerModel.findById(id);
+
+  if (!customer) {
+    throw new NotFoundError(MESSAGES.CUSTOMER_NOT_FOUND);
   }
+
+  res.status(200).json({
+    success: true,
+    data: customer,
+  });
 });
 
-//Create (POST) logic
+/**
+ * Create new customer
+ * @route POST /api/v1/customers
+ * @body {string} companyName - Required
+ * @body {string} phoneNumber - Required
+ */
 const postCustomer = asyncHandler(async (req, res) => {
-  try {
-    var customer = await CustomerModel.create(req.body);
-    res.status(200);
-    res.json(customer);
-  } catch (error) {
-    res.status(500);
-    throw new Error("Could not create new customer at this time");
+  // Check for duplicate phone number
+  const existingCustomer = await CustomerModel.findOne({
+    phoneNumber: req.body.phoneNumber,
+  });
+
+  if (existingCustomer) {
+    throw new ConflictError(MESSAGES.DUPLICATE_CUSTOMER);
   }
+
+  const customer = await CustomerModel.create(req.body);
+
+  res.status(201).json({
+    success: true,
+    message: MESSAGES.CUSTOMER_CREATED,
+    data: customer,
+  });
 });
 
-//UPDATE logic
+/**
+ * Update customer
+ * @route PUT /api/v1/customers/:id
+ */
 const updateCustomer = asyncHandler(async (req, res) => {
-  try {
-    const { id } = req.params;
-    const customer = await CustomerModel.findByIdAndUpdate(id, req.body);
-    if (!customer) {
-      res.status(404);
-      throw new Error("Customer not found");
-    }
-    const customerUpdated = await CustomerModel.findById(id);
-    console.log("Customer update. New values:", customerUpdated);
-    res.status(200).json(customerUpdated);
-  } catch (error) {
-    res.status(500);
-    throw new Error("Could not update customer at this time");
+  const { id } = req.params;
+
+  const customer = await CustomerModel.findById(id);
+  if (!customer) {
+    throw new NotFoundError(MESSAGES.CUSTOMER_NOT_FOUND);
   }
+
+  // Check for duplicate phone number if changed
+  if (req.body.phoneNumber && req.body.phoneNumber !== customer.phoneNumber) {
+    const existingCustomer = await CustomerModel.findOne({
+      phoneNumber: req.body.phoneNumber,
+    });
+    if (existingCustomer) {
+      throw new ConflictError(MESSAGES.DUPLICATE_CUSTOMER);
+    }
+  }
+
+  const updatedCustomer = await CustomerModel.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: MESSAGES.CUSTOMER_UPDATED,
+    data: updatedCustomer,
+  });
 });
 
-//DELETE logic
+/**
+ * Delete customer
+ * @route DELETE /api/v1/customers/:id
+ */
 const delCustomer = asyncHandler(async (req, res) => {
-  try {
-    const { id } = req.params;
-    const customer = await CustomerModel.findByIdAndDelete(id);
-    if (!customer) {
-      res.status(404);
-      throw new Error("Customer not found");
-    }
-    res.status(200).json(customer);
-  } catch (error) {
-    res.status(500);
-    throw new Error("Could not delete customer at this time");
+  const { id } = req.params;
+
+  const customer = await CustomerModel.findByIdAndDelete(id);
+
+  if (!customer) {
+    throw new NotFoundError(MESSAGES.CUSTOMER_NOT_FOUND);
   }
+
+  res.status(200).json({
+    success: true,
+    message: MESSAGES.CUSTOMER_DELETED,
+    data: customer,
+  });
 });
 
 module.exports = {
