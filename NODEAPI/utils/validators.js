@@ -19,6 +19,9 @@ const validatePhoneNumber = (phone) => {
 
 const validateEmail = (email) => {
   if (!email) return true; // Email is optional
+  if (email.length > 150) {
+    throw new Error("Input too long");
+}
   return VALIDATION_PATTERNS.email.test(email);
 };
 
