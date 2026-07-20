@@ -19,7 +19,7 @@
     "@mui/material": "^5.15.15",
     "@mui/x-date-pickers": "^7.17.0",
     "@react-pdf/renderer": "^3.4.2",
-    "axios": "^1.4.0",
+    "axios": "^1.18.0",
     "dayjs": "^1.11.13",
     "file-saver": "^2.0.5",
     "flowbite-react": "^0.7.8",
