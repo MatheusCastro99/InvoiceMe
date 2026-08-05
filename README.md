@@ -1,4 +1,4 @@
-# Ken-Tech Maintenance Management System
+# InvoiceMe Business Management System
 
 A complete, production-ready CRUD application for managing customers and generating invoices for a home maintenance business.
 
