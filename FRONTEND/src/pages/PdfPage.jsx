@@ -8,6 +8,7 @@ import MyDocument from "../components/PdfDocument";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import API_ENDPOINTS from "../config/apiConfig";
 
 const styles = tableDataStyle;
 
@@ -86,7 +87,7 @@ const PdfPage = () => {
       }
       try {
         var saveButton = document.getElementById(`saveButton`)
-        const pdfInfo = await axios.post(`http://localhost:3000/api/generateInvoice`, 
+        const pdfInfo = await axios.post(API_ENDPOINTS.INVOICES.CREATE, 
             {
                 companyName:customerInfo.companyName,
                 phoneNumber:customerInfo.phoneNumber,

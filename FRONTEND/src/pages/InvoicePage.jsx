@@ -34,7 +34,7 @@ const InvoicePage = () => {
               setCorrespondingTax();
               return;
             }
-            const info = await axios.get(`http://localhost:3000/api/customer/${e.target.value}`);
+            const info = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(e.target.value));
             console.log(info)
             setTempCustomer(info.data);
             handleTax(info.data.stateAddress);

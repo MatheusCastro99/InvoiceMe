@@ -9,9 +9,12 @@ import { toast } from "react-toastify";
 import {pdf, View, Text} from '@react-pdf/renderer';
 import MyDocument from "./PdfDocument";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {fas} from "@fortawesome/free-solid-svg-icons";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
+const fas = { faDownload };
 import Swal from "sweetalert2";
 import axios from "axios";
+import API_ENDPOINTS from "../config/apiConfig";
 import Collapsible from 'react-collapsible';
 import { useState } from "react";
 
@@ -61,7 +64,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/generateInvoice/${id}`);
+        await axios.delete(API_ENDPOINTS.INVOICES.DELETE(id));
         toast.success("Invoice Deleted Successfully");
         getInvoices();
       } catch (error) {
