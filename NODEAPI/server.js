@@ -75,6 +75,15 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Debug endpoint (temporary): expose minimal DB connection metadata to assist debugging
+app.get('/debug/db', (req, res) => {
+  const conn = mongoose.connection;
+  res.status(200).json({
+    readyState: conn.readyState, // 0 disconnected, 1 connected
+    name: conn.name || null,
+  });
+});
+
 // API Routes - v1.0
 app.use("/api/v1/customers", customerRoute);
 app.use("/api/v1/tax", taxRoute);
