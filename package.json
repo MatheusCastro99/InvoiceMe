@@ -1,0 +1,16 @@
+{
+  "name": "invoice-me-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Root helper scripts for local development (starts frontend and API together)",
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  },
+  "scripts": {
+    "dev:api": "npm --prefix NODEAPI run dev",
+    "dev:frontend": "npm --prefix FRONTEND run dev",
+    "dev": "concurrently -k \"npm:dev:api\" \"npm:dev:frontend\"",
+    "start:api": "npm --prefix NODEAPI start",
+    "start:frontend": "npm --prefix FRONTEND start"
+  }
+}
