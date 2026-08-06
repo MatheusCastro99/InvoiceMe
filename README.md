@@ -36,7 +36,9 @@ A full-stack application for managing customers and invoices with professional f
 cd NODEAPI
 npm install
 cp .env.example .env
-# Edit .env with your MongoDB URL
+# Edit .env with your MongoDB URL.
+# If you do not have MongoDB Atlas, use a local MongoDB instance:
+# MONGO_URL=mongodb://127.0.0.1:27017/ken-tech
 npm run dev
 # Server runs on http://localhost:3000
 ```
@@ -50,6 +52,8 @@ cp .env.example .env.local
 npm run dev
 # App runs on http://localhost:5173
 ```
+
+> Note: This frontend is a Vite application and must be started with `npm run dev` or `npm start` inside the `FRONTEND` folder. Do not use a generic live-server on `index.html` because the app relies on Vite's ES module development server.
 
 ## 📚 Key Documentation Files
 

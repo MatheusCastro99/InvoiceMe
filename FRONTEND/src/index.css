@@ -1,12 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base{
-  body{
+@layer base {
+  body {
     @apply bg-slate-400;
   }
-  html{
+  html {
     scroll-behavior: smooth;
   }
 }
