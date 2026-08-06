@@ -10,9 +10,11 @@ import {pdf, View, Text} from '@react-pdf/renderer';
 import MyDocument from "./PdfDocument";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
 const fas = { faDownload };
 import Swal from "sweetalert2";
 import axios from "axios";
+import API_ENDPOINTS from "../config/apiConfig";
 import Collapsible from 'react-collapsible';
 import { useState } from "react";
 
