@@ -4,6 +4,7 @@ import Collapsible from 'react-collapsible';
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import API_ENDPOINTS from "../config/apiConfig";
 
 const CustomerProfile = ({ customer }) => {
     const navigate = useNavigate()

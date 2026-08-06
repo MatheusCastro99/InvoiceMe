@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import API_ENDPOINTS from "../config/apiConfig";
 
 const Customer = ({ customer, getCustomers }) => {
   const deleteCustomer = async (id) => {
