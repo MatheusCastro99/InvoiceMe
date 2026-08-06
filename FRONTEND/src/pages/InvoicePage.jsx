@@ -8,6 +8,7 @@ import { Chip, Switch, FormControlLabel } from "@mui/material";
 import Collapsible from 'react-collapsible';
 import CustomerInfo from "../components/CustomerInfo";
 import TableDescription from "../components/TableDescription";
+import API_ENDPOINTS from "../config/apiConfig";
 
 const InvoicePage = () => {
     const [jobPrice, setJobPrice] = useState(Number)
@@ -35,12 +36,11 @@ const InvoicePage = () => {
               return;
             }
             const info = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(e.target.value));
+            const payload = info?.data?.data ?? info?.data ?? {};
             console.log(info)
-            setTempCustomer(info.data);
-            handleTax(info.data.stateAddress);
-            console.log(info.data.stateAddress);
-            <CustomerInfo
-              customer = {tempCustomer}/>;
+            setTempCustomer(payload);
+            handleTax(payload.stateAddress);
+            console.log(payload.stateAddress);
         } catch (error) {
             setTempCustomer([])
         }    
@@ -48,9 +48,10 @@ const InvoicePage = () => {
 
     const getInvoices = async() => {
       try {
-          const response = await axios.get("http://localhost:3000/api/generateInvoice");
+          const response = await axios.get(API_ENDPOINTS.INVOICES.LIST);
           //console.log(response.data);
-          setInvoicesArr(response.data);
+          const payload = response?.data?.data ?? response?.data ?? [];
+          setInvoicesArr(payload);
         } catch (error) {
           toast.error(error.message);
         }
@@ -67,14 +68,16 @@ const InvoicePage = () => {
       }
 
       setJobPrice(tempSubtotal)
-      const getFinalPrice = await axios.put(`http://localhost:3000/api/taxinfo/getTaxAmount`, 
+      const getFinalPrice = await axios.post(API_ENDPOINTS.TAX.CALCULATE, 
         {jobPrice:tempSubtotal, taxRate: correspondingTax, jobDescription: jobDescription})
-      setFinalPrice(getFinalPrice.data)
+      const amount = getFinalPrice?.data?.data ?? getFinalPrice?.data;
+      setFinalPrice(amount)
     }
 
     const handleTax = async(state) => {
-      const getTaxRate = await axios.put(`http://localhost:3000/api/taxinfo/getTaxRate`, {state:state});
-      setCorrespondingTax(getTaxRate.data);
+      const getTaxRate = await axios.post(API_ENDPOINTS.TAX.GET_RATE, {state:state});
+      const rate = getTaxRate?.data?.data ?? getTaxRate?.data;
+      setCorrespondingTax(rate);
     }
 
     const validateDate = (date) => {
@@ -168,11 +171,12 @@ const InvoicePage = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get("http://localhost:3000/api/customer");
-            setCustomers(response.data)
+            const response = await axios.get(API_ENDPOINTS.CUSTOMERS.LIST);
+            const payload = response?.data?.data ?? response?.data ?? [];
+            setCustomers(payload)
         } catch (error) {
             
-        }}
+        }};
 
     useEffect( () => {fetchData(), getInvoices()},[]);
         return (

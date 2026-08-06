@@ -1,5 +1,6 @@
 import { Chip } from '@mui/material';
-import Collapsible from 'react-collapsible';
+import CollapsibleImport from 'react-collapsible';
+const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 
 const CustomerInfo = ({customer}) => {
 

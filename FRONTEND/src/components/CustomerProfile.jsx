@@ -1,9 +1,11 @@
 import React from "react";
 import axios from "axios";
-import Collapsible from 'react-collapsible';
+import CollapsibleImport from 'react-collapsible';
+const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import API_ENDPOINTS from "../config/apiConfig";
 
 const CustomerProfile = ({ customer }) => {
     const navigate = useNavigate()

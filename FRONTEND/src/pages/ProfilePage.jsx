@@ -40,18 +40,19 @@ const ProfilePage = () => {
     const getCustomer = async () => {
         setIsLoading(true);
         try {
-        const response = await axios.get(`http://localhost:3000/api/customer/${id}`);
+        const response = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
+        const payload = response?.data?.data ?? response?.data ?? {};
         setCustomer({
-            companyName: response.data.companyName,
-            phoneNumber: response.data.phoneNumber,
-            contactName: response.data.contactName,
-            companyEmail: response.data.companyEmail,
-            image: response.data.image,
-            streetAddress: response.data.streetAddress,
-            cityAddress: response.data.cityAddress,
-            stateAddress: response.data.stateAddress,
-            zipAddress: response.data.zipAddress,
-            _id: response.data._id
+            companyName: payload.companyName || "",
+            phoneNumber: payload.phoneNumber || "",
+            contactName: payload.contactName || "",
+            companyEmail: payload.companyEmail || "",
+            image: payload.image || "",
+            streetAddress: payload.streetAddress || "",
+            cityAddress: payload.cityAddress || "",
+            stateAddress: payload.stateAddress || "",
+            zipAddress: payload.zipAddress || "",
+            _id: payload._id
         });
         setIsLoading(false);
         } catch (error) {

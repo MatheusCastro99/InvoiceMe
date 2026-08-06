@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import axios from "axios";
+import API_ENDPOINTS from "../config/apiConfig";
 
 const TableCustomer = ({ customers, getCustomers }) => {
   const deleteCustomer = async (id) => {

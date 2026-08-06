@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import API_ENDPOINTS from "../config/apiConfig";
 
 const EditPage = () => {
   let { id } = useParams();
@@ -27,16 +28,18 @@ const EditPage = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
+      const payload = response?.data?.data ?? response?.data ?? {};
       setCustomer({
-        companyName: response.data.companyName,
-        phoneNumber: response.data.phoneNumber,
-        contactName: response.data.contactName,
-        companyEmail: response.data.companyEmail,
-        image: response.data.image,
-        streetAddress: response.data.streetAddress,
-        cityAddress: response.data.cityAddress,
-        stateAddress: response.data.stateAddress,
-        zipAddress: response.data.zipAddress,
+        companyName: payload.companyName || "",
+        phoneNumber: payload.phoneNumber || "",
+        contactName: payload.contactName || "",
+        companyEmail: payload.companyEmail || "",
+        image: payload.image || "",
+        streetAddress: payload.streetAddress || "",
+        cityAddress: payload.cityAddress || "",
+        stateAddress: payload.stateAddress || "",
+        zipAddress: payload.zipAddress || "",
+        _id: payload._id,
       });
       setIsLoading(false);
     } catch (error) {

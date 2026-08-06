@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Customer from "../components/Customer";
 import Divider from '@mui/material/Divider';
-import Collapsible from 'react-collapsible';
+import CollapsibleImport from 'react-collapsible';
+const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import TableInvoice from "../components/TableInvoice";
 import API_ENDPOINTS from "../config/apiConfig";
 
