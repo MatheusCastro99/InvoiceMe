@@ -5,7 +5,23 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Frontend (Vite) - npm/yarn
+  - package-ecosystem: "npm"
+    directory: "/FRONTEND"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Backend (Node API) - npm/yarn
+  - package-ecosystem: "npm"
+    directory: "/NODEAPI"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # GitHub Actions updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 5
