@@ -5,6 +5,7 @@ import axios from "axios";
 import TableInvoice from "../components/TableInvoice";
 import CustomerProfile from "../components/CustomerProfile";
 import Divider from '@mui/material/Divider'
+import API_ENDPOINTS from "../config/apiConfig";
 
 const ProfilePage = () => {
     let { id } = useParams();
@@ -26,9 +27,9 @@ const ProfilePage = () => {
     const getInvoices = async() => {
         try {
             setIsLoading(true);
-            const response = await axios.get("http://localhost:3000/api/generateInvoice");
+            const response = await axios.get(API_ENDPOINTS.INVOICES.LIST);
             //console.log(response.data);
-            setInvoices(response.data);
+            setInvoices(response.data.data || response.data);
             setIsLoading(false);
           } catch (error) {
             toast.error(error.message);

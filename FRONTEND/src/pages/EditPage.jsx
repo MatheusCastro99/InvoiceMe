@@ -26,7 +26,7 @@ const EditPage = () => {
   const getCustomer = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3000/api/customer/${id}`);
+      const response = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
       setCustomer({
         companyName: response.data.companyName,
         phoneNumber: response.data.phoneNumber,
@@ -47,7 +47,7 @@ const EditPage = () => {
 
   const updateCustomer = async (e) => {
     try {
-      await axios.put(`http://localhost:3000/api/customer/${id}`, customer);
+    await axios.put(API_ENDPOINTS.CUSTOMERS.UPDATE(id), customer);
       toast.success(`Updated ${customer.companyName} Successfully`);
       navigate("/");
     } catch (error) {

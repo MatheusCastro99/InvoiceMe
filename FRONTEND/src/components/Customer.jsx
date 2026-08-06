@@ -18,7 +18,7 @@ const Customer = ({ customer, getCustomers }) => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/customer/${id}`);
+        await axios.delete(API_ENDPOINTS.CUSTOMERS.DELETE(id));
         toast.success("Delete a Customer Successfully");
         getCustomers();
       } catch (error) {

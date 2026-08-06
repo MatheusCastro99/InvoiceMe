@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Chip } from '@mui/material';
 import { Divider } from "@mui/material";
 import Collapsible from 'react-collapsible';
+import API_ENDPOINTS from "../config/apiConfig";
 
 const CreatePage = () => {
 
@@ -32,7 +33,7 @@ const CreatePage = () => {
 
         try {
             setIsLoading(true);
-            const response = await axios.post("http://localhost:3000/api/customer", 
+            const response = await axios.post(API_ENDPOINTS.CUSTOMERS.CREATE, 
             {
                 companyName: companyName, phoneNumber: phoneNumber, contactName: contactName, companyEmail: companyEmail, image: image,
                 streetAddress:streetAddress, cityAddress: cityAddress, stateAddress: stateAddress, zipAddress: zipAddress

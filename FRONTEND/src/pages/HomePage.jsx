@@ -6,6 +6,7 @@ import Customer from "../components/Customer";
 import Divider from '@mui/material/Divider';
 import Collapsible from 'react-collapsible';
 import TableInvoice from "../components/TableInvoice";
+import API_ENDPOINTS from "../config/apiConfig";
 
 //EVERYWHERE: NON-OPERATIONAL NUMBERS (PHONE NUMBERS, DATES, INVOICE NUMBERS) ARE TO BE TREATED AS STRINGS
 //EVERYWHERE: OPERATIONAL NUMBERS (PRICES, TAXES) ARE TO BE TREATED AS INT/FLOATS
@@ -27,9 +28,9 @@ const HomePage = () => {
   const getCustomers = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("http://localhost:3000/api/customer");
+      const response = await axios.get(API_ENDPOINTS.CUSTOMERS.LIST);
       //console.log(response.data)
-      setCustomers(response.data);
+      setCustomers(response.data.data || response.data);
       setIsLoading(false);
     } catch (error) {
       toast.error(error.message);
@@ -40,8 +41,8 @@ const HomePage = () => {
   const getInvoices = async() => {
       try {
           setIsLoading(true);
-          const response = await axios.get("http://localhost:3000/api/generateInvoice");
-          setInvoices(response.data);
+          const response = await axios.get(API_ENDPOINTS.INVOICES.LIST);
+              setInvoices(response.data.data || response.data);
           setIsLoading(false);
         } catch (error) {
           toast.error(error.message);
