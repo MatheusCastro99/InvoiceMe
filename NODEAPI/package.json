@@ -1,7 +1,7 @@
 {
-  "name": "kentech-api",
+  "name": "InvoiceMe-api",
   "version": "1.0.0",
-  "description": "Ken-Tech Maintenance API - Customer and Invoice Management",
+  "description": "InvoiceMe API - Customer and Invoice Management",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
@@ -18,7 +18,7 @@
     "invoice",
     "maintenance"
   ],
-  "author": "Ken-Tech Team",
+  "author": "Matheus Castro",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
