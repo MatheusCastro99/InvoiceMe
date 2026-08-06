@@ -14,7 +14,7 @@ const invoiceRoute = require("./routes/invoiceRoute");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 
 // Configuration
-const DEFAULT_MONGO_URL = "mongodb://127.0.0.1:27017/ken-tech";
+const DEFAULT_MONGO_URL = "mongodb://127.0.0.1:27017/API-test";
 const MONGO_URL = process.env.MONGO_URL || DEFAULT_MONGO_URL;
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || "development";
