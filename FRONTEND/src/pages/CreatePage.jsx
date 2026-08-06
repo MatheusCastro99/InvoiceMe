@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Chip } from '@mui/material';
 import { Divider } from "@mui/material";
-import Collapsible from 'react-collapsible';
+import CollapsibleImport from 'react-collapsible';
+const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import API_ENDPOINTS from "../config/apiConfig";
 
 const CreatePage = () => {

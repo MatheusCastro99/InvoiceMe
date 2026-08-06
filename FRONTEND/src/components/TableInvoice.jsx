@@ -15,7 +15,8 @@ const fas = { faDownload };
 import Swal from "sweetalert2";
 import axios from "axios";
 import API_ENDPOINTS from "../config/apiConfig";
-import Collapsible from 'react-collapsible';
+import CollapsibleImport from 'react-collapsible';
+const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import { useState } from "react";
 
 const TableInvoice = ({ invoices, getInvoices, customers}) => {
