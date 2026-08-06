@@ -14,17 +14,37 @@ const invoiceRoute = require("./routes/invoiceRoute");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 
 // Configuration
-const MONGO_URL = process.env.MONGO_URL;
+const DEFAULT_MONGO_URL = "mongodb://127.0.0.1:27017/ken-tech";
+const MONGO_URL = process.env.MONGO_URL || DEFAULT_MONGO_URL;
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || "development";
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
+if (!process.env.MONGO_URL) {
+  console.warn(
+    "⚠️  MONGO_URL is not defined. Falling back to local MongoDB at:",
+    DEFAULT_MONGO_URL
+  );
+}
 
 // Initialize Express App
 const app = express();
 
 // CORS Configuration
+const allowedOrigins = new Set([
+  FRONTEND_URL,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+]);
+
 const corsOptions = {
-  origin: FRONTEND_URL,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.has(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS policy block: origin '${origin}' not allowed`), false);
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
