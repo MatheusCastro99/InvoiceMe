@@ -40,7 +40,7 @@ app.use(cors(corsOptions));
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Ken-Tech Maintenance API",
+    message: "InvoiceMe Business Maintenance API",
     version: "v1.0",
     status: "running",
   });
@@ -77,7 +77,7 @@ mongoose
   .then(() => {
     console.log("✓ Connected to MongoDB");
     app.listen(PORT, () => {
-      console.log(`✓ Ken-Tech API running on port ${PORT}`);
+      console.log(`✓ InvoiceMe Business Maintenance API running on port ${PORT}`);
       console.log(`✓ Environment: ${NODE_ENV}`);
       console.log(`✓ Frontend URL: ${FRONTEND_URL}`);
     });
