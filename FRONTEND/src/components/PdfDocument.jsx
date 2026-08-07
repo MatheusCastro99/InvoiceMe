@@ -1,7 +1,7 @@
 import React from 'react';
 import { Page, Text, View, Document, Image, Line, Svg } from '@react-pdf/renderer';
 import {pageBox, headerBox, jobInfoBox, priceInfoBox, companyInfoBox, footerBox} from "../pdfStyle";
-import Logo from "../assets/KenTechLogo.jpg"
+import Logo from "../assets/InvoiceMeLogo.PNG"
 
 const MyDocument = (info) => {
     const customerInfo = info.customerInfo;
@@ -27,9 +27,9 @@ const MyDocument = (info) => {
             <View style={headerBox.header}>
                 <Image style={headerBox.logo} src= {Logo}/>
                 <View style={headerBox.titleAddressBox}>
-                    <Text>Ken-Tech Maintenance</Text>
-                    <Text style={headerBox.addressNumber}>692 Selfmaster PKWY, Union, NJ - 07083</Text>
-                    <Text style={headerBox.addressNumber}>908-838-5832</Text>
+                    <Text>Your Company Name</Text>
+                    <Text style={headerBox.addressNumber}>Address Information goes Here</Text>
+                    <Text style={headerBox.addressNumber}>Contact Information</Text>
                 </View>
                 <View style={headerBox.dateInvoiceBox}>
                     <Text style={headerBox.dateInvoice}>{dateOfService}</Text>
@@ -76,8 +76,8 @@ const MyDocument = (info) => {
                 </View>
             </View>
             <View>
-                <Text style={footerBox.sentence}>CHECK TO BE MADE NOMINAL TO:</Text>
-                <Text style={footerBox.kenTech}>KEN-TECH MAINTENANCE LLC</Text>
+                <Text style={footerBox.sentence}>Payment Methods Accepted:</Text>
+                <Text style={footerBox.kenTech}>Cash, Check, Credit Card</Text>
                 <Text style={footerBox.sentence}>THANK YOU FOR YOUR BUSINESS!</Text>
             </View>
         </Page>
