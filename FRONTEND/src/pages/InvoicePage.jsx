@@ -5,7 +5,8 @@ import axios from "axios";
 import {Select} from "flowbite-react"
 import Divider from '@mui/material/Divider'
 import { Chip, Switch, FormControlLabel } from "@mui/material";
-import Collapsible from 'react-collapsible';
+import CollapsibleImport from 'react-collapsible';
+const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import CustomerInfo from "../components/CustomerInfo";
 import TableDescription from "../components/TableDescription";
 import API_ENDPOINTS from "../config/apiConfig";
