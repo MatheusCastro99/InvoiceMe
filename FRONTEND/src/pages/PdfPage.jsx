@@ -14,22 +14,23 @@ const styles = tableDataStyle;
 
 const PdfPage = () => {
     const location = useLocation();
-    const [newCustomer, setNewCustomer] = useState()
-    const customerInfo = location.state.customerInfo;
-    const tableData = location.state.tableData;
-    const {companyName}= location.state;
-    const {companyEmail}= location.state;
-    const {phoneNumber}= location.state;
-    const {streetAddress}= location.state;
-    const {cityAddress}= location.state;
-    const {stateAddress}= location.state;
-    const {zipAddress}= location.state;    
-    const {subtotal} = location.state;
-    const {taxRate} = location.state;
-    const {finalPrice} = location.state;
-    const {dateOfService} = location.state;
-    const {invoiceNumber} = location.state;
-    const {jobDescription} = location.state;
+    const [newCustomer, setNewCustomer] = useState();
+    const rawState = location.state || {};
+    const customerInfo = rawState.customerInfo;
+    const tableData = rawState.tableData;
+    const companyName = rawState.companyName;
+    const companyEmail = rawState.companyEmail;
+    const phoneNumber = rawState.phoneNumber;
+    const streetAddress = rawState.streetAddress;
+    const cityAddress = rawState.cityAddress;
+    const stateAddress = rawState.stateAddress;
+    const zipAddress = rawState.zipAddress;
+    const subtotal = typeof rawState.subtotal === 'object' ? Number(rawState.subtotal?.subtotal ?? 0) : Number(rawState.subtotal ?? 0);
+    const taxRate = typeof rawState.taxRate === 'object' ? Number(rawState.taxRate?.taxRate ?? 0) : Number(rawState.taxRate ?? 0);
+    const finalPrice = typeof rawState.finalPrice === 'object' ? Number(rawState.finalPrice?.finalPrice ?? 0) : Number(rawState.finalPrice ?? 0);
+    const dateOfService = rawState.dateOfService;
+    const invoiceNumber = rawState.invoiceNumber;
+    const jobDescription = rawState.jobDescription;
     
     const handleTableData = () => {
       if(tableData===undefined) return;

@@ -71,14 +71,16 @@ const InvoicePage = () => {
       setJobPrice(tempSubtotal)
       const getFinalPrice = await axios.post(API_ENDPOINTS.TAX.CALCULATE, 
         {jobPrice:tempSubtotal, taxRate: correspondingTax, jobDescription: jobDescription})
-      const amount = getFinalPrice?.data?.data ?? getFinalPrice?.data;
-      setFinalPrice(amount)
+      const responsePayload = getFinalPrice?.data?.data ?? getFinalPrice?.data;
+      const calculatedFinalPrice = responsePayload?.finalPrice ?? responsePayload;
+      setFinalPrice(Number(calculatedFinalPrice) || 0)
     }
 
     const handleTax = async(state) => {
       const getTaxRate = await axios.post(API_ENDPOINTS.TAX.GET_RATE, {state:state});
-      const rate = getTaxRate?.data?.data ?? getTaxRate?.data;
-      setCorrespondingTax(rate);
+      const fetchedRate = getTaxRate?.data?.data ?? getTaxRate?.data;
+      const parsedRate = typeof fetchedRate === "object" ? fetchedRate?.taxRate : fetchedRate;
+      setCorrespondingTax(Number(parsedRate) || 0);
     }
 
     const validateDate = (date) => {
