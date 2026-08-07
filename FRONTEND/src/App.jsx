@@ -7,7 +7,7 @@ import PdfPage from "./pages/PdfPage";
 import ProfilePage from "./pages/ProfilePage";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import companyLogo from "./assets/KenTechIcon.ico";
+import companyLogo from "./assets/InvoiceMeIcon.ico";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import { faHouse } from "@fortawesome/free-solid-svg-icons"
 
@@ -17,7 +17,7 @@ const App = () => {
         <nav className="bg-gray-800 sticky top-0">
           <div className="mx-auto p-2 flex justify-between items-center divBar">
             <Link to={"/"}><img src={companyLogo} className="logo inline-flex "></img></Link>
-            <Link to="/"><h2 className="linkNav inline-flex transition ease-in-out duration-300 hover:scale-110">Ken-Tech Maintenance</h2></Link>
+            <Link to="/"><h2 className="linkNav inline-flex transition ease-in-out duration-300 hover:scale-110">InvoiceMe Solutions</h2></Link>
             <a href=""><FontAwesomeIcon icon={faHouse} className="fa-xl white inline-flex transition ease-in-out duration-300 hover:scale-125" style={{color:"white"}}></FontAwesomeIcon></a>
           </div>
         </nav>

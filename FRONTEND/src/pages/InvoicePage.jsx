@@ -277,21 +277,21 @@ const InvoicePage = () => {
                         <label 
                           readOnly = {true}
                           type="text"
-                          className="inline-block font-semibold mb-2 block text-center"
+                          className="inline-block font-semibold mb-2 text-center"
                           placeholder="State Taxes">
                             {tempCustomer.stateAddress||"Select a State for this company"}
                         </label>
                         <label 
                           readOnly = {true}
                           type="text"
-                          className="inline-block font-semibold mb-2 block text-center"
+                          className="inline-block font-semibold mb-2 text-center"
                           placeholder="State Taxes">
                             {correspondingTax||0}%
                         </label>
                         <label 
                           readOnly = {true}
                           type="text"
-                          className="inline-block font-semibold mb-2 block text-center"
+                          className="inline-block font-semibold mb-2 text-center"
                           placeholder="State Taxes">
                             {"$"+(parseFloat((jobPrice*(correspondingTax/100)).toFixed(2))||0)}
                           </label>
