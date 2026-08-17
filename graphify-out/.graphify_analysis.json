@@ -1,0 +1,438 @@
+{
+  "communities": {
+    "0": [
+      "axios",
+      "dayjs",
+      "emotion_react",
+      "emotion_styled",
+      "file_saver",
+      "flowbite_react",
+      "fortawesome_fontawesome_svg_core",
+      "fortawesome_free_solid_svg_icons",
+      "fortawesome_react_fontawesome",
+      "frontend_package_dependencies",
+      "frontend_package_dependencies_axios",
+      "frontend_package_dependencies_dayjs",
+      "frontend_package_dependencies_emotion_react",
+      "frontend_package_dependencies_emotion_styled",
+      "frontend_package_dependencies_file_saver",
+      "frontend_package_dependencies_flowbite_react",
+      "frontend_package_dependencies_fortawesome_fontawesome_svg_core",
+      "frontend_package_dependencies_fortawesome_free_solid_svg_icons",
+      "frontend_package_dependencies_fortawesome_react_fontawesome",
+      "frontend_package_dependencies_mui_material",
+      "frontend_package_dependencies_mui_x_date_pickers",
+      "frontend_package_dependencies_react",
+      "frontend_package_dependencies_react_collapsible",
+      "frontend_package_dependencies_react_dom",
+      "frontend_package_dependencies_react_pdf_renderer",
+      "frontend_package_dependencies_react_router_dom",
+      "frontend_package_dependencies_react_toastify",
+      "frontend_package_dependencies_sweetalert2",
+      "mui_material",
+      "mui_x_date_pickers",
+      "react",
+      "react_collapsible",
+      "react_dom",
+      "react_pdf_renderer",
+      "react_router_dom",
+      "react_toastify",
+      "sweetalert2"
+    ],
+    "1": [
+      "frontend_src_app",
+      "frontend_src_app_app",
+      "frontend_src_components_customer",
+      "frontend_src_components_customer_customer",
+      "frontend_src_components_customerprofile",
+      "frontend_src_components_customerprofile_customerprofile",
+      "frontend_src_components_pdfdocument",
+      "frontend_src_components_pdfdocument_mydocument",
+      "frontend_src_components_tablecustomer",
+      "frontend_src_components_tablecustomer_tablecustomer",
+      "frontend_src_components_tableinvoice",
+      "frontend_src_components_tableinvoice_fas",
+      "frontend_src_components_tableinvoice_tableinvoice",
+      "frontend_src_config_apiconfig",
+      "frontend_src_config_apiconfig_api_endpoints",
+      "frontend_src_config_apiconfig_apirequest",
+      "frontend_src_main",
+      "frontend_src_pages_createpage",
+      "frontend_src_pages_createpage_createpage",
+      "frontend_src_pages_editpage",
+      "frontend_src_pages_editpage_editpage",
+      "frontend_src_pages_homepage",
+      "frontend_src_pages_homepage_homepage",
+      "frontend_src_pages_pdfpage",
+      "frontend_src_pages_pdfpage_pdfpage",
+      "frontend_src_pages_profilepage",
+      "frontend_src_pages_profilepage_profilepage",
+      "frontend_src_pdfstyle",
+      "frontend_src_pdfstyle_companyinfobox",
+      "frontend_src_pdfstyle_footerbox",
+      "frontend_src_pdfstyle_headerbox",
+      "frontend_src_pdfstyle_jobinfobox",
+      "frontend_src_pdfstyle_pagebox",
+      "frontend_src_pdfstyle_priceinfobox",
+      "frontend_src_pdfstyle_tabledatastyle"
+    ],
+    "2": [
+      "nodeapi_controllers_customercontroller",
+      "nodeapi_controllers_customercontroller_asynchandler",
+      "nodeapi_controllers_customercontroller_customermodel",
+      "nodeapi_controllers_customercontroller_delcustomer",
+      "nodeapi_controllers_customercontroller_getcustomerbyid",
+      "nodeapi_controllers_customercontroller_getcustomers",
+      "nodeapi_controllers_customercontroller_mongoose",
+      "nodeapi_controllers_customercontroller_notfounderror_conflicterror_response_messages",
+      "nodeapi_controllers_customercontroller_postcustomer",
+      "nodeapi_controllers_customercontroller_response_messages_messages",
+      "nodeapi_controllers_customercontroller_updatecustomer",
+      "nodeapi_models_customermodel",
+      "nodeapi_models_customermodel_customermodel",
+      "nodeapi_models_customermodel_customerschema",
+      "nodeapi_models_customermodel_mongoose",
+      "nodeapi_routes_customerroute",
+      "nodeapi_routes_customerroute_express",
+      "nodeapi_routes_customerroute_getcustomers_getcustomerbyid_postcustomer_updatecustomer_delcustomer",
+      "nodeapi_routes_customerroute_router",
+      "nodeapi_routes_customerroute_validatecustomerinput",
+      "nodeapi_utils_errors",
+      "nodeapi_utils_errors_apperror",
+      "nodeapi_utils_errors_apperror_constructor",
+      "nodeapi_utils_errors_conflicterror",
+      "nodeapi_utils_errors_conflicterror_constructor",
+      "nodeapi_utils_errors_internalservererror",
+      "nodeapi_utils_errors_internalservererror_constructor",
+      "nodeapi_utils_errors_notfounderror",
+      "nodeapi_utils_errors_notfounderror_constructor",
+      "nodeapi_utils_errors_unauthorizederror",
+      "nodeapi_utils_errors_unauthorizederror_constructor",
+      "nodeapi_utils_errors_validationerror",
+      "nodeapi_utils_errors_validationerror_constructor"
+    ],
+    "3": [
+      "autoprefixer",
+      "eslint",
+      "eslint_plugin_react",
+      "eslint_plugin_react_hooks",
+      "eslint_plugin_react_refresh",
+      "frontend_package_devdependencies",
+      "frontend_package_devdependencies_autoprefixer",
+      "frontend_package_devdependencies_eslint",
+      "frontend_package_devdependencies_eslint_plugin_react",
+      "frontend_package_devdependencies_eslint_plugin_react_hooks",
+      "frontend_package_devdependencies_eslint_plugin_react_refresh",
+      "frontend_package_devdependencies_postcss",
+      "frontend_package_devdependencies_tailwindcss",
+      "frontend_package_devdependencies_types_react",
+      "frontend_package_devdependencies_types_react_dom",
+      "frontend_package_devdependencies_vite",
+      "frontend_package_devdependencies_vitejs_plugin_react",
+      "frontend_package_json_tailwindcss",
+      "postcss",
+      "types_react",
+      "types_react_dom",
+      "vite",
+      "vitejs_plugin_react"
+    ],
+    "4": [
+      "cors",
+      "dotenv",
+      "express",
+      "express_async_handler",
+      "express_validator",
+      "mongoose",
+      "nodeapi_package_dependencies",
+      "nodeapi_package_dependencies_cors",
+      "nodeapi_package_dependencies_dotenv",
+      "nodeapi_package_dependencies_express",
+      "nodeapi_package_dependencies_express_async_handler",
+      "nodeapi_package_dependencies_express_validator",
+      "nodeapi_package_dependencies_mongoose",
+      "nodeapi_package_keywords",
+      "ref_api",
+      "ref_customer",
+      "ref_invoice",
+      "ref_maintenance",
+      "ref_mongodb"
+    ],
+    "5": [
+      "nodeapi_package",
+      "nodeapi_package_author",
+      "nodeapi_package_description",
+      "nodeapi_package_devdependencies",
+      "nodeapi_package_devdependencies_nodemon",
+      "nodeapi_package_engines",
+      "nodeapi_package_engines_node",
+      "nodeapi_package_engines_npm",
+      "nodeapi_package_license",
+      "nodeapi_package_main",
+      "nodeapi_package_name",
+      "nodeapi_package_scripts",
+      "nodeapi_package_scripts_api",
+      "nodeapi_package_scripts_dev",
+      "nodeapi_package_scripts_start",
+      "nodeapi_package_scripts_test",
+      "nodeapi_package_type",
+      "nodeapi_package_version",
+      "nodemon"
+    ],
+    "6": [
+      "nodeapi_controllers_invoicecontroller",
+      "nodeapi_controllers_invoicecontroller_asynchandler",
+      "nodeapi_controllers_invoicecontroller_delinvoice",
+      "nodeapi_controllers_invoicecontroller_getinvoice",
+      "nodeapi_controllers_invoicecontroller_invoicemodel",
+      "nodeapi_controllers_invoicecontroller_notfounderror",
+      "nodeapi_controllers_invoicecontroller_postinvoice",
+      "nodeapi_controllers_invoicecontroller_response_messages",
+      "nodeapi_models_invoicemodel",
+      "nodeapi_models_invoicemodel_invoicemodel",
+      "nodeapi_models_invoicemodel_invoiceschema",
+      "nodeapi_models_invoicemodel_mongoose",
+      "nodeapi_routes_invoiceroute",
+      "nodeapi_routes_invoiceroute_express",
+      "nodeapi_routes_invoiceroute_getinvoice_delinvoice_postinvoice",
+      "nodeapi_routes_invoiceroute_invoicerouter",
+      "nodeapi_routes_invoiceroute_validateinvoiceinput"
+    ],
+    "7": [
+      "concurrently",
+      "package",
+      "package_description",
+      "package_devdependencies",
+      "package_devdependencies_concurrently",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_dev",
+      "package_scripts_dev_api",
+      "package_scripts_dev_frontend",
+      "package_scripts_start_api",
+      "package_scripts_start_frontend",
+      "package_version"
+    ],
+    "8": [
+      "nodeapi_controllers_taxcontroller",
+      "nodeapi_controllers_taxcontroller_asynchandler",
+      "nodeapi_controllers_taxcontroller_calculatetax",
+      "nodeapi_controllers_taxcontroller_definetaxrate",
+      "nodeapi_controllers_taxcontroller_state_tax_rates",
+      "nodeapi_controllers_taxcontroller_validationerror",
+      "nodeapi_routes_taxroute",
+      "nodeapi_routes_taxroute_calculatetax_definetaxrate",
+      "nodeapi_routes_taxroute_express",
+      "nodeapi_routes_taxroute_taxrouter",
+      "nodeapi_utils_constants",
+      "nodeapi_utils_constants_pagination",
+      "nodeapi_utils_constants_response_messages",
+      "nodeapi_utils_constants_state_tax_rates"
+    ],
+    "9": [
+      "nodeapi_middlewares_validationmiddleware",
+      "nodeapi_middlewares_validationmiddleware_validatecustomerdata_validateinvoicedata",
+      "nodeapi_middlewares_validationmiddleware_validatecustomerinput",
+      "nodeapi_middlewares_validationmiddleware_validateinvoiceinput",
+      "nodeapi_middlewares_validationmiddleware_validationerror",
+      "nodeapi_utils_validators",
+      "nodeapi_utils_validators_validatecompanyname",
+      "nodeapi_utils_validators_validatecustomerdata",
+      "nodeapi_utils_validators_validateemail",
+      "nodeapi_utils_validators_validateinvoicedata",
+      "nodeapi_utils_validators_validatephonenumber",
+      "nodeapi_utils_validators_validatestate",
+      "nodeapi_utils_validators_validatezipcode",
+      "nodeapi_utils_validators_validation_patterns"
+    ],
+    "10": [
+      "nodeapi_middlewares_errormiddleware",
+      "nodeapi_middlewares_errormiddleware_errormiddleware",
+      "nodeapi_server",
+      "nodeapi_server_allowedorigins",
+      "nodeapi_server_app",
+      "nodeapi_server_cors",
+      "nodeapi_server_corsoptions",
+      "nodeapi_server_customerroute",
+      "nodeapi_server_errormiddleware",
+      "nodeapi_server_express",
+      "nodeapi_server_invoiceroute",
+      "nodeapi_server_mongoose",
+      "nodeapi_server_taxroute"
+    ],
+    "11": [
+      "frontend_package",
+      "frontend_package_name",
+      "frontend_package_private",
+      "frontend_package_scripts",
+      "frontend_package_scripts_build",
+      "frontend_package_scripts_dev",
+      "frontend_package_scripts_lint",
+      "frontend_package_scripts_page",
+      "frontend_package_scripts_preview",
+      "frontend_package_scripts_start",
+      "frontend_package_type",
+      "frontend_package_version"
+    ],
+    "12": [
+      "frontend_src_components_customerinfo",
+      "frontend_src_components_customerinfo_customerinfo",
+      "frontend_src_components_tabledescription",
+      "frontend_src_components_tabledescription_tabledescription",
+      "frontend_src_pages_invoicepage",
+      "frontend_src_pages_invoicepage_invoicepage"
+    ],
+    "13": [
+      "frontend_eslintrc"
+    ],
+    "14": [
+      "frontend_postcss_config"
+    ],
+    "15": [
+      "frontend_tailwind_config"
+    ],
+    "16": [
+      "frontend_vite_config"
+    ],
+    "17": [
+      "frontend_vite_config_js_timestamp_1722174083550_5ba8a9a02076b"
+    ],
+    "18": [
+      "tailwindcss_tailwindcss"
+    ]
+  },
+  "cohesion": {
+    "0": 0.05405405405405406,
+    "1": 0.12436974789915967,
+    "2": 0.07386363636363637,
+    "3": 0.08695652173913043,
+    "4": 0.10526315789473684,
+    "5": 0.10526315789473684,
+    "6": 0.13970588235294118,
+    "7": 0.14285714285714285,
+    "8": 0.17582417582417584,
+    "9": 0.25274725274725274,
+    "10": 0.15384615384615385,
+    "11": 0.16666666666666666,
+    "12": 0.4666666666666667,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0
+  },
+  "gods": [
+    {
+      "id": "frontend_src_config_apiconfig_api_endpoints",
+      "label": "API_ENDPOINTS",
+      "degree": 11
+    },
+    {
+      "id": "nodeapi_utils_validators_validatecustomerdata",
+      "label": "validateCustomerData()",
+      "degree": 8
+    },
+    {
+      "id": "frontend_package_scripts",
+      "label": "scripts",
+      "degree": 7
+    },
+    {
+      "id": "nodeapi_package_keywords",
+      "label": "keywords",
+      "degree": 7
+    },
+    {
+      "id": "express",
+      "label": "express",
+      "degree": 6
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 6
+    },
+    {
+      "id": "nodeapi_package_scripts",
+      "label": "scripts",
+      "degree": 5
+    },
+    {
+      "id": "nodeapi_utils_errors_notfounderror",
+      "label": "NotFoundError",
+      "degree": 4
+    },
+    {
+      "id": "nodeapi_utils_errors_validationerror",
+      "label": "ValidationError",
+      "degree": 4
+    },
+    {
+      "id": "nodeapi_utils_validators_validateinvoicedata",
+      "label": "validateInvoiceData()",
+      "degree": 4
+    }
+  ],
+  "surprises": [
+    {
+      "source": "validateCustomerInput()",
+      "target": "validateCustomerData()",
+      "source_files": [
+        "NODEAPI/middlewares/validationMiddleware.js",
+        "NODEAPI/utils/validators.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    },
+    {
+      "source": "validateInvoiceInput()",
+      "target": "validateInvoiceData()",
+      "source_files": [
+        "NODEAPI/middlewares/validationMiddleware.js",
+        "NODEAPI/utils/validators.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `express` connect `dependencies` to `taxController.js`, `customerController.js`, `server.js`, `invoiceController.js`?",
+      "why": "High betweenness centrality (0.103) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `keywords` connect `dependencies` to `NODEAPI/package.json`?",
+      "why": "High betweenness centrality (0.070) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `dependencies` to `FRONTEND/package.json`?",
+      "why": "High betweenness centrality (0.055) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `axios`, `dayjs`, `@emotion/react` to the rest of the system?",
+      "why": "117 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `dependencies` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.05405405405405406 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `App.jsx` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.12436974789915967 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `customerController.js` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07386363636363637 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

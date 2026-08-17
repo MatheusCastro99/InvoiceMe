@@ -1,0 +1,236 @@
+{
+  "FRONTEND/.eslintrc.cjs": {
+    "mtime": 1787005443.6894534,
+    "seen": 1787005663.7121794,
+    "ast_hash": "afc780ccf32cb83a9ba6e6a902e12951",
+    "semantic_hash": "afc780ccf32cb83a9ba6e6a902e12951"
+  },
+  "FRONTEND/package.json": {
+    "mtime": 1787005443.69248,
+    "seen": 1787005663.7121835,
+    "ast_hash": "ff149834c10c60ab3698e9d126716388",
+    "semantic_hash": "ff149834c10c60ab3698e9d126716388"
+  },
+  "FRONTEND/postcss.config.js": {
+    "mtime": 1787005443.6934843,
+    "seen": 1787005663.7121851,
+    "ast_hash": "5b84f4567208c7c747079c0477373231",
+    "semantic_hash": "5b84f4567208c7c747079c0477373231"
+  },
+  "FRONTEND/src/App.jsx": {
+    "mtime": 1787005443.6944883,
+    "seen": 1787005663.712186,
+    "ast_hash": "486ecd5ef67bb7bdef8763dbc10fb20d",
+    "semantic_hash": "486ecd5ef67bb7bdef8763dbc10fb20d"
+  },
+  "FRONTEND/src/components/Customer.jsx": {
+    "mtime": 1787005443.7096322,
+    "seen": 1787005663.7121868,
+    "ast_hash": "bb2aa5b13aa0409a2afe437e2200fb7c",
+    "semantic_hash": "bb2aa5b13aa0409a2afe437e2200fb7c"
+  },
+  "FRONTEND/src/components/CustomerInfo.jsx": {
+    "mtime": 1787005443.7101321,
+    "seen": 1787005663.7121878,
+    "ast_hash": "b8d6a7459fc3412e9e2f5440070191c4",
+    "semantic_hash": "b8d6a7459fc3412e9e2f5440070191c4"
+  },
+  "FRONTEND/src/components/CustomerProfile.jsx": {
+    "mtime": 1787005443.711132,
+    "seen": 1787005663.7121885,
+    "ast_hash": "4dfcb6129083ed619e5b69ab7b6c8c3e",
+    "semantic_hash": "4dfcb6129083ed619e5b69ab7b6c8c3e"
+  },
+  "FRONTEND/src/components/PdfDocument.jsx": {
+    "mtime": 1787005443.7116475,
+    "seen": 1787005663.712189,
+    "ast_hash": "bc035da10e6cd4f37bb33451e8e4d446",
+    "semantic_hash": "bc035da10e6cd4f37bb33451e8e4d446"
+  },
+  "FRONTEND/src/components/TableCustomer.jsx": {
+    "mtime": 1787005443.712132,
+    "seen": 1787005663.7121897,
+    "ast_hash": "2afb9c3ceabf6989a8140c5baadef558",
+    "semantic_hash": "2afb9c3ceabf6989a8140c5baadef558"
+  },
+  "FRONTEND/src/components/TableDescription.jsx": {
+    "mtime": 1787005443.712132,
+    "seen": 1787005663.7121902,
+    "ast_hash": "cd38eff514f8a39423e5aef96f8905b8",
+    "semantic_hash": "cd38eff514f8a39423e5aef96f8905b8"
+  },
+  "FRONTEND/src/components/TableInvoice.jsx": {
+    "mtime": 1787005443.7131498,
+    "seen": 1787005663.7121906,
+    "ast_hash": "cb931c2c486f7ac413af0c21276d3927",
+    "semantic_hash": "cb931c2c486f7ac413af0c21276d3927"
+  },
+  "FRONTEND/src/config/apiConfig.js": {
+    "mtime": 1787005443.7131498,
+    "seen": 1787005663.7121916,
+    "ast_hash": "4bebe3ece265a5b3bdd5c44a4bfcde8f",
+    "semantic_hash": "4bebe3ece265a5b3bdd5c44a4bfcde8f"
+  },
+  "FRONTEND/src/main.jsx": {
+    "mtime": 1787005443.714132,
+    "seen": 1787005663.7121923,
+    "ast_hash": "cb93ebac7376248b070317ec86913ca1",
+    "semantic_hash": "cb93ebac7376248b070317ec86913ca1"
+  },
+  "FRONTEND/src/pages/CreatePage.jsx": {
+    "mtime": 1787005443.7146337,
+    "seen": 1787005663.7121928,
+    "ast_hash": "2e8fda1b441c461a2ee6b1af29b9dbf3",
+    "semantic_hash": "2e8fda1b441c461a2ee6b1af29b9dbf3"
+  },
+  "FRONTEND/src/pages/EditPage.jsx": {
+    "mtime": 1787005443.7146337,
+    "seen": 1787005663.7121933,
+    "ast_hash": "20c7973749af9f94769ad521467a21c9",
+    "semantic_hash": "20c7973749af9f94769ad521467a21c9"
+  },
+  "FRONTEND/src/pages/HomePage.jsx": {
+    "mtime": 1787005443.7156386,
+    "seen": 1787005663.712194,
+    "ast_hash": "ed96e4088b706f6936119d8d2220c6d9",
+    "semantic_hash": "ed96e4088b706f6936119d8d2220c6d9"
+  },
+  "FRONTEND/src/pages/InvoicePage.jsx": {
+    "mtime": 1787005443.716145,
+    "seen": 1787005663.7121944,
+    "ast_hash": "4912c3aabe79869b1b7c51a68d32e489",
+    "semantic_hash": "4912c3aabe79869b1b7c51a68d32e489"
+  },
+  "FRONTEND/src/pages/PdfPage.jsx": {
+    "mtime": 1787005443.716645,
+    "seen": 1787005663.7121952,
+    "ast_hash": "2958dab63e5b0ad9b58335b778f4e268",
+    "semantic_hash": "2958dab63e5b0ad9b58335b778f4e268"
+  },
+  "FRONTEND/src/pages/ProfilePage.jsx": {
+    "mtime": 1787005443.7171447,
+    "seen": 1787005663.7121956,
+    "ast_hash": "af7e92fb951708ca221fbba6f31294e3",
+    "semantic_hash": "af7e92fb951708ca221fbba6f31294e3"
+  },
+  "FRONTEND/src/pdfStyle.jsx": {
+    "mtime": 1787005443.7176433,
+    "seen": 1787005663.7121966,
+    "ast_hash": "916d132aa54b66063bddad063cee3394",
+    "semantic_hash": "916d132aa54b66063bddad063cee3394"
+  },
+  "FRONTEND/tailwind.config.js": {
+    "mtime": 1787005443.7176433,
+    "seen": 1787005663.712197,
+    "ast_hash": "853a9ffd5e32061df67408a9643b342f",
+    "semantic_hash": "853a9ffd5e32061df67408a9643b342f"
+  },
+  "FRONTEND/vite.config.js": {
+    "mtime": 1787005443.7181435,
+    "seen": 1787005663.7121975,
+    "ast_hash": "de0732ddf7c649f3b9fa8ee38a71fc13",
+    "semantic_hash": "de0732ddf7c649f3b9fa8ee38a71fc13"
+  },
+  "FRONTEND/vite.config.js.timestamp-1722174083550-5ba8a9a02076b.mjs": {
+    "mtime": 1787005443.7181435,
+    "seen": 1787005663.7121985,
+    "ast_hash": "b4de083bd1a658f1e774f5190e32c862",
+    "semantic_hash": "b4de083bd1a658f1e774f5190e32c862"
+  },
+  "NODEAPI/controllers/customerController.js": {
+    "mtime": 1787005443.7201433,
+    "seen": 1787005663.7121992,
+    "ast_hash": "902da1270d93f3fab1e09bb267e6db58",
+    "semantic_hash": "902da1270d93f3fab1e09bb267e6db58"
+  },
+  "NODEAPI/controllers/invoiceController.js": {
+    "mtime": 1787005443.7201433,
+    "seen": 1787005663.7121997,
+    "ast_hash": "4d2677a863be0f24e166fe9ab9cd1873",
+    "semantic_hash": "4d2677a863be0f24e166fe9ab9cd1873"
+  },
+  "NODEAPI/controllers/taxController.js": {
+    "mtime": 1787005443.7206433,
+    "seen": 1787005663.7122002,
+    "ast_hash": "adcef63549091c58cbab5ef07d7abfc6",
+    "semantic_hash": "adcef63549091c58cbab5ef07d7abfc6"
+  },
+  "NODEAPI/middlewares/errorMiddleware.js": {
+    "mtime": 1787005443.721145,
+    "seen": 1787005663.7122009,
+    "ast_hash": "f2bcf4e85572c2bb0fcc443e35498686",
+    "semantic_hash": "f2bcf4e85572c2bb0fcc443e35498686"
+  },
+  "NODEAPI/middlewares/validationMiddleware.js": {
+    "mtime": 1787005443.7216456,
+    "seen": 1787005663.7122018,
+    "ast_hash": "acdd286aa870ffeb1bb781d1126c116d",
+    "semantic_hash": "acdd286aa870ffeb1bb781d1126c116d"
+  },
+  "NODEAPI/models/customerModel.js": {
+    "mtime": 1787005443.7216456,
+    "seen": 1787005663.712202,
+    "ast_hash": "ea4b1a5f0c76f6d64fe369ffef0eafb2",
+    "semantic_hash": "ea4b1a5f0c76f6d64fe369ffef0eafb2"
+  },
+  "NODEAPI/models/invoiceModel.js": {
+    "mtime": 1787005443.7221432,
+    "seen": 1787005663.7122028,
+    "ast_hash": "dfed9b4a8d808a3d1c045adb3ba9c563",
+    "semantic_hash": "dfed9b4a8d808a3d1c045adb3ba9c563"
+  },
+  "NODEAPI/package.json": {
+    "mtime": 1787005443.723644,
+    "seen": 1787005663.7122035,
+    "ast_hash": "aa1a2110de84e224a66df3585d3f15ac",
+    "semantic_hash": "aa1a2110de84e224a66df3585d3f15ac"
+  },
+  "NODEAPI/routes/customerRoute.js": {
+    "mtime": 1787005443.723644,
+    "seen": 1787005663.712204,
+    "ast_hash": "a195f592403d52866cac962c09f4c18e",
+    "semantic_hash": "a195f592403d52866cac962c09f4c18e"
+  },
+  "NODEAPI/routes/invoiceRoute.js": {
+    "mtime": 1787005443.7241433,
+    "seen": 1787005663.7122045,
+    "ast_hash": "f8400b7494ecf6cc589337e1a267dbd4",
+    "semantic_hash": "f8400b7494ecf6cc589337e1a267dbd4"
+  },
+  "NODEAPI/routes/taxRoute.js": {
+    "mtime": 1787005443.724643,
+    "seen": 1787005663.7122054,
+    "ast_hash": "e7222e673649e932c761caa6071d2e04",
+    "semantic_hash": "e7222e673649e932c761caa6071d2e04"
+  },
+  "NODEAPI/server.js": {
+    "mtime": 1787005443.724643,
+    "seen": 1787005663.712206,
+    "ast_hash": "d54fd9ff6d128fa53cd3c39d50c2ba03",
+    "semantic_hash": "d54fd9ff6d128fa53cd3c39d50c2ba03"
+  },
+  "NODEAPI/utils/constants.js": {
+    "mtime": 1787005443.724643,
+    "seen": 1787005663.7122066,
+    "ast_hash": "3b7a08dbc03f0310ecfa90294dddccb4",
+    "semantic_hash": "3b7a08dbc03f0310ecfa90294dddccb4"
+  },
+  "NODEAPI/utils/errors.js": {
+    "mtime": 1787005443.725646,
+    "seen": 1787005663.712207,
+    "ast_hash": "2718f3d256fd93ff920a3e9b0241827a",
+    "semantic_hash": "2718f3d256fd93ff920a3e9b0241827a"
+  },
+  "NODEAPI/utils/validators.js": {
+    "mtime": 1787005443.725646,
+    "seen": 1787005663.7122078,
+    "ast_hash": "3920398f0b8db7daa839c364c0e0961e",
+    "semantic_hash": "3920398f0b8db7daa839c364c0e0961e"
+  },
+  "package.json": {
+    "mtime": 1787005443.7271707,
+    "seen": 1787005663.7122083,
+    "ast_hash": "f1f3f56b002d8c3603921a15d6938efd",
+    "semantic_hash": "f1f3f56b002d8c3603921a15d6938efd"
+  }
+}
