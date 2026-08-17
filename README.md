@@ -22,6 +22,12 @@ A full-stack application for managing customers and invoices with professional f
 - **[API Documentation](./NODEAPI/API_DOCUMENTATION.md)** - Complete API reference
 - **[Frontend Setup](./FRONTEND/README.md)** - React app setup
 
+## 🧠 Graphify Documentation Support
+
+Graphify is available as a tool to support documentation and exploration of the codebase. It can help surface relationships between modules, identify documentation hotspots, and provide a structured knowledge map for the project.
+
+Generated outputs for this repository are stored in the `graphify-out/` directory, including a persistent graph and report files for documentation-oriented analysis.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
