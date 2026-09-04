@@ -1,157 +1,30 @@
 # InvoiceMe Business Management System
 
-A complete, production-ready CRUD application for managing customers and generating invoices for a home maintenance business.
+A comprehensive, production-ready CRUD application for managing customers and generating invoices for a small businesses.
 
 **Version:** 1.0.0  
 **Status:** Production Ready  
-**Stack:** MERN (MongoDB, Express, React, Node.js) + Tailwind CSS
+**Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
-## 🎯 Project Overview
+## Project Overview
 
 A full-stack application for managing customers and invoices with professional features:
 
 - **API Versioning** - RESTful API with `/api/v1/` routing
-- **Production Ready** - Error handling, validation, security
+- **Production Ready** - Error handling, detailed validation, modern security principles
 - **Well Documented** - API docs, README files, inline comments
 - **Environment Configuration** - `.env` based setup
-- **Input Validation** - Backend validation + frontend checks
+- **Input Validation** - Front-End Checks for quick user reference + Back-end Validation to enforce standards and business rules
 
-## 📁 Quick Navigation
+---
 
-- **[Backend Setup](./NODEAPI/README.md)** - Express API setup
-- **[API Documentation](./NODEAPI/API_DOCUMENTATION.md)** - Complete API reference
-- **[Frontend Setup](./FRONTEND/README.md)** - React app setup
+# Project Status
 
-## 🧠 Graphify Documentation Support
-
-Graphify is available as a tool to support documentation and exploration of the codebase. It can help surface relationships between modules, identify documentation hotspots, and provide a structured knowledge map for the project.
-
-Generated outputs for this repository are stored in the `graphify-out/` directory, including a persistent graph and report files for documentation-oriented analysis.
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js v14+
-- MongoDB Atlas (or local MongoDB)
-- npm/yarn
-
-### Backend Setup
-
-```bash
-cd NODEAPI
-npm install
-cp .env.example .env
-# Edit .env with your MongoDB URL.
-# If you do not have MongoDB Atlas, use a local MongoDB instance:
-# MONGO_URL=mongodb://127.0.0.1:27017/ken-tech
-npm run dev
-# Server runs on http://localhost:3000
-```
-
-### Frontend Setup
-
-```bash
-cd FRONTEND
-npm install
-cp .env.example .env.local
-npm run dev
-# App runs on http://localhost:5173
-```
-
-> Note: This frontend is a Vite application and must be started with `npm run dev` or `npm start` inside the `FRONTEND` folder. Do not use a generic live-server on `index.html` because the app relies on Vite's ES module development server.
-
-## 📚 Key Documentation Files
-
-| File                                                           | Purpose                                   |
-| -------------------------------------------------------------- | ----------------------------------------- |
-| [NODEAPI/README.md](./NODEAPI/README.md)                       | Backend setup, routes, validation         |
-| [NODEAPI/API_DOCUMENTATION.md](./NODEAPI/API_DOCUMENTATION.md) | Complete API reference with examples      |
-| [FRONTEND/README.md](./FRONTEND/README.md)                     | Frontend setup, components, configuration |
-
-## 🔄 API Versioning
-
-All endpoints use versioning: `/api/v1/{resource}`
-
-**Customer Endpoints:**
-
-```
-GET    /api/v1/customers              # List
-GET    /api/v1/customers/:id          # Get one
-POST   /api/v1/customers              # Create
-PUT    /api/v1/customers/:id          # Update
-DELETE /api/v1/customers/:id          # Delete
-```
-
-**Invoice Endpoints:**
-
-```
-GET    /api/v1/invoices               # List
-POST   /api/v1/invoices               # Create
-DELETE /api/v1/invoices/:id           # Delete
-```
-
-**Tax Endpoints:**
-
-```
-POST   /api/v1/tax/rate               # Get rate
-POST   /api/v1/tax/calculate          # Calculate
-```
-
-See [API_DOCUMENTATION.md](./NODEAPI/API_DOCUMENTATION.md) for complete reference.
-
-## 📦 Project Structure
-
-```
-CRUD1/
-├── NODEAPI/
-│   ├── controllers/    # Business logic
-│   ├── models/         # MongoDB schemas
-│   ├── routes/         # Route handlers
-│   ├── middlewares/    # Express middlewares
-│   ├── utils/          # Errors, validation, constants
-│   ├── server.js       # Express app
-│   ├── package.json
-│   ├── .env.example
-│   ├── README.md
-│   └── API_DOCUMENTATION.md
-├── FRONTEND/
-│   ├── src/
-│   │   ├── components/ # React components
-│   │   ├── pages/      # Page components
-│   │   ├── config/     # API configuration
-│   │   └── App.jsx
-│   ├── package.json
-│   ├── .env.example
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── README.md
-└── README.md
-```
-
-## 🔐 Configuration
-
-### Backend (.env)
-
-```bash
-MONGO_URL=mongodb+srv://...
-PORT=3000
-NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
-API_VERSION=v1
-```
-
-### Frontend (.env.local)
-
-```bash
-VITE_API_BASE_URL=http://localhost:3000
-```
-
-## ✅ Features
+## Features
 
 **Customer Management**
 
-- View customers with pagination
+- View customers with modular pagination
 - Create with validation
 - Edit profiles
 - Delete confirmation
@@ -163,6 +36,7 @@ VITE_API_BASE_URL=http://localhost:3000
 - Tax calculations by state
 - PDF exports
 - Invoice history
+- Invoice Number tracking system and duplicate prevention
 
 **User Interface**
 
@@ -172,7 +46,7 @@ VITE_API_BASE_URL=http://localhost:3000
 - Smooth animations
 - Tailwind styling
 
-## 📋 Validation
+## Validation
 
 **Customer:**
 
@@ -187,7 +61,7 @@ VITE_API_BASE_URL=http://localhost:3000
 - Date: ISO format required
 - Price: Positive number
 
-## 🧪 Testing
+## API Testing Example
 
 ```bash
 # Get all customers
@@ -202,7 +76,7 @@ curl -X POST http://localhost:3000/api/v1/customers \
   }'
 ```
 
-## 📊 Response Format
+## Expected Response Format
 
 **Success:**
 
@@ -225,58 +99,6 @@ curl -X POST http://localhost:3000/api/v1/customers \
   "errors": ["Error 1", "Error 2"]
 }
 ```
-
-## 🚀 Deployment
-
-**Build Frontend:**
-
-```bash
-cd FRONTEND
-npm run build
-# Creates dist/ folder
-```
-
-**Deploy to Vercel:**
-
-```bash
-vercel
-# Set VITE_API_BASE_URL environment variable
-```
-
-**Deploy Backend to Heroku:**
-
-```bash
-heroku create
-git push heroku main
-# Set Config Vars in Heroku dashboard
-```
-
-## 🆘 Troubleshooting
-
-**MongoDB connection error:**
-
-- Verify MONGO_URL in .env
-- Check IP whitelist on MongoDB Atlas
-
-**CORS error:**
-
-- Verify FRONTEND_URL matches your frontend domain
-- Both must be running
-
-**Validation error:**
-
-- Phone: Use "(555) 123-4567" format
-- State: Use 2-letter code like "CA"
-
-## 📞 Support
-
-- Backend issues → [NODEAPI/README.md](./NODEAPI/README.md)
-- Frontend issues → [FRONTEND/README.md](./FRONTEND/README.md)
-- API questions → [API_DOCUMENTATION.md](./NODEAPI/API_DOCUMENTATION.md)
-
-## 📝 License
-
-ISC
 
 ## Version History
 
@@ -305,3 +127,153 @@ ISC
 - Pagination support
 - Duplicate prevention
 - Production-ready setup
+
+---
+
+# Documentation
+
+## Graphify Documentation Support
+
+Graphify is available as a tool to support documentation and exploration of the codebase. It can help surface relationships between modules, identify documentation hotspots, and provide a structured knowledge map for the project.
+
+Generated outputs for this repository are stored in the `graphify-out/` directory, including a persistent graph and report files for documentation-oriented analysis.
+
+## Key Documentation Files
+
+| File                                                           | Purpose                                   |
+| -------------------------------------------------------------- | ----------------------------------------- |
+| [NODEAPI/README.md](./NODEAPI/README.md)                       | Backend setup, routes, validation         |
+| [NODEAPI/API_DOCUMENTATION.md](./NODEAPI/API_DOCUMENTATION.md) | Complete API reference with examples      |
+| [FRONTEND/README.md](./FRONTEND/README.md)                     | Frontend setup, components, configuration |
+
+## Project Architecture
+
+  Simple Model-View-Controller Setup
+  
+```
+CRUD1/
+├── NODEAPI/
+│   ├── controllers/    # Business logic
+│   ├── models/         # MongoDB schemas
+│   ├── routes/         # Route handlers
+│   ├── middlewares/    # Express middlewares
+│   ├── utils/          # Errors, validation, constants
+│   ├── server.js       # Express app
+│   ├── package.json
+│   ├── .env.example
+│   ├── README.md
+│   └── API_DOCUMENTATION.md
+├── FRONTEND/
+│   ├── src/
+│   │   ├── components/ # React components
+│   │   ├── pages/      # Page components
+│   │   ├── config/     # API configuration
+│   │   └── App.jsx
+│   ├── package.json
+│   ├── .env.example
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   └── README.md
+└── README.md
+```
+
+## API Versioning
+
+All endpoints use versioning: `/api/v1/{resource}`
+
+**Customer Endpoints:**
+
+```
+GET    /api/v1/customers              # List
+GET    /api/v1/customers/:id          # Get one
+POST   /api/v1/customers              # Create
+PUT    /api/v1/customers/:id          # Update
+DELETE /api/v1/customers/:id          # Delete
+```
+
+**Invoice Endpoints:**
+
+```
+GET    /api/v1/invoices               # List
+POST   /api/v1/invoices               # Create
+DELETE /api/v1/invoices/:id           # Delete
+```
+
+**Tax Endpoints:**
+
+```
+POST   /api/v1/tax/rate               # Get state rate
+POST   /api/v1/tax/calculate          # Calculate
+```
+
+---
+
+# Quick Start
+
+### Prerequisites
+
+- Node.js v14+
+- MongoDB Atlas (or local MongoDB)
+- npm/yarn
+
+## Backend Setup
+
+```bash
+cd NODEAPI
+npm install
+cp .env.example .env
+# Edit .env with your MongoDB URL.
+# If you do not have MongoDB Atlas, use a local MongoDB instance:
+# MONGO_URL=mongodb://127.0.0.1:27017/ken-tech
+npm run dev
+# Server runs on http://localhost:3000
+```
+
+## Frontend Setup
+
+```bash
+cd FRONTEND
+npm install
+npm run dev
+# App runs on http://localhost:5173
+```
+
+> Note: This frontend is a Vite application and must be started with `npm run dev` or `npm start` inside the `FRONTEND` folder. Do not use a generic live-server on `index.html` because the app relies on Vite's ES module development server.
+
+## Configuration
+
+### Backend (.env)
+
+```bash
+MONGO_URL=mongodb+srv://...
+PORT=3000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
+API_VERSION=v1 (api/v1/)
+```
+
+### Frontend (.env.local)
+
+```bash
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+---
+
+# Troubleshooting First steps
+
+**MongoDB connection error:**
+
+- Verify MONGO_URL in .env
+- Check IP whitelist on MongoDB Atlas
+
+**CORS error:**
+
+- Verify FRONTEND_URL matches your frontend domain
+- Both must be running
+
+## Documentation Support
+
+- Backend issues → [NODEAPI/README.md](./NODEAPI/README.md)
+- Frontend issues → [FRONTEND/README.md](./FRONTEND/README.md)
+- API questions → [API_DOCUMENTATION.md](./NODEAPI/API_DOCUMENTATION.md)
