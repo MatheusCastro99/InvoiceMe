@@ -6,6 +6,19 @@ A comprehensive, production-ready CRUD application for managing customers and ge
 **Status:** Production Ready  
 **Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
+## Project Health
+
+[![Dependabot](https://img.shields.io/badge/Dependabot-passing-brightgreen)](./.github/dependabot.yml)
+[![CodeQL](https://github.com/MatheusCastro99/InvoiceMe/actions/workflows/codeql.yml/badge.svg?branch=master)](https://github.com/MatheusCastro99/InvoiceMe/actions/workflows/codeql.yml)
+[![Node.js CI](https://github.com/MatheusCastro99/InvoiceMe/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/MatheusCastro99/InvoiceMe/actions/workflows/node.js.yml)
+
+[![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen)](https://github.com/MatheusCastro99/InvoiceMe)
+
+[![Node.js](https://img.shields.io/badge/Node.js-API-blue)](https://nodejs.org/learn/)
+[![React](https://img.shields.io/badge/React.js-UI-blue)](https://react.dev/learn)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Database-blue)](https://learn.mongodb.com)
+
+
 ## Project Overview
 
 A full-stack application for managing customers and invoices with professional features:
@@ -142,9 +155,7 @@ Generated outputs for this repository are stored in the `graphify-out/` director
 
 | File                                                           | Purpose                                   |
 | -------------------------------------------------------------- | ----------------------------------------- |
-| [NODEAPI/README.md](./NODEAPI/README.md)                       | Backend setup, routes, validation         |
 | [NODEAPI/API_DOCUMENTATION.md](./NODEAPI/API_DOCUMENTATION.md) | Complete API reference with examples      |
-| [FRONTEND/README.md](./FRONTEND/README.md)                     | Frontend setup, components, configuration |
 
 ## Project Architecture
 
@@ -274,6 +285,4 @@ VITE_API_BASE_URL=http://localhost:3000
 
 ## Documentation Support
 
-- Backend issues → [NODEAPI/README.md](./NODEAPI/README.md)
-- Frontend issues → [FRONTEND/README.md](./FRONTEND/README.md)
 - API questions → [API_DOCUMENTATION.md](./NODEAPI/API_DOCUMENTATION.md)
