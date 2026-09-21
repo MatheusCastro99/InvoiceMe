@@ -62,13 +62,13 @@ const HomePage = () => {
         <div className="inline-block">
         <Link
           to="/create"
-          className="inline-block mt-4 shadow-md bg-blue-700 text-white rounded-sm px-4 py-2 font-bold transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer hover:scale-110"
+          className="inline-block mt-4 shadow-md bg-blue-700 text-white rounded-xs px-4 py-2 font-bold transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer hover:scale-110"
         >
           Create Customer
         </Link>
         <Link
           to="/invoice"
-          className="inline-block mt-4 ml-5 shadow-md bg-gray-400 text-white rounded-sm px-4 py-2 font-bold transition ease-in-out duration-300 hover:bg-gray-300 hover:cursor-pointer hover:scale-110"
+          className="inline-block mt-4 ml-5 shadow-md bg-gray-400 text-white rounded-xs px-4 py-2 font-bold transition ease-in-out duration-300 hover:bg-gray-300 hover:cursor-pointer hover:scale-110"
         >
           Generate Invoice
         </Link>
@@ -76,7 +76,7 @@ const HomePage = () => {
         <div className="seeTable">
           <a
             href="#companyTable"
-            className="inline-flex mt-4 ml-5 mb-4 shadow-md bg-gray-400 text-white rounded px-4 py-2 font-bold transition ease-in-out duration-300 hover:bg-gray-300 hover:cursor-pointer hover:scale-110">
+            className="inline-flex mt-4 ml-5 mb-4 shadow-md bg-gray-400 text-white rounded-sm px-4 py-2 font-bold transition ease-in-out duration-300 hover:bg-gray-300 hover:cursor-pointer hover:scale-110">
               See All Invoices
           </a>
         </div>

@@ -1,7 +1,6 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { StyleSheet, PDFViewer, pdf, View, Text} from '@react-pdf/renderer';
+import { PDFViewer, pdf, View, Text } from '@react-pdf/renderer';
 import {tableDataStyle} from "../pdfStyle";
 import {saveAs} from "file-saver"
 import MyDocument from "../components/PdfDocument";
@@ -87,8 +86,7 @@ const PdfPage = () => {
         return;
       }
       try {
-        var saveButton = document.getElementById(`saveButton`)
-        const pdfInfo = await axios.post(API_ENDPOINTS.INVOICES.CREATE, 
+        await axios.post(API_ENDPOINTS.INVOICES.CREATE, 
             {
                 companyName:customerInfo.companyName,
                 phoneNumber:customerInfo.phoneNumber,
@@ -109,7 +107,9 @@ const PdfPage = () => {
         toast.success(`Saved ${customerInfo.companyName}'s Job Successfully`);
         setNewCustomer(false);
 
-      } catch (error) {}     
+      } catch (error) {
+        toast.error(error.message);
+      }
     }
 
     const saveFile = () => {
@@ -138,6 +138,8 @@ const PdfPage = () => {
     useEffect(() => {
       isNew(customerInfo);
       handleTableData();
+    // Run once on mount with the invoice passed in via router state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

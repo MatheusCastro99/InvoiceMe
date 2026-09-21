@@ -48,7 +48,7 @@ const EditPage = () => {
     }
   };
 
-  const updateCustomer = async (e) => {
+  const updateCustomer = async () => {
     try {
     await axios.put(API_ENDPOINTS.CUSTOMERS.UPDATE(id), customer);
       toast.success(`Updated ${customer.companyName} Successfully`);
@@ -59,7 +59,7 @@ const EditPage = () => {
   };
 
   const validateName = (tempName) => {
-    const prohibitedChars = /[<>:"/\\|?+*\x00-\x1F]/
+    const prohibitedChars = /[<>:"/\\|?+*\p{Cc}]/u
     var nameTemp = document.getElementById(`nameField`)
 
     if (tempName=="") {
@@ -133,13 +133,13 @@ const EditPage = () => {
           chars.splice(0, 0, "(");
           chars.splice(4, 1, ") ");
           chars.splice(8, 1, "-");
-          setPhoneNumber(chars.join(''));
+          setCustomer((prev) => ({ ...prev, phoneNumber: chars.join('') }));
       }
       else if(chars.length==10){
           chars.splice(0, 0, "(")
           chars.splice(4, 0, ") ")
           chars.splice(8, 0, "-")
-          setPhoneNumber(chars.join(''));
+          setCustomer((prev) => ({ ...prev, phoneNumber: chars.join('') }));
       }
 
         setPhoneValidity(true)
@@ -239,10 +239,12 @@ const EditPage = () => {
 
   useEffect(() => {
     getCustomer();
+  // Load once on mount; getCustomer is recreated every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="max-w-lg bg-white shadow-lg mx-auto p-7 rounded mt-6">
+    <div className="max-w-lg bg-white shadow-lg mx-auto p-7 rounded-sm mt-6">
       <h2 id="home" className="font-semibold text-2xl mb-4 block text-center">
         Edit a Customer
       </h2>
@@ -264,7 +266,7 @@ const EditPage = () => {
                     setCustomer({ ...customer, companyName: e.target.value })
                   }
                   onBlur={(e) => validateName(e.target.value)}
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="Company Name"
                 />
               </div>
@@ -278,7 +280,7 @@ const EditPage = () => {
                   value={customer.phoneNumber}
                   onChange={(e) => setCustomer({ ...customer, phoneNumber: e.target.value })}
                   onBlur={(e) => validateNumber(e.target.value)}
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="Phone Number"
                 />
               </div>
@@ -294,7 +296,7 @@ const EditPage = () => {
                     setCustomer({ ...customer, companyEmail: e.target.value })
                   }
                   onBlur={(e) => {validateEmail(e.target.value)}}
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="Email"
                 />
               </div>
@@ -309,7 +311,7 @@ const EditPage = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, contactName: e.target.value })
                   }
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="Contact Name"
                 />
               </div>
@@ -323,12 +325,12 @@ const EditPage = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, image: e.target.value })
                   }
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="Image URL"
                 />
 
                 {customer.image && (
-                  <div className="w-1/2 border rounded p-2 mt-4 ">
+                  <div className="w-1/2 border rounded-sm p-2 mt-4 ">
                     <img className="w-full" src={customer.image} />
                   </div>
                 )}
@@ -343,7 +345,7 @@ const EditPage = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, streetAddress: e.target.value })
                   }
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="Street Address"
                 />
               </div>
@@ -357,7 +359,7 @@ const EditPage = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, cityAddress: e.target.value })
                   }
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="City"
                 />
               </div>
@@ -371,7 +373,7 @@ const EditPage = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, stateAddress: e.target.value })
                   }
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="State Address"
                 />
               </div>
@@ -387,12 +389,12 @@ const EditPage = () => {
                     setCustomer({ ...customer, zipAddress: e.target.value })
                   }
                   onBlur={(e) => {validateZipCode(e.target.value)}}
-                  className="w-full block border p-3 text-gray-600  rounded focus:outline-none focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
+                  className="w-full block border p-3 text-gray-600  rounded-sm focus:outline-hidden focus:shadow-outline focus:border-blue-200 placeholder-gray-400"
                   placeholder="Zip Code"
                 />
               </div>
               <div className="flex justify-center">
-                <button className="block w-1/2 mt-6 bg-blue-700 text-white rounded-sm py-2 font-bold transition ease-in-out duration-300 hover:scale-110 hover:bg-blue-600 hover:cursor-pointer">
+                <button className="block w-1/2 mt-6 bg-blue-700 text-white rounded-xs py-2 font-bold transition ease-in-out duration-300 hover:scale-110 hover:bg-blue-600 hover:cursor-pointer">
                   Update
                 </button>
               </div>

@@ -48,8 +48,8 @@ const TableCustomer = ({ customers, getCustomers }) => {
                 </td>
                 <td className="p-4 border-b ">
                   <div className="flex gap-2">
-                    <Link  to={`/edit/${customer._id}`} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-blue-500 rounded hover:bg-blue-600">Edit</Link>
-                    <button onClick={() => deleteCustomer(customer._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded hover:bg-red-600">Delete</button>
+                    <Link  to={`/edit/${customer._id}`} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-blue-500 rounded-sm hover:bg-blue-600">Edit</Link>
+                    <button onClick={() => deleteCustomer(customer._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded-sm hover:bg-red-600">Delete</button>
                   </div>
                 </td>
               </tr>

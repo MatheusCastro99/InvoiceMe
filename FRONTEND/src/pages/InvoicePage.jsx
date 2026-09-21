@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -42,7 +42,7 @@ const InvoicePage = () => {
             setTempCustomer(payload);
             handleTax(payload.stateAddress);
             console.log(payload.stateAddress);
-        } catch (error) {
+        } catch {
             setTempCustomer([])
         }    
     }
@@ -178,12 +178,12 @@ const InvoicePage = () => {
             const payload = response?.data?.data ?? response?.data ?? [];
             setCustomers(payload)
         } catch (error) {
-            
+            toast.error(error.message);
         }};
 
     useEffect( () => {fetchData(), getInvoices()},[]);
         return (
-            <div className="max-w-xl bg-white shadow-lg mx-auto p-7 rounded mt-6">
+            <div className="max-w-xl bg-white shadow-lg mx-auto p-7 rounded-sm mt-6">
                 <h2 id="home" className="font-semibold text-2xl mb-4 block text-center">
                     Generate Invoice
                 </h2>

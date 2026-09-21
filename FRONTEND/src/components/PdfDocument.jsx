@@ -1,4 +1,3 @@
-import React from 'react';
 import { Page, Text, View, Document, Image, Line, Svg } from '@react-pdf/renderer';
 import {pageBox, headerBox, jobInfoBox, priceInfoBox, companyInfoBox, footerBox} from "../pdfStyle";
 import Logo from "../assets/InvoiceMeLogo.PNG"

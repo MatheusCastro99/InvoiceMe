@@ -1,4 +1,4 @@
-import React, {useState, useEffect}from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -9,7 +9,6 @@ import API_ENDPOINTS from "../config/apiConfig";
 
 const ProfilePage = () => {
     let { id } = useParams();
-    const [isLoading, setIsLoading] = useState(false);
 
     const [customer, setCustomer] = useState({
         companyName: "",
@@ -26,19 +25,15 @@ const ProfilePage = () => {
 
     const getInvoices = async() => {
         try {
-            setIsLoading(true);
             const response = await axios.get(API_ENDPOINTS.INVOICES.LIST);
             //console.log(response.data);
             setInvoices(response.data.data || response.data);
-            setIsLoading(false);
           } catch (error) {
             toast.error(error.message);
-            setIsLoading(false);
           }
     }
 
     const getCustomer = async () => {
-        setIsLoading(true);
         try {
         const response = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
         const payload = response?.data?.data ?? response?.data ?? {};
@@ -54,9 +49,7 @@ const ProfilePage = () => {
             zipAddress: payload.zipAddress || "",
             _id: payload._id
         });
-        setIsLoading(false);
         } catch (error) {
-        setIsLoading(false);
         toast.error(error.message);
         }
     };
@@ -64,11 +57,13 @@ const ProfilePage = () => {
     useEffect(() => {
         getCustomer();
         getInvoices();
+      // Load once on mount; the fetch helpers are recreated every render.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
 
 
     return(
-        <div className="max-w-3xl bg-white shadow-lg mx-auto p-5 rounded mt-6">
+        <div className="max-w-3xl bg-white shadow-lg mx-auto p-5 rounded-sm mt-6">
             <div>
                 <CustomerProfile customer={customer}/>
             </div>
