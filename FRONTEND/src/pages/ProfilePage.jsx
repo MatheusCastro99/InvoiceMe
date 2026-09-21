@@ -9,7 +9,6 @@ import API_ENDPOINTS from "../config/apiConfig";
 
 const ProfilePage = () => {
     let { id } = useParams();
-    const [, setIsLoading] = useState(false);
 
     const [customer, setCustomer] = useState({
         companyName: "",
@@ -26,19 +25,15 @@ const ProfilePage = () => {
 
     const getInvoices = async() => {
         try {
-            setIsLoading(true);
             const response = await axios.get(API_ENDPOINTS.INVOICES.LIST);
             //console.log(response.data);
             setInvoices(response.data.data || response.data);
-            setIsLoading(false);
           } catch (error) {
             toast.error(error.message);
-            setIsLoading(false);
           }
     }
 
     const getCustomer = async () => {
-        setIsLoading(true);
         try {
         const response = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
         const payload = response?.data?.data ?? response?.data ?? {};
@@ -54,9 +49,7 @@ const ProfilePage = () => {
             zipAddress: payload.zipAddress || "",
             _id: payload._id
         });
-        setIsLoading(false);
         } catch (error) {
-        setIsLoading(false);
         toast.error(error.message);
         }
     };

@@ -1,5 +1,4 @@
 import { Switch, FormControlLabel } from "@mui/material";
-import dayjs from "dayjs"
 import {tableDataStyle} from "../pdfStyle";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -23,7 +22,6 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
     
   const [delCheckBox, setDelCheckBox] = useState(true);
   const calendarDiv = document.getElementById('calBox');
-  const [, setDates] = useState(dayjs() || null);
   const [month, setMonth] = useState();
   const [resetCal, setResetCal] = useState();
   const styles = tableDataStyle;
@@ -91,7 +89,6 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
     }
 
     setMonth((currMonth.month() + 1))
-    setDates(currMonth);
   }
 
     const handleCheckBox = () => {
@@ -166,7 +163,6 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
       return invoices.map((currInvoice) => {
 
         let monthOfService = parseInt(currInvoice.dateOfService.slice(0, 2));
-        //console.log(dates.month(), monthOfService, month);
         if(customers.companyName==undefined && month==undefined) {
           return(
             <tr key={currInvoice._id}>
@@ -179,7 +175,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
                   <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded-sm transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
                   <Link
                       to = {`/pdfPage`}
-                      state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.streetAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress,
+                      state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.cityAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress,
                                 subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, 
                                 dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, tableData: currInvoice.tableData}}
                       className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
@@ -213,7 +209,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
                   <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded-sm transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
                   <Link
                       to = {`/pdfPage`}
-                      state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.streetAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress,
+                      state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.cityAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress,
                         subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, 
                         dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, tableData: currInvoice.tableData}}
                       className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">

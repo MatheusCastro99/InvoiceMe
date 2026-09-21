@@ -1,21 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
+const emptyRow = (id) => ({
+    id,
+    description: "",
+    quantity: "",
+    price: "",
+    itemTotal: ""
+});
 
 const TableDescription = (props) => {
-    const [rows, setRows] = useState([]);
-    const [rowNum, setRowNum] = useState(1);
+    // Start with one empty row so the table is usable immediately.
+    const [rows, setRows] = useState(() => [emptyRow(1)]);
+    const [rowNum, setRowNum] = useState(2);
     const dataCallBack = props.dataCallBack;
-    //const [jobDataTable, setJobDataTable] = useState([])
 
     const addItemRow = () => {
-        const newRow = {
-            id: rowNum,
-            description: "",
-            quantity: "",
-            price: "",
-            itemTotal: ""
-        };
-
-        setRows(prevRows => [...prevRows, newRow]);
+        setRows(prevRows => [...prevRows, emptyRow(rowNum)]);
         setRowNum(rowNum + 1);
     };
 
@@ -30,20 +30,13 @@ const TableDescription = (props) => {
     }
 
     const handleChange = (rowIndex, field, value) => {
-        const updatedRows = [...rows];
+        const updatedRow = { ...rows[rowIndex], [field]: value };
+        updatedRow.itemTotal = parseFloat((updatedRow.price * updatedRow.quantity).toFixed(2), 10);
 
-        updatedRows[rowIndex][field] = value;
-        updatedRows[rowIndex]['itemTotal'] = parseFloat(((updatedRows[rowIndex]['price'] * updatedRows[rowIndex]['quantity'])).toFixed(2), 10)
-
+        const updatedRows = rows.map((row, i) => (i === rowIndex ? updatedRow : row));
         setRows(updatedRows);
         dataCallBack(updatedRows);
     }
-
-    //useEffect(()=>{console.log(rows)})
-    // NOTE: this returns addItemRow as the effect's cleanup, so it runs on unmount (and on StrictMode's
-    // dev-only remount), not on the first mount. Left unchanged here; see PR #67.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => addItemRow, [])
 
     return (
         <div className="overflow-auto">

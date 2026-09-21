@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
 
 # Production builds
@@ -45,3 +44,6 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Vite temp files
+vite.config.*.timestamp-*
