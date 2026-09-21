@@ -1,4 +1,5 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# Installs and builds each sub-project (FRONTEND, NODEAPI) on every push and pull request to master,
+# so dependency updates are actually exercised before they are merged.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 name: Node.js CI
@@ -13,14 +14,19 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  frontend:
+    name: Frontend build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        # Vite 8 requires Node 20.19+ / 22.12+, and Node 20 is end-of-life, so test the current LTS lines.
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [22.x, 24.x]
+
+    defaults:
+      run:
+        working-directory: FRONTEND
 
     steps:
     - uses: actions/checkout@v4
@@ -29,6 +35,40 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: FRONTEND/package-lock.json
     - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test --if-present
+    - run: npm run build
+
+  api:
+    name: API smoke test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
+
+    defaults:
+      run:
+        working-directory: NODEAPI
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: NODEAPI/package-lock.json
+    - run: npm ci
+    - name: Syntax check server entry point
+      run: node --check server.js
+    # server.js connects to MongoDB and starts listening when loaded, so instead load everything it wires up
+    # (dotenv, express, mongoose, cors, routes -> controllers -> models, middleware) without starting it.
+    - name: Load API modules
+      run: >-
+        node -e "
+        for (const m of ['dotenv', 'express', 'mongoose', 'cors',
+        './routes/customerRoute', './routes/taxRoute', './routes/invoiceRoute',
+        './middlewares/errorMiddleware']) require(m);
+        console.log('API modules loaded OK');
+        "
