@@ -1,4 +1,3 @@
-import React from "react";
 import axios from "axios";
 import CollapsibleImport from 'react-collapsible';
 const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
@@ -33,7 +32,7 @@ const CustomerProfile = ({ customer }) => {
             <div className="inline-flex">
                 <div className="w-1/2 inline-block">
                     {customer.image && (
-                    <div className="rounded p-2 mt-2 ">
+                    <div className="rounded-sm p-2 mt-2 ">
                         <img className="w-full" src={customer.image} />
                     </div>
                     )}

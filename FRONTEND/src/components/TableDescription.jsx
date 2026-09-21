@@ -1,12 +1,4 @@
-import { Switch, FormControlLabel } from "@mui/material";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import axios from "axios";
-import CollapsibleImport from 'react-collapsible';
-const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import { useState, useEffect } from "react";
-import React from "react";
 
 const TableDescription = (props) => {
     const [rows, setRows] = useState([]);
@@ -48,6 +40,9 @@ const TableDescription = (props) => {
     }
 
     //useEffect(()=>{console.log(rows)})
+    // NOTE: this returns addItemRow as the effect's cleanup, so it runs on unmount (and on StrictMode's
+    // dev-only remount), not on the first mount. Left unchanged here; see PR #67.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => addItemRow, [])
 
     return (

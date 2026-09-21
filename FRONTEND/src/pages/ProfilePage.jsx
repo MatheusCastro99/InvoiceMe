@@ -1,4 +1,4 @@
-import React, {useState, useEffect}from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -9,7 +9,7 @@ import API_ENDPOINTS from "../config/apiConfig";
 
 const ProfilePage = () => {
     let { id } = useParams();
-    const [isLoading, setIsLoading] = useState(false);
+    const [, setIsLoading] = useState(false);
 
     const [customer, setCustomer] = useState({
         companyName: "",
@@ -64,11 +64,13 @@ const ProfilePage = () => {
     useEffect(() => {
         getCustomer();
         getInvoices();
+      // Load once on mount; the fetch helpers are recreated every render.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
 
 
     return(
-        <div className="max-w-3xl bg-white shadow-lg mx-auto p-5 rounded mt-6">
+        <div className="max-w-3xl bg-white shadow-lg mx-auto p-5 rounded-sm mt-6">
             <div>
                 <CustomerProfile customer={customer}/>
             </div>

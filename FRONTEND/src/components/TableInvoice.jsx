@@ -23,7 +23,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
     
   const [delCheckBox, setDelCheckBox] = useState(true);
   const calendarDiv = document.getElementById('calBox');
-  const [dates, setDates] = useState(dayjs() || null);
+  const [, setDates] = useState(dayjs() || null);
   const [month, setMonth] = useState();
   const [resetCal, setResetCal] = useState();
   const styles = tableDataStyle;
@@ -107,8 +107,9 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
             }
           }
         }
-        } catch (error) {
-          }
+        } catch {
+          // Filtering is best-effort; keep showing the unfiltered list if it fails.
+        }
       }
 
       else {
@@ -175,16 +176,16 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
                 <div className="flex gap-2">
-                  <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
+                  <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded-sm transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
                   <Link
                       to = {`/pdfPage`}
                       state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.streetAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress,
                                 subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, 
                                 dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, tableData: currInvoice.tableData}}
-                      className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
+                      className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
                       PDF
                   </Link>
-                  <button onClick={() => saveInvoice(currInvoice)} className="inline-block text-sm text-white px-2 py-1 bg-gray-500 rounded transition ease-in-out duration-300 hover:bg-gray-700">
+                  <button onClick={() => saveInvoice(currInvoice)} className="inline-block text-sm text-white px-2 py-1 bg-gray-500 rounded-sm transition ease-in-out duration-300 hover:bg-gray-700">
                     <FontAwesomeIcon icon={fas.faDownload} className="fa-lg white" />
                   </button>
                 </div>
@@ -209,16 +210,16 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
                 <div className="flex gap-2">
-                  <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
+                  <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded-sm transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
                   <Link
                       to = {`/pdfPage`}
                       state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.streetAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress,
                         subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, 
                         dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, tableData: currInvoice.tableData}}
-                      className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
+                      className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
                       PDF
                   </Link>
-                  <button onClick={() => saveInvoice(currInvoice)} className="inline-block text-sm text-white px-2 py-1 bg-gray-500 rounded transition ease-in-out duration-300 hover:bg-gray-700">
+                  <button onClick={() => saveInvoice(currInvoice)} className="inline-block text-sm text-white px-2 py-1 bg-gray-500 rounded-sm transition ease-in-out duration-300 hover:bg-gray-700">
                     <FontAwesomeIcon icon={fas.faDownload} className="fa-lg white" />
                   </button>
                 </div>
@@ -243,14 +244,14 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
                 <div className="flex gap-2">
-                  <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
+                  <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded-sm transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
                   <Link
                       to = {`/pdfPage`}
                       state= {{customerInfo: customers, subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, dateOfService: currInvoice.dateOfService}}
-                      className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
+                      className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
                       PDF
                   </Link>
-                  <button onClick={() => saveInvoice(currInvoice)} className="inline-block text-sm text-white px-2 py-1 bg-gray-500 rounded transition ease-in-out duration-300 hover:bg-gray-700">
+                  <button onClick={() => saveInvoice(currInvoice)} className="inline-block text-sm text-white px-2 py-1 bg-gray-500 rounded-sm transition ease-in-out duration-300 hover:bg-gray-700">
                     <FontAwesomeIcon icon={fas.faDownload} className="fa-lg white" />
                   </button>
                 </div>
