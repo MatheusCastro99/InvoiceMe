@@ -28,8 +28,9 @@ the same amount differently.
 In practice, both of those are already happening:
 
 - `taxController.calculateTax` does float arithmetic and rounds with `parseFloat(x.toFixed(2))` at the API boundary.
-- The frontend works out tax again on its own as `subtotal * (taxRate / 100)` in three places in `TableInvoice.jsx`
-  and once in `PdfDocument.jsx`, so the stored total and the displayed tax can disagree.
+- The frontend works out tax again on its own: as `subtotal * (taxRate / 100)` in three places in `TableInvoice.jsx`
+  and once in `PdfDocument.jsx`, and as `jobPrice * (correspondingTax / 100)` in `InvoicePage.jsx`,
+  so the stored total and the displayed tax can disagree.
 - Line-item `quantity` and `price` come from text inputs as strings, and `itemTotal` comes from multiplying them
   with implicit string coercion in `TableDescription.jsx`.
 
@@ -129,7 +130,7 @@ No authentication strategy is chosen yet. The choice gets its own entry when the
 
 - Earlier epics must not assume a particular auth model. The Schema epic doesn't add user or ownership fields,
   and the Docker epic doesn't bake in an identity provider.
-- The unauthenticated `GET /debug/db` endpoint in `server.js` is a known exposure until then.
+- The unauthenticated `GET /debug/db` endpoint in `app.js` is a known exposure until then.
   If an earlier epic touches it, it should be removed or restricted to development.
 - `.env.example` already has a `JWT_SECRET` placeholder. It remains a placeholder and doesn't mean JWT was chosen.
 
