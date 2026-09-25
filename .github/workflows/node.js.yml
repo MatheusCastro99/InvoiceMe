@@ -63,13 +63,9 @@ jobs:
     - run: npm ci
     - name: Syntax check server entry point
       run: node --check server.js
-    # server.js connects to MongoDB and starts listening when loaded, so instead load everything it wires up
-    # (dotenv, express, mongoose, cors, routes -> controllers -> models, middleware) without starting it.
-    - name: Load API modules
-      run: >-
-        node -e "
-        for (const m of ['dotenv', 'express', 'mongoose', 'cors',
-        './routes/customerRoute', './routes/taxRoute', './routes/invoiceRoute',
-        './middlewares/errorMiddleware']) require(m);
-        console.log('API modules loaded OK');
-        "
+    # app.js composes the whole Express app (routes -> controllers -> models, middleware) with no side effects.
+    # Loading it must leave nothing running: if a DB connection or listener creeps back into app.js,
+    # the process never exits and the timeout fails the step instead of hanging the job.
+    - name: Load API app
+      timeout-minutes: 1
+      run: node -e "require('dotenv'); require('./app'); console.log('API app loaded OK')"
