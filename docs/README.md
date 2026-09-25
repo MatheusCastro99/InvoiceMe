@@ -156,7 +156,7 @@ The project roadmap is tracked in [ROADMAP.md](./ROADMAP.md). Current focus area
 
 Graphify is available as a tool to support documentation and exploration of the codebase. It can help surface relationships between modules, identify documentation hotspots, and provide a structured knowledge map for the project.
 
-Generated outputs for this repository are stored in the `graphify-out/` directory, including a persistent graph and report files for documentation-oriented analysis.
+Generated outputs are written to a local `graphify-out/` directory, including a persistent graph and report files for documentation-oriented analysis. That directory is gitignored and not committed; regenerate it locally when you need it.
 
 ## Key Documentation Files
 
@@ -164,6 +164,7 @@ Generated outputs for this repository are stored in the `graphify-out/` director
 | --- | --- |
 | [../README.md](./README.md) | Repository overview and project entry point |
 | [./ROADMAP.md](./ROADMAP.md) | Planned improvements and near-term feature roadmap |
+| [./Decisions.md](./Decisions.md) | Architecture and engineering decisions (ADRs) |
 | [../NODEAPI/API_DOCUMENTATION.md](../NODEAPI/API_DOCUMENTATION.md) | Complete API reference with examples |
 
 ## Project Architecture
@@ -178,7 +179,8 @@ InvoiceMe/
 │   ├── routes/         # Route handlers
 │   ├── middlewares/    # Validation and error handling
 │   ├── utils/          # Shared helpers and constants
-│   ├── server.js       # Express app bootstrap
+│   ├── app.js          # Express app: middleware, routes, error handling
+│   ├── server.js       # Bootstrap: env, MongoDB connection, listen
 │   ├── package.json
 │   └── .env.example
 ├── FRONTEND/
@@ -192,12 +194,14 @@ InvoiceMe/
 │   └── tailwind.config.js
 ├── docs/
 │   ├── README.md
-│   └── ROADMAP.md
+│   ├── ROADMAP.md
+│   ├── Decisions.md
+│   ├── architecture-overview.md
+│   └── save-workflows.md
 ├── package.json        # Root scripts to run API + frontend together
-├── .github/
-│   ├── workflows/
-│   └── dependabot.yml
-├── graphify-out/
+└── .github/
+    ├── workflows/
+    └── dependabot.yml
 ```
 
 ## API Versioning
@@ -235,7 +239,7 @@ POST   /api/v1/tax/calculate          # Calculate
 
 ### Prerequisites
 
-- Node.js 18+ recommended
+- Node.js 20.19+ required (Mongoose 9)
 - MongoDB Atlas or local MongoDB instance
 - npm
 
