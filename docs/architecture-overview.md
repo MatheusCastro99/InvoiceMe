@@ -7,7 +7,7 @@ This document summarizes the current system architecture and the planned extensi
 ```mermaid
 flowchart LR
     U[Business User / Staff] --> F[React Frontend\nVite + Tailwind\nPages: Create / Edit / Home / Invoice / Pdf / Profile]
-    F -->|REST JSON requests| A[Express API\n/server.js\n/api/v1]
+    F -->|REST JSON requests| A[Express API\n/app.js\n/api/v1]
     A --> R[Routes\ncustomerRoute.js\ninvoiceRoute.js\ntaxRoute.js]
     R --> V[Validation Middleware\nvalidationMiddleware.js]
     V --> C[Controllers\ncustomerController.js\ninvoiceController.js\ntaxController.js]

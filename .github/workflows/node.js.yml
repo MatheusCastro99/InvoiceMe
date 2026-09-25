@@ -63,13 +63,12 @@ jobs:
     - run: npm ci
     - name: Syntax check server entry point
       run: node --check server.js
-    # server.js connects to MongoDB and starts listening when loaded, so instead load everything it wires up
-    # (dotenv, express, mongoose, cors, routes -> controllers -> models, middleware) without starting it.
-    - name: Load API modules
+    # app.js composes the whole Express app (routes -> controllers -> models, middleware) with no side effects.
+    # A DB connection attempt fails the readyState check at once (connect() sets it to 2 synchronously, even
+    # when the attempt has a .catch). A listener keeps the process alive, so the timeout fails the step.
+    - name: Load API app
+      timeout-minutes: 1
       run: >-
-        node -e "
-        for (const m of ['dotenv', 'express', 'mongoose', 'cors',
-        './routes/customerRoute', './routes/taxRoute', './routes/invoiceRoute',
-        './middlewares/errorMiddleware']) require(m);
-        console.log('API modules loaded OK');
-        "
+        node -e "require('./app');
+        if (require('mongoose').connection.readyState !== 0) { console.error('app.js opened a DB connection'); process.exit(1); }
+        console.log('API app loaded OK')"
