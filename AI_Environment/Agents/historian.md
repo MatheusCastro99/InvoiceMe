@@ -20,7 +20,7 @@ Docs go stale in the gap between "the code changed" and "someone updated the REA
 | Content | Owner | Historian's role |
 |---|---|---|
 | Project documentation: `docs/`, `NODEAPI/*.md`, `README.md` files, `AI_Environment/` | Project owner | **Edits it:** applies the list and fixes anything else it can verify is stale |
-| `docs/Decisions.md` (the ADRs) | **Project owner, exclusively** | **Never writes it.** It may draft ADR candidates in its report |
+| `docs/Decisions.md` (the ADRs) | **Project owner, exclusively** | **Never writes it.** It **reports** any ADR text that the change (or its own doc edits) has made untrue, and it may draft ADR candidates in its report |
 | Code documentation: JSDoc, route headers, inline comments | Main session (designed with the owner) | **Never edits it.** It reports stale comments for the main session |
 | Code, tests, config, CI, `.claude/` | Main session | Never edits it |
 
@@ -48,3 +48,4 @@ A report whose **"What changed → how the docs reflect it"** section maps each 
   - It **never writes `Decisions.md`**, not even factual corrections.
   - It returns a change → documentation map.
 - 2026-09-25: ADR candidates are now limited to recurring patterns and standing rules, matching what `Decisions.md` holds; one-off choices are not ADRs.
+- 2026-09-25: Also checks `Decisions.md` against the change and reports any ADR text made untrue (it still never edits the file). This came after the #74 pass, where an ADR sentence contradicted by the historian's own README edit was caught only by Copilot's review.
