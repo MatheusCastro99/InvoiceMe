@@ -135,3 +135,6 @@ Thumbs.db
 
 # Project specific
 node_modules/
+
+# Graphify output (generated; used locally for agentic folder-structure mapping)
+graphify-out/
