@@ -116,4 +116,4 @@ Status: Accepted, permanent.
 ### ADR-009
 Runnable agent and skill definitions in `.claude/` are gitignored; their documentation in `AI_Environment/` is public.
 
-Status: Accepted, pending (agent-files PR).
+Status: Accepted, permanent.
