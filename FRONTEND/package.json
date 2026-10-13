@@ -43,7 +43,7 @@
     "globals": "^17.13.0",
     "postcss": "^8.4.24",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.3.2"
+    "vite": "^8.3.4"
   },
   "overrides": {
     "deepmerge-ts": "^8.0.2",
