@@ -71,7 +71,7 @@ Documentation rules
 -------------------
 - Keep a running stale-docs list for each PR in `.claude/stale-docs.md` (gitignored): ID, file and location, what is stale, what it should say, evidence.
 - Before the merge, the historian applies the list; the owner reviews its diff against the list and the change.
-- Documents in scope: `README.md`, `CLAUDE.md`, `Docs/`, `Harness_Config/`.
+- The historian edits `README.md`, `Docs/` and `Harness_Config/`. It reports a stale `CLAUDE.md`; the main session updates this file after the owner's review.
 
 Branching and commits
 ---------------------

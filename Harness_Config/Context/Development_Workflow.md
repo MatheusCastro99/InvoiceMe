@@ -91,7 +91,7 @@ Every issue goes through these stages, in order. Who decides, and how findings a
 
 ### 10. Historian doc pass
 - **What happens:** once the change is final, the main session briefs the historian subagent with the stale-docs list. The historian checks each entry against the repository, applies the listed entries, and reports anything else it finds without editing it. The owner reviews its diff.
-- **Documents in scope:** `README.md`, `CLAUDE.md`, `Docs/` and `Harness_Config/`.
+- **Documents in scope:** the historian edits `README.md`, `Docs/` and `Harness_Config/`. It reports a stale `CLAUDE.md` without editing it; the main session updates that file after the owner's review.
 - **Who acts:** the main session, the historian subagent and the owner.
 - **Produces:** the historian's report, and one documentation commit made by the main session after the review.
 - **Owner's approval:** yes. The owner approves the documentation diff and decides on each finding beyond the list.
@@ -122,7 +122,7 @@ flowchart TD
     ISSUE[/"Issue and its comments"/]
     CTX[/"Context documents"/]
     LIST[/"Stale-docs list"/]
-    DOCS[/"README, CLAUDE.md, Docs/, Harness_Config/"/]
+    DOCS[/"README, Docs/, Harness_Config/"/]
     RT(["red-team subagent"])
     HI(["historian subagent"])
 
