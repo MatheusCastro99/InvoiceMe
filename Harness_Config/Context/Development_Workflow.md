@@ -92,7 +92,7 @@ Every issue goes through these stages, in order, from gathering information to t
 
 ### 10. Historian doc pass
 
-- **What happens:** once the change is final, the main session briefs the historian subagent with the stale-docs list. The historian checks each entry against the repository, applies the listed entries, and reports anything else it finds without editing it. The owner reviews its diff against the list and the change. The documents in scope are `README.md`, `Docs/`, `Harness_Config/`, `.claude/CLAUDE.md` and `NODEAPI/.env.example`.
+- **What happens:** once the change is final, the main session briefs the historian subagent with the stale-docs list. The historian checks each entry against the repository, applies the listed entries, and reports anything else it finds without editing it. The owner reviews its diff against the list and the change. The documents in scope are `README.md`, `Docs/`, `Harness_Config/` and `NODEAPI/.env.example`. The agent guidance file, `.claude/CLAUDE.md`, stays with the main session and the owner: the historian reports it when it is stale, and the main session updates it.
 - **Who acts:** the main session, the historian subagent and the owner.
 - **Produces:** the historian's report, and one documentation commit made by the main session after the review.
 - **Owner's approval:** yes. The owner approves the documentation diff and decides on each finding beyond the list.

@@ -80,7 +80,7 @@ Code rules
 Documentation rules
 -------------------
 - The main session keeps a running stale-docs list per PR (ID, file and location, what's stale, what it should say, evidence), in `.claude/stale-docs.md` when the work spans several sessions.
-- Right before merge, the historian subagent applies the list; the maintainer reviews its diff against the list and the change.
+- Right before merge, the historian subagent applies the list to `README.md`, `Docs/`, `Harness_Config/` and `NODEAPI/.env.example`; the maintainer reviews its diff against the list and the change. The historian only reports this file when it is stale; the main session updates it.
 - Keep `README.md`, `Docs/`, `Harness_Config/`, `.claude/CLAUDE.md` and `NODEAPI/.env.example` consistent with the code.
 
 Branching and commits
