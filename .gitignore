@@ -138,3 +138,10 @@ node_modules/
 
 # Graphify output (generated; used locally for agentic folder-structure mapping)
 graphify-out/
+
+# Claude Code local tooling: runnable agents and skills, local settings, and the stale-docs list.
+# Their roles are described in CLAUDE.md and Harness_Config/AI_CONTEXT.md.
+.claude/agents/
+.claude/skills/
+.claude/settings.local.json
+.claude/stale-docs.md
