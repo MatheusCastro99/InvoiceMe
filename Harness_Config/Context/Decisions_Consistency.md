@@ -46,7 +46,7 @@ Reason:
 Rules:
 - Each validated field has its own validator on `onBlur`, which sets a validity flag in state, marks the field with a red or green border, and shows a toast with the expected format when it fails.
 - Submit checks every validity flag and blocks the request until all are valid.
-- Every write route has a validation middleware backed by `utils/validators.js`.
+- Every create and update route has a validation middleware backed by `utils/validators.js`.
 
 Status: Accepted, current
 

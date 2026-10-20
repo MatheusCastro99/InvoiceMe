@@ -38,7 +38,7 @@ Avoid:
 - **Needs the owner.**
 
 ## Visual direction
-- Color: a finance-like palette. **Needs the owner:** the palette itself. Today the app uses a slate-400 page background, a gray-800 navbar, blue-700 for primary actions and gray-400 for secondary ones.
+- Color: a finance-like palette. **Needs the owner:** the palette itself. Today the app uses a slate-400 page background, a gray-800 navbar, blue-700 for most primary actions (blue-500 on the invoice screens) and gray-400 for secondary ones.
 - Type: **Needs the owner.**
 - Layout: centered white cards for forms (`max-w-lg` or `max-w-xl`), a responsive card grid for customers (2 columns, 4 on large screens), and tables for invoices.
 
@@ -82,7 +82,7 @@ Answers:
 - Has it been saved?
 
 ## Interaction patterns
-- Actions: primary actions are blue-700 buttons, secondary actions gray-400, both with a scale-up on hover.
+- Actions: primary actions are mostly blue-700 buttons (blue-500 on the Generate Invoice page and in the invoice table), secondary actions gray-400, with a scale-up on hover on most of them.
 - Confirmations: deleting a customer or an invoice asks first, in a sweetalert2 dialog.
 - Feedback: react-toastify toasts for success and failure. Form fields show a red border when invalid and a green one when valid, and the error toast states the expected format ([ADR-003](Decisions_Consistency.md#adr-003)).
 

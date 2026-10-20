@@ -48,7 +48,7 @@ InvoiceMe/
 
 ### NODEAPI/middlewares/
 - `validationMiddleware.js`: runs the validators from `utils/validators.js` on customer create and update and invoice create, and turns failures into a `ValidationError`.
-- `errorMiddleware.js`: the single error handler. It logs the error and answers with the error envelope.
+- `errorMiddleware.js`: the error handler for every route. It logs the error and answers with the error envelope. Unknown routes get the separate 404 handler in `app.js`.
 
 ### NODEAPI/models/
 - `customerModel.js`: Customer, with the company, contact and address fields.
@@ -74,7 +74,7 @@ InvoiceMe/
 - `PdfPage.jsx` (`/pdfPage`): previews the invoice as a PDF, saves it to the API, and downloads it.
 
 ### FRONTEND/src/components/
-- `Customer.jsx`: a customer card. `CustomerInfo.jsx` and `CustomerProfile.jsx`: customer details. `TableCustomer.jsx`, `TableInvoice.jsx`, `TableDescription.jsx`: tables of customers, of invoices, and of an invoice's line items. `PdfDocument.jsx`: the PDF invoice layout.
+- `Customer.jsx`: a customer card. `CustomerInfo.jsx` and `CustomerProfile.jsx`: customer details. `TableInvoice.jsx`, `TableDescription.jsx`: tables of invoices, and of an invoice's line items. `TableCustomer.jsx`: a table of customers that nothing imports. `PdfDocument.jsx`: the PDF invoice layout.
 
 ## Overview
 
