@@ -7,7 +7,7 @@ The page an agent loads first. Read it before planning or editing anything, then
 ## Project
 InvoiceMe is a customer and invoice tracking application for small businesses: a React frontend and an Express API on MongoDB. It values a modern, structured, finance-like interface, and input that is checked at every layer before it reaches the database.
 
-- [README](../README.md): setup and how to run locally
+- [README](../docs/README.md): setup and how to run locally
 - [Project Vision](../Docs/Project_Vision.md): what InvoiceMe is, who it is for, and what it is not
 - [Roadmap](../Docs/Project_Roadmap.md): the planned work
 
