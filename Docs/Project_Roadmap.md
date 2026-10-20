@@ -1,6 +1,6 @@
 # Project Roadmap
 
-## Harness onboarding: IN PROGRESS
+## Harness onboarding: CONCLUDED
 
 - Documentation: the context documents in `Harness_Config/`, the project documents in `Docs/`, and the agent guidance file `.claude/CLAUDE.md`
 - Skills: guardrails-review and ux-design

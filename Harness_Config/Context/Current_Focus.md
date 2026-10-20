@@ -2,16 +2,13 @@
 
 Last updated: 2026-10-20
 
-Status: being onboarded to the harness configuration and workflow, on the `docs/harness-onboarding` branch
+Status: harness onboarding done; a manual documentation pass comes next
 
-## Harness onboarding
+## Documentation follow-up
 
-The onboarding writes the project's context documents, skills and agents with the owner. Its process is in the harness-onboarding skill, `.claude/skills/harness-onboarding/SKILL.md`.
+The owner goes over the documentation the harness onboarding wrote, in `Harness_Config/`, `Docs/` and `.claude/CLAUDE.md`, by hand, and settles what the onboarding left open.
 
-Steps, in order:
-- 1 Documentation: shipped. The context documents, the project documents, the AI Context index and the agent guidance file.
-- 2 Skills: shipped. The guardrails-review and ux-design skills.
-- 3 Agents: shipped. The red-team and historian agents, and the stale-docs list.
-- 4 Review: shipped. The red-team reviews every page the onboarding wrote.
+Unfinished on purpose:
+- The pending rules in [Decisions](Decisions_Consistency.md) (ADR-003, ADR-005, ADR-007, ADR-009, ADR-010, ADR-011) wait for work that is not planned yet.
 
 The full plan is in the [Roadmap](../../Docs/Project_Roadmap.md).
