@@ -2,19 +2,18 @@
 
 Last updated: 2026-10-20
 
-Status: in development. The harness onboarding is in progress on the `docs/harness-onboarding` branch.
+Status: in development. The harness onboarding is done: the context pages, the project documents, `CLAUDE.md`, and the local agents and skills are in place.
 
-## Harness onboarding
+## Documentation repass
 
-The project's context documents, skills and agents are being set up with the `harness-onboarding` skill (local tooling, at `.claude/skills/harness-onboarding/SKILL.md`), which describes the process. It runs in four steps:
+A second pass over the documentation written during the onboarding, fixing contradictions, gaps, and any passage that is ambiguous or not accurate.
 
-- 1 Documentation: done. The context pages in `Harness_Config/`, the project documents in `Docs/`, and `CLAUDE.md`.
-- 2 Skills: done. The guardrails-review and ux-design skills.
-- 3 Agents: done. The red-team and historian agents, and the stale-docs list.
-- 4 Review: next. The red-team reviews every page written during the onboarding.
+In scope:
+- `CLAUDE.md`, `Docs/` and `Harness_Config/`, checked against the code and against each other
+- The open questions marked **Needs the owner**, most of them in [UI Guidelines](UI_Guidelines.md), [Roadmap](../../Docs/Project_Roadmap.md), [Project Vision](../../Docs/Project_Vision.md), [Data Flow](DataFlow.md) and [Development Workflow](Development_Workflow.md)
+- The status of each rule marked `Proposed, needs the owner` in [Decisions](Decisions_Consistency.md): ADR-001, ADR-002, ADR-008 and ADR-009
 
 Unfinished on purpose:
-- Step 4 above.
-- This page is rewritten with the project's next work when the onboarding closes.
+- The code defects the onboarding review found and [Data Flow](DataFlow.md) records, such as the stale tax rate and the invoice-number check, are not fixed in this pass. They are left for issues of their own.
 
-The planned work after the onboarding is in the [Roadmap](../../Docs/Project_Roadmap.md).
+The planned work after the repass is in the [Roadmap](../../Docs/Project_Roadmap.md).
