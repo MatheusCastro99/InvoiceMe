@@ -23,7 +23,7 @@ The structure and the key files are in [Architecture Design](../Harness_Config/C
 
 ### Customers
 - List the customers
-- Add a customer, with company name and phone number required; a phone number belongs to one customer only
+- Add a customer: the form requires company name, phone, email and ZIP; the API requires only company name and phone. A phone number belongs to one customer only.
 - Edit and delete a customer
 - Open a customer's profile, with their invoices
 

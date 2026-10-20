@@ -27,7 +27,7 @@ flowchart TD
 ```
 
 Notes:
-- The client and the server validate separately, with their own rules: the client requires email and ZIP, the server accepts them empty.
+- The client and the server validate separately, with their own rules. The client requires email and ZIP, which the server accepts empty. The server rejects company names with characters such as `'` or accented letters, or longer than 100 characters, and states not given as two capital letters, all of which the client lets through: those saves end in a 400.
 - The page shows `error.message` from axios, such as "Request failed with status code 409", not the `message` the API returns.
 - Editing a customer (`EditPage.jsx`, `PUT /api/v1/customers/:id`) takes the same path through `validateCustomerInput` and `updateCustomer`, which also returns 404 when the customer does not exist.
 
@@ -55,6 +55,6 @@ flowchart TD
 ```
 
 Notes:
-- The server computes the tax rate and the final price; the page only shows them.
+- The server computes the tax rate and the final price. The page sums the line items into the subtotal it sends, and shows a tax line it derives as subtotal × rate.
 - The invoice stores a copy of the customer's name, phone, email and address at the time it is saved. A later change to the customer does not change the invoice.
 - Downloading the PDF (`saveFile` in `PdfPage.jsx`) happens in the browser with `@react-pdf/renderer` and does not call the API.

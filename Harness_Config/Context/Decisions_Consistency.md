@@ -40,7 +40,7 @@ Status: Accepted, current
 The server's validators in `NODEAPI/utils/validators.js` are the source of truth for what a valid customer or invoice is.
 
 Reason:
-- The client and the server validate today with rules of their own, and they disagree: the client requires email and ZIP, the server accepts them empty.
+- The client and the server validate today with rules of their own, and they disagree: the client requires email and ZIP, which the server accepts empty; the client allows company-name characters and lengths the server rejects, does not check the state's format, and requires separators in phone numbers that the server treats as optional.
 - Only the server's check protects what is stored.
 
 Rules:
@@ -49,14 +49,15 @@ Rules:
 Status: Accepted, pending (the client checks in `CreatePage.jsx`, `EditPage.jsx` and `InvoicePage.jsx` aligned with `utils/validators.js`)
 
 ### ADR-004
-The server computes the tax rate and the invoice total. The rate table, `STATE_TAX_RATES` in `NODEAPI/utils/constants.js`, is the only source of tax rates.
+The server is the source of the tax rate and the invoice's final price. The rate table, `STATE_TAX_RATES` in `NODEAPI/utils/constants.js`, is the only source of tax rates.
 
 Reason:
-- A total computed in two places drifts apart.
+- A final price computed in two places drifts apart.
 - One table to update when a rate changes.
 
 Rules:
-- The frontend gets the rate and the final price from `/api/v1/tax/rate` and `/api/v1/tax/calculate`, and only displays them.
+- The frontend gets the rate and the final price from `/api/v1/tax/rate` and `/api/v1/tax/calculate`, and never computes either itself.
+- The frontend may derive what it only displays from those figures: the subtotal of the line items, and the tax line (subtotal × rate).
 
 Status: Accepted, current
 
@@ -83,16 +84,17 @@ Rules:
 Status: Accepted, current
 
 ### ADR-007
-Configuration and secrets come from environment variables. `NODEAPI/.env` is never committed; `NODEAPI/.env.example` lists every variable by name.
+Configuration and secrets come from environment variables. `.env` files are never committed. `NODEAPI/.env.example` lists every API variable by name, and `FRONTEND/.env.example` every frontend variable.
 
 Reason:
 - A connection string in the code or in git is exposed to anyone who can read the repository.
+- Vite reads `FRONTEND/.env`, not the API's file, so each project lists its own variables.
 
 Rules:
-- A new variable is added to `.env.example` in the same change, without a real value.
+- A new variable is added to its project's `.env.example` in the same change, without a real value.
 - Frontend variables use the `VITE_` prefix.
 
-Status: Accepted, current
+Status: Accepted, pending (`FRONTEND/.env.example` created, listing `VITE_API_BASE_URL`)
 
 ### ADR-008
 An invoice stores a copy of the customer's fields as they were when it was saved. It does not reference the customer record.
@@ -135,7 +137,7 @@ MUI is the component library for the frontend. New screens and components use MU
 
 Reason:
 - Two component libraries give the screens two looks and two ways of doing the same thing.
-- MUI is already used on most screens, including the date pickers.
+- MUI is already used on more screens than `flowbite-react`, which provides a single Select.
 
 Rules:
 - A component MUI provides is taken from MUI, not rebuilt or taken from another library.
