@@ -5,7 +5,7 @@ Last updated: 2026-10-20
 ## Project
 InvoiceMe is a customer and invoice tracking web application for small businesses: a React frontend, an Express API and MongoDB. Its interface aims to be intuitive and to feel like a financial tool.
 
-- [README](../README.md): how to install and run it
+- [README](../Docs/README.md): how to install and run it
 - [Project Vision](../Docs/Project_Vision.md)
 - [Requirements](../Docs/PRD.md)
 - [Roadmap](../Docs/Project_Roadmap.md)

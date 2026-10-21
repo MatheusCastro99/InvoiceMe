@@ -6,7 +6,7 @@ This file tells claude-code and local subagents how to work in this repository. 
 
 Repository facts
 ---------------
-- Repo root: the directory containing `README.md`, `FRONTEND/` and `NODEAPI/`
+- Repo root: the directory containing `Docs/`, `FRONTEND/` and `NODEAPI/`; the README is `Docs/README.md`
 - GitHub: MatheusCastro99/InvoiceMe; default branch `master`
 - InvoiceMe: a customer and invoice tracking web application for small businesses
 - Three npm projects, no workspaces: the root (dev scripts only), `FRONTEND/` (React + Vite + Tailwind, ES modules) and `NODEAPI/` (Express + Mongoose, CommonJS)
@@ -80,8 +80,8 @@ Code rules
 Documentation rules
 -------------------
 - The main session keeps a running stale-docs list per PR (ID, file and location, what's stale, what it should say, evidence), in `.claude/stale-docs.md` when the work spans several sessions.
-- Right before merge, the historian subagent applies the list to `README.md`, `Docs/`, `Harness_Config/` and `NODEAPI/.env.example`; the maintainer reviews its diff against the list and the change. The historian only reports this file when it is stale; the main session updates it.
-- Keep `README.md`, `Docs/`, `Harness_Config/`, `.claude/CLAUDE.md` and `NODEAPI/.env.example` consistent with the code.
+- Right before merge, the historian subagent applies the list to `Docs/` (including the README), `Harness_Config/`, `NODEAPI/API_DOCUMENTATION.md`, `NODEAPI/VersionLog.md` and `NODEAPI/.env.example`; the maintainer reviews its diff against the list and the change. The historian only reports this file when it is stale; the main session updates it.
+- Keep `Docs/`, `Harness_Config/`, `NODEAPI/API_DOCUMENTATION.md`, `NODEAPI/VersionLog.md`, `.claude/CLAUDE.md` and `NODEAPI/.env.example` consistent with the code.
 
 Branching and commits
 ---------------------

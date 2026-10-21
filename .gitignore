@@ -143,4 +143,5 @@ graphify-out/
 .claude/agents/
 .claude/skills/
 .claude/onboarding-follow-up.md
+.claude/settings.local.json
 .claude/stale-docs.md
