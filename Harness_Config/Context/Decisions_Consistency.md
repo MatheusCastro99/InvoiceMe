@@ -4,96 +4,142 @@ Last updated: 2026-10-20
 
 The standing rules every change to InvoiceMe must follow. A one-off choice is not a rule: it goes in its issue or pull request.
 
-The rules belong to the owner. The main session may propose or draft one; it does not add, reword, or change the status of one on its own ([Working Agreements](Working_Agreements.md)).
-
-Statuses:
-
-| Status | Meaning |
-|---|---|
-| `Accepted, current` | In force now. Expected to change as the project grows. |
-| `Accepted, permanent` | In force, and not expected to change. |
-| `Accepted, pending (<what it waits for>)` | Decided, not in force yet. The code may not follow it until the named work lands. |
-| `Proposed, needs the owner` | Drawn from a pattern in the code during onboarding. Not in force until the owner accepts it. This status is temporary and goes away once each rule is decided. |
-
 ### ADR-001
-Every API request takes one path: route → validation middleware (for writes) → controller → Mongoose model. Every controller is wrapped in `asyncHandler`, and every error reaches the client through `errorMiddleware`.
+Every request to a resource under `/api/v1/` takes one path: router, validation middleware where the route has one, controller wrapped in `express-async-handler`, Mongoose model where the resource is stored. Errors are thrown as the error classes in `NODEAPI/utils/errors.js` and answered by `errorMiddleware`.
 
 Reason:
-- One path means one place to add a check, and one error format for the frontend to read.
+- One path means one place to add a check, and one shape for every answer the frontend reads.
+- A controller that answers an error itself bypasses the logging and the error shape.
 
 Rules:
-- A controller throws an `AppError` subclass from `utils/errors.js`; it never writes an error response itself.
-- A success response is `{ success: true, message?, data, count? | pagination? }`.
-- An error response is `{ success: false, message, statusCode, errors? }`, with `stack` only when `NODE_ENV` is `development`.
-- Response messages come from `RESPONSE_MESSAGES` in `utils/constants.js`.
+- A success answers `{ success: true, data, message? }`; a list may add `count` or `pagination`.
+- An error answers `{ success: false, message, statusCode, errors? }`, built by `errorMiddleware`.
+- A controller, middleware or validator never calls `res.status(4xx|5xx)` itself; it throws `ValidationError`, `NotFoundError`, `ConflictError` or another `AppError` subclass.
+- Resource routes are mounted under `/api/v1/`. Only `/`, `/health`, `/debug/db` and the 404 handler live outside it, in `app.js`.
 
-Status: Proposed, needs the owner
-
-### ADR-002
-The frontend builds every API URL from `API_ENDPOINTS` in `FRONTEND/src/config/apiConfig.js`. The base URL comes from `VITE_API_BASE_URL`.
-
-Reason:
-- One place to change an endpoint or the API's address for another environment.
-
-Status: Proposed, needs the owner
-
-### ADR-003
-Validation is layered: user input is checked in the interface before it is sent, and again on the server before it reaches the database. `CreatePage.jsx` is the pattern to follow for forms.
-
-Reason:
-- The interface tells the user what to correct before a request is sent; the server protects the database from any client.
-
-Rules:
-- Each validated field has its own validator on `onBlur`, which sets a validity flag in state, marks the field with a red or green border, and shows a toast with the expected format when it fails.
-- Submit checks every validity flag and blocks the request until all are valid.
-- Every create and update route has a validation middleware backed by `utils/validators.js`.
+Examples:
+- `routes/customerRoute.js` → `validateCustomerInput` → `postCustomer` → `CustomerModel.create`
+- `routes/taxRoute.js` → `calculateTax`, which checks its own input and throws `ValidationError`; nothing is stored
 
 Status: Accepted, current
 
-### ADR-004
-Non-operational numbers (phone numbers, dates, invoice numbers) are strings. Operational numbers (prices, taxes) are numbers. Dates, prices, phone numbers, emails and the like are checked and formatted with regex.
+### ADR-002
+Every API URL the frontend calls is defined once, in `API_ENDPOINTS` in `FRONTEND/src/config/apiConfig.js`.
 
 Reason:
-- Stated by the owner in `HomePage.jsx`. The models follow it: `phoneNumber`, `dateOfService` and `invoiceNumber` are `String`; `finalPrice`, `taxRate` and `subtotal` are `Number`.
+- The base URL comes from `VITE_API_BASE_URL`; a URL written inside a page ignores it.
+- One list shows every endpoint the frontend depends on.
+
+Rules:
+- A new endpoint adds its route in `NODEAPI/routes/` and its entry in `API_ENDPOINTS` in the same change.
+- Pages and components never write an API URL as a string.
+
+Status: Accepted, current
+
+### ADR-003
+The server's validators in `NODEAPI/utils/validators.js` are the source of truth for what a valid customer or invoice is.
+
+Reason:
+- The client and the server validate today with rules of their own, and they disagree: the client requires email and ZIP, which the server accepts empty; the client allows company-name characters and lengths the server rejects, does not check the state's format, and requires separators in phone numbers that the server treats as optional.
+- Only the server's check protects what is stored.
+
+Rules:
+- A change to a validation rule is made on the server first; the client's checks follow it and never accept what the server rejects, or reject what it accepts.
+
+Status: Accepted, pending (the client checks in `CreatePage.jsx`, `EditPage.jsx` and `InvoicePage.jsx` aligned with `utils/validators.js`)
+
+### ADR-004
+The server is the source of the tax rate and the invoice's final price. The rate table, `STATE_TAX_RATES` in `NODEAPI/utils/constants.js`, is the only source of tax rates.
+
+Reason:
+- A final price computed in two places drifts apart.
+- One table to update when a rate changes.
+
+Rules:
+- The frontend gets the rate and the final price from `/api/v1/tax/rate` and `/api/v1/tax/calculate`, and never computes either itself.
+- The frontend may derive what it only displays from those figures: the subtotal of the line items, and the tax line (subtotal × rate).
 
 Status: Accepted, current
 
 ### ADR-005
-An invoice carries its own copy of the customer's contact and address fields, with no reference to the Customer.
+User-facing messages from the API come from `RESPONSE_MESSAGES` in `NODEAPI/utils/constants.js`.
 
 Reason:
-- The customer's details prefill the invoice, so the user does not have to enter them by hand.
+- One place to read and change what the user is told.
 
-Status: Accepted, current
+Status: Accepted, pending (the literal messages in `controllers/taxController.js` and `utils/validators.js` moved to `RESPONSE_MESSAGES`)
 
 ### ADR-006
-Tailwind CSS is the default for new interface work.
+API files follow one naming pattern.
 
 Reason:
-- The owner's choice. The interface currently mixes Tailwind, MUI and flowbite-react. **Needs the owner:** whether existing MUI and flowbite-react components stay, or are replaced over time.
+- A reader finds a resource's route, controller and model by name alone.
+
+Rules:
+- Files are camelCase with their role as suffix: `customerRoute.js`, `customerController.js`, `customerModel.js`.
+- Handlers for a stored resource are named by verb: `getX`, `postX`, `updateX`, `delX`. Other handlers say what they do: `calculateTax`.
+- Mongoose models are exported as `XModel`.
+- Route, controller, middleware and utility files open with a JSDoc banner, and each route carries `@route` JSDoc.
 
 Status: Accepted, current
 
 ### ADR-007
-Debug endpoints, such as `/debug/db`, exist only in development.
+Configuration and secrets come from environment variables. `.env` files are never committed. `NODEAPI/.env.example` lists every API variable by name, and `FRONTEND/.env.example` every frontend variable.
 
 Reason:
-- `/debug/db` shows the database connection state and name to anyone who can reach the API.
+- A connection string in the code or in git is exposed to anyone who can read the repository.
+- Vite reads `FRONTEND/.env`, not the API's file, so each project lists its own variables.
 
-Status: Accepted, pending (a guard that disables `/debug/db` outside development; today it answers in every environment)
+Rules:
+- A new variable is added to its project's `.env.example` in the same change, without a real value.
+- Frontend variables use the `VITE_` prefix.
+
+Status: Accepted, pending (`FRONTEND/.env.example` created, listing `VITE_API_BASE_URL`)
 
 ### ADR-008
-`app.js` has no side effects on require: no database connection and no listening port. `server.js` does the bootstrapping.
+An invoice stores a copy of the customer's fields as they were when it was saved. It does not reference the customer record.
 
 Reason:
-- Tests can load the app without a database. CI fails if loading `app.js` opens a connection.
+- An invoice is a record of what was billed, to whom, at that time; a later change to the customer must not rewrite it.
 
-Status: Proposed, needs the owner
+Rules:
+- A change to a customer never updates their existing invoices.
+
+Status: Accepted, current
 
 ### ADR-009
-Secrets and environment settings live in `NODEAPI/.env`, which is never committed. `NODEAPI/.env.example` lists every variable the API reads, with a placeholder value.
+Components change what the page shows through React state. They never read or change the DOM directly (`document.getElementById`, `classList`).
 
 Reason:
-- The connection string carries database credentials.
+- Direct DOM changes are lost or overwritten when React renders again, and the page's state can no longer be read from the component.
 
-Status: Proposed, needs the owner
+Rules:
+- New code follows this rule now.
+- Field validity and its styling are state, rendered through `className`.
+- Mounting the app on `#root` in `main.jsx` is the one exception.
+
+Status: Accepted, pending (the direct DOM changes in `CreatePage.jsx`, `EditPage.jsx`, `InvoicePage.jsx` and `components/TableInvoice.jsx` moved to React state)
+
+### ADR-010
+Every API endpoint has tests.
+
+Reason:
+- The API has no tests today; CI only checks that it loads.
+
+Rules:
+- A new or changed endpoint comes with tests for its success and its error answers.
+- Tests import `app.js`, which opens no database connection on load.
+
+Status: Accepted, pending (a test runner and test setup in `NODEAPI`, where `npm test` is a stub today)
+
+### ADR-011
+MUI is the component library for the frontend. New screens and components use MUI components; `flowbite-react` is not used in new code.
+
+Reason:
+- Two component libraries give the screens two looks and two ways of doing the same thing.
+- MUI is already used on more screens than `flowbite-react`, which provides a single Select.
+
+Rules:
+- A component MUI provides is taken from MUI, not rebuilt or taken from another library.
+
+Status: Accepted, pending (the `flowbite-react` Select in `InvoicePage.jsx` replaced with MUI)

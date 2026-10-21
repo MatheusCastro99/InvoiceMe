@@ -2,24 +2,22 @@
 
 ## Summary
 
-InvoiceMe is a customer and invoice tracking application for small businesses.
+InvoiceMe is a customer and invoice tracking web application. Its main audience is small businesses: it keeps their customers in one place and turns a job into an invoice they can save and download as a PDF.
 
-A business keeps its customers' contact and address details in one place, and builds invoices from them: the customer's details fill the invoice, the state's sales tax is applied, and the invoice is saved and downloaded as a PDF.
-
-## Who it is for
-
-Small businesses that invoice their customers. **Needs the owner:** who in the business uses it day to day.
+The project grew out of use by one business, Ken-Tech. It is no longer tied to that business.
 
 ## What it is
 
-- A web app for tracking customers and the invoices issued to them
-- Built to serve any small business. It began with one business, KenTech, and is no longer tied to it.
+- A place to keep a small business's customers: company, contact, phone, email and address.
+- A way to build an invoice for a customer, with the tax computed for the customer's state, and to keep every invoice saved.
+- An interface that is intuitive and feels like a financial tool.
 
 ## What it is NOT
 
-- A tool built for one business
-- **Needs the owner:** what else is out of scope, such as payments, accounting or multi-user teams.
+- Tied to Ken-Tech or to any single business.
 
 ## Target feeling
 
-Modern, structured, organized and finance-like. The interface guardrails are in [UI Guidelines](../Harness_Config/Context/UI_Guidelines.md).
+Think:
+
+- An intuitive financial tool, with a finance-like look and palette

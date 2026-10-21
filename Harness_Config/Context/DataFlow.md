@@ -2,76 +2,59 @@
 
 Last updated: 2026-10-20
 
-Every request goes from a page, through axios with a URL from `API_ENDPOINTS`, to an Express route, the validation middleware where there is one, a controller and a Mongoose model. Every error a route raises ends in `errorMiddleware` ([ADR-001](Decisions_Consistency.md#adr-001)). A request to an unknown route is answered by the 404 handler in `app.js` instead, with `{ success: false, message, path }`.
+Every request to `/api/v1/` takes the same path: a page calls the API with axios, using a URL from `API_ENDPOINTS` (`FRONTEND/src/config/apiConfig.js`); an Express router under `/api/v1/` runs the validation middleware, where the route has one, then a controller wrapped in `express-async-handler`; the controller reads or writes through a Mongoose model, for customers and invoices, and answers with `{ success, data, message? }`. Any error a controller throws or passes on reaches `errorMiddleware`, which answers with `{ success: false, message, statusCode, errors? }`.
 
-## Save a customer
-
-Creating (`CreatePage.jsx`, `POST /api/v1/customers`) and editing (`EditPage.jsx`, `PUT /api/v1/customers/:id`) follow the same path, with three differences on edit: the page first loads the customer by ID; every validity flag starts as valid, so a field is checked only once it is blurred; and the handler also answers 404 when the customer no longer exists.
+## Save a new customer
 
 ```mermaid
 flowchart TD
-    A["CreatePage / EditPage<br/>the user leaves a field"] --> B{"field validator (onBlur)<br/>is the format valid?"}
-    B -- "no" --> B1["red border on the field<br/>toast with the expected format"]
-    B -- "yes" --> B2["green border<br/>validity flag set"]
-    B2 --> S{"Save: checkValidity<br/>are all flags valid?"}
-    S -- "no" --> S1["toast: check name, phone, email, zip<br/>red borders on the invalid fields"]
-    S -- "yes" --> C["axios POST / PUT<br/>API_ENDPOINTS.CUSTOMERS"]
-    C -- "no answer" --> C1["toast with the axios error message<br/>the form keeps what the user entered"]
-    C --> D["customerRoute"]
+    A["CreatePage.jsx<br/>the user fills the form and clicks Save"] --> B{"checkValidity<br/>did name, phone, email and ZIP<br/>pass their on-blur checks?"}
+    B -- "no" --> B1["CreatePage.jsx<br/>shows a toast and a red border on each invalid field"]
+    B -- "yes" --> C["saveCustomer, axios.post<br/>API_ENDPOINTS.CUSTOMERS.CREATE"]
+    C --> D["customerRoute.js<br/>POST /api/v1/customers"]
+    C -- "no answer" --> C1["CreatePage.jsx<br/>toast with the axios error message;<br/>the form keeps what was entered"]
     D --> E{"validateCustomerInput<br/>utils/validators.js"}
-    E -- "no" --> E1["ValidationError 400<br/>errorMiddleware"]
-    E -- "yes" --> F{"customerController<br/>is the phone number already used?"}
-    F -- "yes" --> F1["ConflictError 409<br/>errorMiddleware"]
-    F -- "no" --> G[("CustomerModel<br/>create / findByIdAndUpdate")]
-    G -- "fails" --> G1["500<br/>errorMiddleware"]
-    G -- "succeeds" --> H["201 / 200<br/>{ success, message, data }"]
-    E1 --> I["toast with the axios error message"]
+    E -- "no" --> E1["errorMiddleware<br/>400 with the list of errors"]
+    E -- "yes" --> F{"postCustomer<br/>is the phone number already used?"}
+    F -- "yes" --> F1["errorMiddleware<br/>409, duplicate customer"]
+    F -- "no" --> G[("CustomerModel.create<br/>MongoDB")]
+    G -- "fails" --> G1["errorMiddleware<br/>500"]
+    G -- "succeeds" --> H["postCustomer<br/>201 with the new customer"]
+    E1 --> I["CreatePage.jsx<br/>toast with the axios error message"]
     F1 --> I
     G1 --> I
-    H --> K["success toast<br/>navigate to /"]
+    H --> K["CreatePage.jsx<br/>success toast, then the home page"]
 ```
 
 Notes:
-- The client and the server check different things. The client requires email and zip code; the server treats both as optional. The client and server phone patterns are not the same regex.
-- An error toast shows axios's `error.message` ("Request failed with status code …"), not the `message` the API puts in its error envelope.
-- After a create, the success toast reads `response.data.companyName`. The customer is under `response.data.data`, so the name is likely missing from the toast. **Needs the owner:** an open bug, or intended?
-- On create only, a customer image left empty is replaced in the browser by a placeholder image URL on an external site before the request.
+- The client and the server validate separately, with their own rules. The client requires email and ZIP, which the server accepts empty. The server rejects company names with characters such as `'` or accented letters, or longer than 100 characters, and states not given as two capital letters, all of which the client lets through: those saves end in a 400.
+- The page shows `error.message` from axios, such as "Request failed with status code 409", not the `message` the API returns.
+- Editing a customer (`EditPage.jsx`, `PUT /api/v1/customers/:id`) takes the same path through `validateCustomerInput` and `updateCustomer`, which also returns 404 when the customer does not exist.
 
-## Generate and save an invoice
+## Save an invoice
 
 ```mermaid
 flowchart TD
-    A["InvoicePage<br/>the user picks a company"] --> B["GET /customers/:id"]
-    B -- "fails" --> B1["customer details cleared"]
-    B --> T["POST /tax/rate { state }<br/>rate from STATE_TAX_RATES"]
-    T -- "400: no or unknown state" --> T1["tax rate keeps its previous value<br/>(none on the first pick)<br/>no message to the user"]
-    T --> P["the user enters the price or line items"]
-    P --> Q["POST /tax/calculate { jobPrice, taxRate }<br/>taxController rounds to 2 decimals"]
-    Q -- "400: no tax rate" --> Q1["final price stays 0 or stale<br/>no message to the user"]
-    Q --> V{"date and invoice number validators (onBlur)<br/>Generate PDF: checkValidity"}
-    V -- "no" --> V1["red border, toast<br/>navigation blocked"]
-    V -- "yes" --> R["navigate to /pdfPage<br/>with the invoice in router state"]
-    R --> PDF["PdfPage<br/>renders the invoice with PDFViewer"]
-    PDF --> DL["Download<br/>PDF built in the browser, saved with file-saver"]
-    PDF --> SV["Save Invoice<br/>axios POST /invoices"]
-    SV -- "no answer" --> SV1["toast with the axios error message"]
-    SV --> VI{"validateInvoiceInput"}
-    VI -- "no" --> VI1["ValidationError 400<br/>toast with the axios error message"]
-    VI -- "yes" --> M[("InvoiceModel.create")]
-    M -- "fails" --> M1["500<br/>toast with the axios error message"]
-    M -- "succeeds" --> OK["201: success toast<br/>Save button disabled"]
+    A["InvoicePage.jsx<br/>the user picks a customer and enters a price;<br/>the state comes from the customer's address"] --> T["InvoicePage.jsx, axios.post<br/>tax/rate, then tax/calculate"]
+    T --> T1["taxController.js<br/>rate from STATE_TAX_RATES, final price"]
+    T1 --> A2["InvoicePage.jsx<br/>Generate PDF: navigates to /pdfPage<br/>with the invoice in router state"]
+    A2 --> B{"PdfPage.jsx, saveInvoice<br/>are company, date and final price set?"}
+    B -- "no" --> B1["PdfPage.jsx<br/>toast: fill out all input"]
+    B -- "yes" --> C["axios.post<br/>API_ENDPOINTS.INVOICES.CREATE"]
+    C --> D["invoiceRoute.js<br/>POST /api/v1/invoices"]
+    C -- "no answer" --> C1["PdfPage.jsx<br/>toast with the axios error message"]
+    D --> E{"validateInvoiceInput<br/>utils/validators.js"}
+    E -- "no" --> E1["errorMiddleware<br/>400 with the list of errors"]
+    E -- "yes" --> F["postInvoice"]
+    F --> G[("InvoiceModel.create<br/>MongoDB")]
+    G -- "fails" --> G1["errorMiddleware<br/>500"]
+    G -- "succeeds" --> H["postInvoice<br/>201 with the new invoice"]
+    E1 --> I["PdfPage.jsx<br/>toast with the axios error message"]
+    G1 --> I
+    H --> K["PdfPage.jsx<br/>success toast"]
 ```
 
 Notes:
-- The customer's contact and address fields are copied into the invoice when it is saved. The invoice keeps no reference to the customer ([ADR-005](Decisions_Consistency.md#adr-005)).
-- The tax calls have no error handling of their own, and the rate lookup is not awaited, so its failure is an unhandled rejection. A customer with no state, or a state not in `STATE_TAX_RATES`, keeps the previous customer's rate, or no rate at all on the first pick, without telling the user. With no rate, `/tax/calculate` answers 400 and the final price stays 0 or stale. The final price is also not recomputed when the customer changes.
-- Generate PDF checks the date, the invoice number and that the subtotal is not 0. It does not check the final price, so a $0 or stale total can reach `PdfPage` and be saved.
-- The invoice number is checked only in the browser, against the last element of the invoice list. The API returns that list newest first, so the last element is the oldest invoice. The comparison is between strings, so `"10"` counts as lower than `"9"`. With no invoices at all, the validator throws, the number is never marked valid, and Generate PDF stays blocked. **Needs the owner:** confirm the intended check.
-- The invoice data reaches `PdfPage` only through router state. Opening `/pdfPage` directly, or reloading it, leaves the page without an invoice.
-- Downloading the PDF does not call the API; saving it does.
-
-## Load and delete
-
-- **Lists.** `HomePage` loads the customers (`GET /customers`, paginated, 20 by default) and all invoices (`GET /invoices`, newest first) on mount. `ProfilePage` loads one customer and the invoice list. Each page reads the payload defensively, as `response.data.data` with a fallback to `response.data`, and shows a toast on failure.
-- **Delete.** `Customer`, `CustomerProfile` and `TableInvoice` ask for confirmation with a sweetalert2 dialog, then call `DELETE /customers/:id` or `DELETE /invoices/:id`. A missing record answers 404 through `errorMiddleware`. Deleting a customer leaves their invoices in place, since an invoice holds its own copy of the customer's details.
-- **IDs.** No route checks the ID format. An ID that is not a valid MongoDB ObjectId makes Mongoose throw a cast error with no status code, which `errorMiddleware` answers as 500.
+- The server computes the tax rate and the final price. The page sums the line items into the subtotal it sends, and shows a tax line it derives as subtotal × rate.
+- The invoice stores a copy of the customer's name, phone, email and address at the time it is saved. A later change to the customer does not change the invoice.
+- Downloading the PDF (`saveFile` in `PdfPage.jsx`) happens in the browser with `@react-pdf/renderer` and does not call the API.

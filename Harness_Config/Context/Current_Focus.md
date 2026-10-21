@@ -2,18 +2,13 @@
 
 Last updated: 2026-10-20
 
-Status: in development. The harness onboarding is done: the context pages, the project documents, `CLAUDE.md`, and the local agents and skills are in place.
+Status: harness onboarding done; a manual documentation pass comes next
 
-## Documentation repass
+## Documentation follow-up
 
-A second pass over the documentation written during the onboarding, fixing contradictions, gaps, and any passage that is ambiguous or not accurate.
-
-In scope:
-- `CLAUDE.md`, `Docs/` and `Harness_Config/`, checked against the code and against each other
-- The open questions marked **Needs the owner**, most of them in [UI Guidelines](UI_Guidelines.md), [Roadmap](../../Docs/Project_Roadmap.md), [Project Vision](../../Docs/Project_Vision.md), [Data Flow](DataFlow.md) and [Development Workflow](Development_Workflow.md)
-- The status of each rule marked `Proposed, needs the owner` in [Decisions](Decisions_Consistency.md): ADR-001, ADR-002, ADR-008 and ADR-009
+The owner goes over the documentation the harness onboarding wrote, in `Harness_Config/`, `Docs/` and `.claude/CLAUDE.md`, by hand, and settles what the onboarding left open.
 
 Unfinished on purpose:
-- The code defects the onboarding review found and [Data Flow](DataFlow.md) records, such as the stale tax rate and the invoice-number check, are not fixed in this pass. They are left for issues of their own.
+- The pending rules in [Decisions](Decisions_Consistency.md) (ADR-003, ADR-005, ADR-007, ADR-009, ADR-010, ADR-011) wait for work that is not planned yet.
 
-The planned work after the repass is in the [Roadmap](../../Docs/Project_Roadmap.md).
+The full plan is in the [Roadmap](../../Docs/Project_Roadmap.md).
