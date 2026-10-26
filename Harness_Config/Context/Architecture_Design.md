@@ -1,6 +1,6 @@
 # Architecture Design
 
-Last updated: 2026-10-20
+Last updated: 2026-10-26
 
 ## Structure
 
@@ -32,7 +32,7 @@ InvoiceMe/
 - package.json: dev scripts only, which start the API and the frontend together
 
 ### .github/
-- workflows/node.js.yml: CI on pushes and pull requests to `master`; lints and builds the frontend, syntax-checks the API and loads `app.js` without a database
+- workflows/node.js.yml: CI on pushes and pull requests to `master`; lints and builds the frontend, syntax-checks the API, loads `app.js` without a database, and runs the API tests (`npm test`) on an in-memory MongoDB
 - workflows/codeql.yml: CodeQL code scanning
 - dependabot.yml: weekly npm updates for `FRONTEND` and `NODEAPI`, monthly for GitHub Actions
 

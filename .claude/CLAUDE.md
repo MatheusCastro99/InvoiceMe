@@ -6,7 +6,7 @@ A customer and invoice tracking web application for small businesses: it keeps t
 
 - Stack: three npm projects, no workspaces: the root (dev scripts only), `FRONTEND/` (React + Vite + Tailwind 4 + MUI, ES modules) and `NODEAPI/` (Express + Mongoose, CommonJS). Node.js 20.19 or later
 - GitHub: MatheusCastro99/InvoiceMe (public). Default branch: `master`
-- CI on every PR: "Node.js CI" (frontend lint and build, API syntax and load check, on Node 22.x and 24.x) and CodeQL
+- CI on every PR: "Node.js CI" (frontend lint and build, API syntax and load check, API tests, on Node 22.x and 24.x) and CodeQL
 - Project config for the harness: `.claude/harness.json` (checks, docs, CI checks)
 
 ## Where things are
@@ -44,6 +44,8 @@ Every issue goes through the harness skills, in order. Each block ends where its
 
 Working state lives in `.harness/work/<n>/` (gitignored). The approved plan and the handoff are also posted to the issue. If `.harness/work/<n>/BLOCKED` exists, stop and tell the owner.
 
+When the forked build's reply has a `MAIN SESSION:` line, do what it says before you reply: the fork can't reach the app's tools.
+
 Project skills: `guardrails-review` checks a change against the ADRs (the red-team preloads it); `ux-design` reviews interface and copy changes.
 
 ## Standing rules
@@ -58,7 +60,7 @@ The full rules and their status are in `Decisions_Consistency.md`. A pending rul
 - API files are camelCase with their role as suffix; stored-resource handlers are `getX`/`postX`/`updateX`/`delX`; models export `XModel`; new files open with a JSDoc banner and routes carry `@route` (ADR-006).
 - Configuration comes from environment variables; a new one is added to its project's `.env.example` in the same change, with no real value; frontend variables start with `VITE_` (ADR-007).
 - An invoice stores a copy of the customer's fields; a customer change never updates existing invoices (ADR-008).
-- A new or changed endpoint comes with tests for its success and error answers, once `NODEAPI` has a test runner (ADR-010, pending).
+- A new or changed endpoint comes with tests for its success and error answers (ADR-010).
 - Put new code where `Architecture_Design.md` says it belongs. Prefer small, plain changes: no files, abstractions or dependencies the issue didn't ask for.
 
 ## Working agreements

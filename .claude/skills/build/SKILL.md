@@ -38,6 +38,7 @@ The `builder` agent runs this skill on Sonnet (D12), apart from the main session
    - Update each candidate doc that is now wrong, in this same commit.
    - For a doc that is still accurate, add `ack: <doc> — <why>` to `.harness/work/<n>/stale-docs.md`.
    - Also check the docs the plan listed: the script can't see drift that names no path.
+   - Update a doc line the change makes untrue even when the plan limits the files: the plan's file list scopes the code, not the docs it falsifies. List the line under the handoff's Docs.
 5. **Commit**, one commit per sub-phase: `<type>: <summary> (#<n>)`. The docs gate blocks a commit while a flagged doc is neither updated nor acknowledged.
 
 The Stop gate won't let you stop while fast checks fail. After 3 failures it writes `BLOCKED`. Then:
@@ -59,7 +60,7 @@ Anything the plan doesn't cover stops the work: a behaviour change, a new depend
    - If a check fails, fix it, run `full` again, push, and wait again.
    - When CI passes, record `gh pr view <pr> --json headRefOid`.
 4. **PR monitoring (Auto-fix) stays off from the handoff until the merge,** so nothing pushes after the handoff. You can't reach the app's PR tools from the fork, so end your reply with this line, which the main session acts on: `MAIN SESSION: turn off Auto-fix for <PR url> if it is on.`
-5. **Standard tier:**
+5. **Handoff, on both tiers:**
    - Write `.harness/work/<n>/handoff.md` in exactly this shape. Every section is filled in or says "none":
 
      ```markdown
@@ -81,8 +82,9 @@ Anything the plan doesn't cover stops the work: a behaviour change, a new depend
 
    - Validate it with `node .claude/scripts/handoff-check.cjs .harness/work/<n>/handoff.md --verify-head`, and fix it until it passes.
    - Post it to the issue (`gh issue comment <n> --body-file …`). In the posted copy, replace anything security-sensitive with "withheld"; keep it in the local file.
-   - Tell the owner to start Block C in a fresh session: `claude --model opus`, then `/review <n>`. Stop.
-6. **Small tier:** no handoff file. Continue in this session with the `review` skill.
+6. **Then stop. Don't run `review` yourself:** G2 is triaged on Opus, outside the fork (D22).
+   - **Standard:** tell the owner to start Block C in a fresh session: `claude --model opus`, then `/review <n>`.
+   - **Small:** end your reply with `MAIN SESSION: run the review skill for #<n> now (Small tier, this session).`
 
 ## Never
 

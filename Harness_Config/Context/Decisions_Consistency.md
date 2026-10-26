@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-10-20
+Last updated: 2026-10-26
 
 The standing rules every change to InvoiceMe must follow. A one-off choice is not a rule: it goes in its issue or pull request.
 
@@ -124,13 +124,13 @@ Status: Accepted, pending (the direct DOM changes in `CreatePage.jsx`, `EditPage
 Every API endpoint has tests.
 
 Reason:
-- The API has no tests today; CI only checks that it loads.
+- Tests pin every endpoint's answers, so a change that alters one (such as the Schema epic's migration) fails a test instead of shipping unnoticed.
 
 Rules:
 - A new or changed endpoint comes with tests for its success and its error answers.
 - Tests import `app.js`, which opens no database connection on load.
 
-Status: Accepted, pending (a test runner and test setup in `NODEAPI`, where `npm test` is a stub today)
+Status: Accepted, current
 
 ### ADR-011
 MUI is the component library for the frontend. New screens and components use MUI components; `flowbite-react` is not used in new code.
@@ -143,3 +143,19 @@ Rules:
 - A component MUI provides is taken from MUI, not rebuilt or taken from another library.
 
 Status: Accepted, pending (the `flowbite-react` Select in `InvoicePage.jsx` replaced with MUI)
+
+### ADR-012
+Every money amount (line-item price, subtotal, tax, final price) is an integer number of cents in the database and the API; only the frontend's input and display convert to and from dollars.
+
+Reason:
+- Floating-point dollars round inconsistently, and tax math compounds the error.
+
+Status: Accepted, pending (the Schema epic converts the model, the API and the frontend; today `subtotal` and `finalPrice` are `Number` dollars)
+
+### ADR-013
+A date of service is a calendar date: stored as a Date at UTC midnight, sent and accepted as ISO `YYYY-MM-DD`.
+
+Reason:
+- A string date can't be sorted, compared or validated, and a local-time Date shifts the day across time zones.
+
+Status: Accepted, pending (the Schema epic; today `dateOfService` is a String and only its presence is checked, see #70)
