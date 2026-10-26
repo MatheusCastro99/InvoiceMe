@@ -143,3 +143,19 @@ Rules:
 - A component MUI provides is taken from MUI, not rebuilt or taken from another library.
 
 Status: Accepted, pending (the `flowbite-react` Select in `InvoicePage.jsx` replaced with MUI)
+
+### ADR-012
+Every money amount (line-item price, subtotal, tax, final price) is an integer number of cents in the database and the API; only the frontend's input and display convert to and from dollars.
+
+Reason:
+- Floating-point dollars round inconsistently, and tax math compounds the error.
+
+Status: Accepted, pending (the Schema epic converts the model, the API and the frontend; today `subtotal` and `finalPrice` are `Number` dollars)
+
+### ADR-013
+A date of service is a calendar date: stored as a Date at UTC midnight, sent and accepted as ISO `YYYY-MM-DD`.
+
+Reason:
+- A string date can't be sorted, compared or validated, and a local-time Date shifts the day across time zones.
+
+Status: Accepted, pending (the Schema epic; today `dateOfService` is a String and only its presence is checked, see #70)

@@ -1,4 +1,4 @@
-# Ken-Tech Maintenance API Documentation
+# InvoiceMe API Documentation
 
 ## API Version: v1.0
 
@@ -303,8 +303,8 @@ All endpoints return JSON responses with the following structure:
 
 - `companyName` (required): String
 - `phoneNumber` (required): Valid US phone format
-- `dateOfService` (required): ISO date string
-- `finalPrice` (required): Positive number
+- `dateOfService` (required): String; only its presence is checked
+- `finalPrice` (required): a number, 0 or more
 
 **Response (201):**
 
