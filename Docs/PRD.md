@@ -15,7 +15,7 @@ InvoiceMe is a customer and invoice tracking web application for small businesse
 - **Storage**: MongoDB, through Mongoose
 - **Runtime**: Node.js 20.19 or later
 - **Hosting**: local only; the API and the frontend run on the developer's machine
-- **CI**: GitHub Actions (frontend lint and build, API load check) and CodeQL
+- **CI**: GitHub Actions (frontend lint and build, API load check and API tests) and CodeQL
 
 The structure and the key files are in [Architecture Design](../Harness_Config/Context/Architecture_Design.md).
 

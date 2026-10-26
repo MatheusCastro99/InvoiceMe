@@ -2,7 +2,7 @@
 
 A comprehensive, production-ready CRUD application for managing customers and generating invoices for a small businesses.
 
-**Version:** 1.0.0
+**Version:** 1.21
 **Status:** Production-ready MVP
 **Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
@@ -76,8 +76,8 @@ The project is currently in an active MVP / production-ready iteration for small
 **Invoice:**
 
 - Phone: Valid US format
-- Date: ISO format required
-- Price: Positive number
+- Date of service: required (the format isn't checked yet)
+- Price: a number, 0 or more
 
 ## API Testing Example
 
@@ -120,7 +120,9 @@ curl -X POST http://localhost:3000/api/v1/customers \
 
 ## Version History
 
-### v1.0.0 (Current) - 2024
+### v1.21 (current)
+
+The full history is in [`NODEAPI/VersionLog.md`](../NODEAPI/VersionLog.md).
 
 **Released Features:**
 
@@ -162,7 +164,8 @@ Generated outputs are written to a local `graphify-out/` directory, including a 
 
 | File | Purpose |
 | --- | --- |
-| [../README.md](./README.md) | Repository overview and project entry point |
+| [./PRD.md](./PRD.md) | Product requirements: what InvoiceMe does and for whom |
+| [./Project_Vision.md](./Project_Vision.md) | Why the project exists and where it is heading |
 | [../Docs/Project_Roadmap.md](../Docs/Project_Roadmap.md) | Planned improvements and near-term feature roadmap |
 | [../Harness_Config/Context/Decisions_Consistency.md](../Harness_Config/Context/Decisions_Consistency.md) | Architecture and engineering decisions (ADRs) |
 | [../NODEAPI/API_DOCUMENTATION.md](../NODEAPI/API_DOCUMENTATION.md) | Complete API reference with examples |
@@ -182,6 +185,9 @@ InvoiceMe/
 │   ├── tests/          # Jest + Supertest suite; setup in tests/setup/
 │   ├── app.js          # Express app: middleware, routes, error handling
 │   ├── server.js       # Bootstrap: env, MongoDB connection, listen
+│   ├── jest.config.js
+│   ├── API_DOCUMENTATION.md # API reference
+│   ├── VersionLog.md   # API change log
 │   ├── package.json
 │   └── .env.example
 ├── FRONTEND/
@@ -192,13 +198,20 @@ InvoiceMe/
 │   │   └── App.jsx
 │   ├── package.json
 │   ├── vite.config.js
-│   └── tailwind.config.js
-├── docs/
-│   ├── README.md
-│   ├── ROADMAP.md
-│   ├── Decisions.md
-│   ├── architecture-overview.md
-│   └── save-workflows.md
+│   ├── eslint.config.js
+│   ├── postcss.config.js
+│   ├── index.html
+│   └── public/
+├── Docs/
+│   ├── README.md           # This file
+│   ├── PRD.md              # Product requirements
+│   ├── Project_Vision.md   # Vision and direction
+│   └── Project_Roadmap.md  # Planned work
+├── Harness_Config/Context/
+│   ├── Architecture_Design.md   # Structure and key files
+│   ├── DataFlow.md              # How a request moves and fails
+│   ├── Decisions_Consistency.md # Standing rules (ADRs)
+│   └── UI_Guidelines.md         # UI authority
 ├── package.json        # Root scripts to run API + frontend together
 └── .github/
     ├── workflows/
@@ -253,7 +266,7 @@ npm install
 npm run dev
 ```
 
-This uses the root workspace scripts to start both the API and frontend together.
+This uses the root scripts, which run the API and the frontend together with `concurrently`.
 
 ## Backend Setup
 
@@ -291,7 +304,7 @@ MONGO_URL=mongodb+srv://...
 PORT=3000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
-API_VERSION=v1 (api/v1/)
+API_VERSION=v1          # in .env.example, not read by the code yet; routes are fixed at /api/v1/
 ```
 
 ### Frontend (.env.local)

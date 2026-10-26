@@ -21,6 +21,7 @@ Currently, 5 states are available for auto tax calculation. They are:
     - CT
     - FL
     - For states othen than those, tax calculation is not available
+    - Superseded in v1.21: all 50 states are supported.
 
 - Access individual customers profile, where it is possible to Read, Update, and Delete their personal information as well as read and delete their corresponding invoices.
 

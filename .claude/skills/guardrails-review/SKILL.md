@@ -70,7 +70,7 @@ These have already happened in this project. Check the change against each one.
 
 ## 4. Verification you can do
 
-- Build: `node .claude/scripts/check.cjs full` runs the frontend lint (zero warnings allowed) and build, `node --check server.js` and the `app.js` load check, the same as CI. Report new warnings, not just errors.
+- Build: `node .claude/scripts/check.cjs full` runs the frontend lint (zero warnings allowed) and build, `node --check server.js`, the `app.js` load check and the NODEAPI tests, the same as CI. Report new warnings, not just errors.
 - Tests: `node .claude/scripts/check.cjs api-test` runs the NODEAPI Jest suite on an in-memory MongoDB: the harness isolation test and HTTP tests for every endpoint (#73). Known bugs (#69, #70) are pinned as `test.failing` that asserts the correct answer: a fix that makes one pass must remove its marker in the same change.
 - The owner checks by hand: the change in the running app, their own way, before the merge. Don't list those paths as "needs testing". List only what the tests and that pass would miss: invalid or unknown ids, empty optional fields, a duplicate phone number, a state missing from `STATE_TAX_RATES`, an invoice with many line items, and MongoDB being unreachable.
 
@@ -83,7 +83,7 @@ Sections 5 and 6 apply when this skill is used inline. The red-team agent uses i
 | **Critical** | Wrong or lost data, a crash, exposed secrets, or a broken standing rule | A connection string committed (ADR-007); a customer update that rewrites saved invoices (ADR-008); a final price computed in the frontend instead of by the server (ADR-004) | Fix before merge |
 | **Major** | A real reliability or maintainability risk | An API URL written in a page (ADR-002); a new client check that disagrees with `validators.js` (ADR-003); a controller that answers an error itself (ADR-001) | Fix before the next issue |
 | **Minor** | Friction, clarity, naming | A handler named outside the pattern (ADR-006); a leftover `console.log` | Mention; fix if cheap |
-| **Accepted trade-off** | Intentional, per the documents | The existing code that a pending rule (ADR-003, ADR-005, ADR-007, ADR-009, ADR-011) has not brought in line yet; the project runs locally only | Don't raise it again |
+| **Accepted trade-off** | Intentional, per the documents | The existing code that a pending rule (ADR-003, ADR-005, ADR-007, ADR-009, ADR-011, ADR-012, ADR-013) has not brought in line yet; the project runs locally only | Don't raise it again |
 
 ## 6. Output
 
