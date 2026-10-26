@@ -6,7 +6,7 @@ A customer and invoice tracking web application for small businesses: it keeps t
 
 - Stack: three npm projects, no workspaces: the root (dev scripts only), `FRONTEND/` (React + Vite + Tailwind 4 + MUI, ES modules) and `NODEAPI/` (Express + Mongoose, CommonJS). Node.js 20.19 or later
 - GitHub: MatheusCastro99/InvoiceMe (public). Default branch: `master`
-- CI on every PR: "Node.js CI" (frontend lint and build, API syntax and load check, on Node 22.x and 24.x) and CodeQL
+- CI on every PR: "Node.js CI" (frontend lint and build, API syntax and load check, API tests, on Node 22.x and 24.x) and CodeQL
 - Project config for the harness: `.claude/harness.json` (checks, docs, CI checks)
 
 ## Where things are
