@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-10-20
+Last updated: 2026-10-26
 
 The standing rules every change to InvoiceMe must follow. A one-off choice is not a rule: it goes in its issue or pull request.
 
@@ -124,13 +124,13 @@ Status: Accepted, pending (the direct DOM changes in `CreatePage.jsx`, `EditPage
 Every API endpoint has tests.
 
 Reason:
-- The API has no tests today; CI only checks that it loads.
+- Tests pin every endpoint's answers, so a change that alters one (such as the Schema epic's migration) fails a test instead of shipping unnoticed.
 
 Rules:
 - A new or changed endpoint comes with tests for its success and its error answers.
 - Tests import `app.js`, which opens no database connection on load.
 
-Status: Accepted, pending (a test runner and test setup in `NODEAPI`, where `npm test` is a stub today)
+Status: Accepted, current
 
 ### ADR-011
 MUI is the component library for the frontend. New screens and components use MUI components; `flowbite-react` is not used in new code.
