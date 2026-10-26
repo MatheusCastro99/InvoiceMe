@@ -179,6 +179,7 @@ InvoiceMe/
 │   ├── routes/         # Route handlers
 │   ├── middlewares/    # Validation and error handling
 │   ├── utils/          # Shared helpers and constants
+│   ├── tests/          # Jest + Supertest suite; setup in tests/setup/
 │   ├── app.js          # Express app: middleware, routes, error handling
 │   ├── server.js       # Bootstrap: env, MongoDB connection, listen
 │   ├── package.json
@@ -266,7 +267,7 @@ cp .env.example .env
 npm run dev
 # Server runs on http://localhost:3000
 
-# Tests (no .env or database needed; the first run downloads a MongoDB binary)
+# Tests (no .env or database needed; npm install downloads a MongoDB binary the first time)
 npm test
 ```
 

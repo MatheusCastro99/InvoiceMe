@@ -29,7 +29,7 @@ Run project checks through the runner, never by hand: `node .claude/scripts/chec
 
 - Install: `npm install` in the root, `NODEAPI/` and `FRONTEND/`; copy `NODEAPI/.env.example` to `NODEAPI/.env`
 - Run everything: `npm run dev` from the root (API on port 3000, then the frontend on 5173)
-- Tests: `npm test` in `NODEAPI/` runs the Jest + Supertest suite on an in-memory MongoDB (no `.env` or database needed; the first run downloads a MongoDB binary), or `node .claude/scripts/check.cjs api-test`. Also `npm run test:watch` and `npm run test:coverage`. Each sub-phase names an observable check, automated through the runner where possible.
+- Tests: `npm test` in `NODEAPI/` runs the Jest + Supertest suite on an in-memory MongoDB (no `.env` or database needed; `npm install` downloads a MongoDB binary the first time), or `node .claude/scripts/check.cjs api-test`. Also `npm run test:watch` and `npm run test:coverage`. Each sub-phase names an observable check, automated through the runner where possible.
 
 ## Workflow
 
