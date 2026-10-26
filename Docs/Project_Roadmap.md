@@ -1,17 +1,36 @@
 # Project Roadmap
 
-## Harness onboarding: CONCLUDED
+## Epic 0: Automated API tests [CONCLUDED]
 
-- Documentation: the context documents in `Harness_Config/`, the project documents in `Docs/`, and the agent guidance file `.claude/CLAUDE.md`
-- Skills: guardrails-review and ux-design
-- Agents: red-team and historian, and the stale-docs list
-- Review: a red-team review of every page written
+- Split the Express App from the Server bootstrap in order to make the app importable without a DB connection
+- Every NODEAPI endpoint has automated HTTP-level tests that run locally and in CI
+- Harnesses: Jest + Supertest
 
-## Production harness adoption (#114): IN PROGRESS
+## Epic 1: Schema Types Correction
 
-- The ProdHarnessConfig harness replaces the onboarding's 12-stage workflow, the historian and the stale-docs list: the `scope`, `build`, `review` and `close` skills, with the hooks and checks in `.claude/` (see `.claude/CLAUDE.md`)
-- Retired: `Harness_Config/AI_CONTEXT.md` and the Current Focus, Development Workflow and Working Agreements pages
+- API validation for duplicate customers/invoice numbers, invalid dates, and uncapped page sizes (#70)
+- Correct API return calls ([#69](https://github.com/MatheusCastro99/InvoiceMe/issues/69))
+- Int cents for money calculations
 
-## Documentation follow-up: NEXT
+## Epic 2: Authentication Overhaul
 
-- A manual pass by the owner over the documentation the onboarding wrote
+- Auth is still undecided
+- Implementation has to hold support for multiple users, as app is planned to go live publicly
+
+## Epic 3: Dockerization
+
+- Wrap application in several docker containers
+
+## Epic 4: UI Overhaul
+
+- Redesign on all pages to hold clear green (tech) color palette.
+- Finance theme design and adoption
+
+## Epic 5: Last Pass before InvoiceMe goes live
+
+- A last pass for UX fixes
+- Repo-wide secret scanning
+- Deciding where to host. Vercel, AWS, and Azure are some of the considered options so far, open to recommendation.
+- Deployment strategy
+
+
