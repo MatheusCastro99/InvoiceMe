@@ -60,7 +60,7 @@ The full rules and their status are in `Decisions_Consistency.md`. A pending rul
 - API files are camelCase with their role as suffix; stored-resource handlers are `getX`/`postX`/`updateX`/`delX`; models export `XModel`; new files open with a JSDoc banner and routes carry `@route` (ADR-006).
 - Configuration comes from environment variables; a new one is added to its project's `.env.example` in the same change, with no real value; frontend variables start with `VITE_` (ADR-007).
 - An invoice stores a copy of the customer's fields; a customer change never updates existing invoices (ADR-008).
-- A new or changed endpoint comes with tests for its success and error answers, once `NODEAPI` has a test runner (ADR-010, pending).
+- A new or changed endpoint comes with tests for its success and error answers (ADR-010).
 - Put new code where `Architecture_Design.md` says it belongs. Prefer small, plain changes: no files, abstractions or dependencies the issue didn't ask for.
 
 ## Working agreements
