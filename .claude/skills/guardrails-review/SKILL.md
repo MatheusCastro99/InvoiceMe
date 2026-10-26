@@ -71,7 +71,7 @@ These have already happened in this project. Check the change against each one.
 ## 4. Verification you can do
 
 - Build: `node .claude/scripts/check.cjs full` runs the frontend lint (zero warnings allowed) and build, `node --check server.js` and the `app.js` load check, the same as CI. Report new warnings, not just errors.
-- Tests: `node .claude/scripts/check.cjs api-test` runs the NODEAPI Jest suite on an in-memory MongoDB: the harness isolation test and the `/health` smoke test so far. Endpoint tests come with #73.
+- Tests: `node .claude/scripts/check.cjs api-test` runs the NODEAPI Jest suite on an in-memory MongoDB: the harness isolation test and HTTP tests for every endpoint (#73). Known bugs (#69, #70) are pinned as `test.failing` that asserts the correct answer: a fix that makes one pass must remove its marker in the same change.
 - The owner checks by hand: the change in the running app, their own way, before the merge. Don't list those paths as "needs testing". List only what the tests and that pass would miss: invalid or unknown ids, empty optional fields, a duplicate phone number, a state missing from `STATE_TAX_RATES`, an invoice with many line items, and MongoDB being unreachable.
 
 ## 5. Severity scale (findings and tech debt)
