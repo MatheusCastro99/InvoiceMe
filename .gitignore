@@ -9,12 +9,14 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+!.claude/skills/build/
 develop-eggs/
 dist/
 downloads/
 eggs/
 .eggs/
 lib/
+!.claude/lib/
 lib64/
 parts/
 sdist/
@@ -139,9 +141,6 @@ node_modules/
 # Graphify output (generated; used locally for agentic folder-structure mapping)
 graphify-out/
 
-# Harness tooling (personal, not tracked) and onboarding working files
-.claude/agents/
-.claude/skills/
-.claude/onboarding-follow-up.md
+# Claude Code: the harness in .claude/ is tracked; personal settings and working state are not
 .claude/settings.local.json
-.claude/stale-docs.md
+.harness/work/
