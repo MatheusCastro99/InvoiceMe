@@ -265,6 +265,9 @@ cp .env.example .env
 # MONGO_URL=mongodb://127.0.0.1:27017/API-test
 npm run dev
 # Server runs on http://localhost:3000
+
+# Tests (no .env or database needed; the first run downloads a MongoDB binary)
+npm test
 ```
 
 ## Frontend Setup
