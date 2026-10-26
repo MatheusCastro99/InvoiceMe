@@ -48,6 +48,11 @@ jobs:
       matrix:
         node-version: [22.x, 24.x]
 
+    # mongodb-memory-server downloads its MongoDB binary here, in npm ci's postinstall or on the first test run.
+    # It sits outside node_modules so the cache can be restored before npm ci wipes node_modules.
+    env:
+      MONGOMS_DOWNLOAD_DIR: ${{ github.workspace }}/.cache/mongodb-binaries
+
     defaults:
       run:
         working-directory: NODEAPI
@@ -60,6 +65,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: NODEAPI/package-lock.json
+    - name: Cache MongoDB binary
+      uses: actions/cache@v6
+      with:
+        path: ${{ env.MONGOMS_DOWNLOAD_DIR }}
+        key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('NODEAPI/package-lock.json') }}
+        restore-keys: mongodb-binaries-${{ runner.os }}-
     - run: npm ci
     - name: Syntax check server entry point
       run: node --check server.js
@@ -72,3 +83,6 @@ jobs:
         node -e "require('./app');
         if (require('mongoose').connection.readyState !== 0) { console.error('app.js opened a DB connection'); process.exit(1); }
         console.log('API app loaded OK')"
+    - name: Run tests
+      timeout-minutes: 10
+      run: npm test

@@ -34,3 +34,5 @@ build/
 # Custom files
 Ken-Tech.cmd
 UpdateApp.cmd
+# Test output
+coverage/
