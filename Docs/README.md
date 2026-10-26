@@ -2,7 +2,7 @@
 
 A comprehensive, production-ready CRUD application for managing customers and generating invoices for a small businesses.
 
-**Version:** 1.0.0
+**Version:** 1.21
 **Status:** Production-ready MVP
 **Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
