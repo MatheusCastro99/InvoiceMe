@@ -170,3 +170,4 @@ const tableDataStyle = StyleSheet.create({
   });
 
 export {pageBox, headerBox, jobInfoBox, priceInfoBox, companyInfoBox, footerBox, tableDataStyle}
+const harnessV0Probe = 1;
