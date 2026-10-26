@@ -1,14 +1,14 @@
 {
   "source": "ProdHarnessConfig",
-  "commit": "aa1474f42248b9f2c42db9a74f9bb81c5e8c0868",
+  "commit": "2d8e9fcc8092ebe5621f655c20f5b7ae7e78dc90",
   "sourceDirty": false,
   "project": "InvoiceMe",
-  "installedAt": "2026-10-26T14:46:27.584Z",
+  "installedAt": "2026-10-26T16:54:27.159Z",
   "files": {
     ".claude/agents/builder.md": "e4c5c2123e6b694c9feafdecf395aa636345a7377638a7a9edc21003fe7c79d0",
     ".claude/agents/red-team.md": "2d4a5e25b86b16962ca9448af0929afe5edbddbb2cc02e390d0ef7fd3be9b0f0",
     ".claude/agents/surveyor.md": "8a58e71ee7be2560394a8b53b1a6fbe11ddbec5eac2bc88e34f6b600915c8a72",
-    ".claude/harness.json": "28b382265e8958da9a536f61ae2040b8db88a46f159968cf50a20185d94ee5b8",
+    ".claude/harness.json": "bbdcc1ab2a4187408c856604ddf1ea3fda943e4b941d1014ab87bdba004199d6",
     ".claude/hooks/check-gate.cjs": "8a010e52ea507df93a184b3f0098fba425d421d6e03d21ff56c9a3467936a524",
     ".claude/hooks/docs-gate.cjs": "dda4dfa0b683483498e594ff22eb503d7ba6719e14dc01ed54623fc1017a63d3",
     ".claude/hooks/file-check.cjs": "8a7acc009d57aefb4bfe325e8cbf58a7c13e5e05a6a6ad63ac21f50b607c63c1",
