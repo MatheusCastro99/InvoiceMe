@@ -56,7 +56,7 @@ Confirm each check with evidence from the code (`file:line`), not from memory.
 - New screens and components use MUI components, and add no `flowbite-react` import.
 
 ### Tests (ADR-010)
-- Pending until `NODEAPI` has a test runner. A change that adds the runner, or claims to close ADR-010, comes with tests for each endpoint's success and error answers, importing `NODEAPI/app.js`.
+- A new or changed endpoint comes with tests in `NODEAPI/tests/` for its success and error answers, importing `NODEAPI/app.js`.
 
 ### Simplicity
 - The following are **not** defects: a global state store, a data-fetching library, TypeScript, and a service or repository layer between controllers and models. Recommend one only when a concrete, present problem needs it, and name that problem.
@@ -83,7 +83,7 @@ Sections 5 and 6 apply when this skill is used inline. The red-team agent uses i
 | **Critical** | Wrong or lost data, a crash, exposed secrets, or a broken standing rule | A connection string committed (ADR-007); a customer update that rewrites saved invoices (ADR-008); a final price computed in the frontend instead of by the server (ADR-004) | Fix before merge |
 | **Major** | A real reliability or maintainability risk | An API URL written in a page (ADR-002); a new client check that disagrees with `validators.js` (ADR-003); a controller that answers an error itself (ADR-001) | Fix before the next issue |
 | **Minor** | Friction, clarity, naming | A handler named outside the pattern (ADR-006); a leftover `console.log` | Mention; fix if cheap |
-| **Accepted trade-off** | Intentional, per the documents | The existing code that a pending rule (ADR-003, ADR-005, ADR-007, ADR-009, ADR-010, ADR-011) has not brought in line yet; the project runs locally only | Don't raise it again |
+| **Accepted trade-off** | Intentional, per the documents | The existing code that a pending rule (ADR-003, ADR-005, ADR-007, ADR-009, ADR-011) has not brought in line yet; the project runs locally only | Don't raise it again |
 
 ## 6. Output
 
