@@ -1,6 +1,5 @@
 /**
  * Characterization tests: /api/v1/customers (list, get, create, update, delete).
- * Known bugs (#70) are pinned as test.failing that asserts the correct behavior.
  */
 
 const mongoose = require("mongoose");

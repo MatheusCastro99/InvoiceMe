@@ -168,7 +168,7 @@ All endpoints return JSON responses with the following structure:
 
 **Error Response (409 - Duplicate):**
 
-The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"5551234567"` are the same number. The database also refuses a duplicate (`unique` index); a duplicate that reaches it answers 409 `A record with this value already exists`.
+The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"5551234567"` are the same number. Customers stored before v1.23 keep the number as it was typed, and are matched only once their numbers are normalized (#141). The database also refuses a duplicate (`unique` index); a duplicate that reaches it answers 409 `A record with this value already exists`.
 
 ```json
 {
