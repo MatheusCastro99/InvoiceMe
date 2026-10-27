@@ -25,6 +25,8 @@ describe("CORS", () => {
   });
 
   it("a disallowed origin answers 403 and the body does not echo the origin", async () => {
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+
     const res = await request(app)
       .get("/health")
       .set("Origin", "http://not-allowed.example");
@@ -36,5 +38,7 @@ describe("CORS", () => {
       statusCode: 403,
     });
     expect(JSON.stringify(res.body)).not.toContain("not-allowed.example");
+    expect(warn).toHaveBeenCalledWith("CORS: origin not allowed:", "\"http://not-allowed.example\"");
+    warn.mockRestore();
   });
 });

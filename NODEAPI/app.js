@@ -36,6 +36,8 @@ const corsOptions = {
       return callback(null, true);
     }
 
+    // Name the refused origin in the server log only, never in the response
+    console.warn("CORS: origin not allowed:", JSON.stringify(origin));
     return callback(new ForbiddenError(MESSAGES.ORIGIN_NOT_ALLOWED), false);
   },
   credentials: true,
