@@ -195,6 +195,7 @@ InvoiceMe/
 │   │   ├── components/ # UI blocks and reusable views
 │   │   ├── pages/      # Page-level screens
 │   │   ├── config/     # API configuration
+│   │   ├── utils/      # Phone number check and display format
 │   │   └── App.jsx
 │   ├── package.json
 │   ├── vite.config.js

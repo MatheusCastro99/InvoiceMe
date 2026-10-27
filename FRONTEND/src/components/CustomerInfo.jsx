@@ -1,5 +1,6 @@
 import { Chip } from '@mui/material';
 import CollapsibleImport from 'react-collapsible';
+import { formatPhoneNumber } from "../utils/phone";
 const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 
 const CustomerInfo = ({customer}) => {
@@ -26,7 +27,7 @@ const CustomerInfo = ({customer}) => {
                 <input
                     readOnly={true}
                     type="text"
-                    value={customer.phoneNumber || ''}
+                    value={formatPhoneNumber(customer.phoneNumber) || ''}
                     className="text-lg mb-2 block text-center"
                 />
                 </div>
