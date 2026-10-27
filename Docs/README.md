@@ -2,7 +2,7 @@
 
 A comprehensive, production-ready CRUD application for managing customers and generating invoices for a small businesses.
 
-**Version:** 1.21
+**Version:** 1.22
 **Status:** Production-ready MVP
 **Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
@@ -120,7 +120,7 @@ curl -X POST http://localhost:3000/api/v1/customers \
 
 ## Version History
 
-### v1.21 (current)
+### v1.22 (current)
 
 The full history is in [`NODEAPI/VersionLog.md`](../NODEAPI/VersionLog.md).
 

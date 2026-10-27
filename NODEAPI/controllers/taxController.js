@@ -21,6 +21,10 @@ const defineTaxRate = asyncHandler((req, res) => {
     throw new ValidationError("State parameter is required");
   }
 
+  if (typeof state !== "string") {
+    throw new ValidationError(`Invalid state code: ${state}`);
+  }
+
   const stateCode = state.toUpperCase();
   const taxRate = STATE_TAX_RATES[stateCode];
 

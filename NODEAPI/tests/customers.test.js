@@ -1,6 +1,6 @@
 /**
  * Characterization tests: /api/v1/customers (list, get, create, update, delete).
- * Known bugs (#69, #70) are pinned as test.failing that asserts the correct behavior.
+ * Known bugs (#70) are pinned as test.failing that asserts the correct behavior.
  */
 
 const mongoose = require("mongoose");
@@ -121,10 +121,11 @@ describe("GET /api/v1/customers/:id", () => {
     });
   });
 
-  test.failing("#69: a malformed id answers 400", async () => {
+  it("a malformed id answers 400", async () => {
     const res = await request(app).get("/api/v1/customers/not-an-id");
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);
   });
 });
 
@@ -207,28 +208,31 @@ describe("POST /api/v1/customers", () => {
     });
   });
 
-  test.failing("#69: a companyEmail over 150 characters answers 400", async () => {
+  it("a companyEmail over 150 characters answers 400", async () => {
     const res = await request(app)
       .post("/api/v1/customers")
       .send(validCustomer({ companyEmail: `${"a".repeat(145)}@x.com` }));
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe("Invalid email format");
   });
 
-  test.failing("#69: a numeric companyName answers 400", async () => {
+  it("a numeric companyName answers 400", async () => {
     const res = await request(app)
       .post("/api/v1/customers")
       .send(validCustomer({ companyName: 123 }));
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe("Invalid company name format");
   });
 
-  test.failing("#69: a numeric phoneNumber answers 400", async () => {
+  it("a numeric phoneNumber answers 400", async () => {
     const res = await request(app)
       .post("/api/v1/customers")
       .send(validCustomer({ phoneNumber: 5551234567 }));
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe("Invalid phone number format");
   });
 });
 
@@ -305,12 +309,13 @@ describe("PUT /api/v1/customers/:id", () => {
     expect(res.status).toBe(409);
   });
 
-  test.failing("#69: a malformed id answers 400", async () => {
+  it("a malformed id answers 400", async () => {
     const res = await request(app)
       .put("/api/v1/customers/not-an-id")
       .send(validCustomer());
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);
   });
 });
 
@@ -338,9 +343,10 @@ describe("DELETE /api/v1/customers/:id", () => {
     expect(res.body.message).toBe(RESPONSE_MESSAGES.CUSTOMER_NOT_FOUND);
   });
 
-  test.failing("#69: a malformed id answers 400", async () => {
+  it("a malformed id answers 400", async () => {
     const res = await request(app).delete("/api/v1/customers/not-an-id");
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);
   });
 });

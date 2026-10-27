@@ -13,15 +13,13 @@ const VALIDATION_PATTERNS = {
 };
 
 const validatePhoneNumber = (phone) => {
-  if (!phone) return false;
+  if (!phone || typeof phone !== "string") return false;
   return VALIDATION_PATTERNS.phoneNumber.test(phone.replace(/\s/g, ""));
 };
 
 const validateEmail = (email) => {
   if (!email) return true; // Email is optional
-  if (email.length > 150) {
-    throw new Error("Input too long");
-}
+  if (typeof email !== "string" || email.length > 150) return false;
   return VALIDATION_PATTERNS.email.test(email);
 };
 
@@ -31,7 +29,7 @@ const validateZipCode = (zip) => {
 };
 
 const validateCompanyName = (name) => {
-  if (!name || name.trim().length === 0) return false;
+  if (!name || typeof name !== "string" || name.trim().length === 0) return false;
   if (name.length > 100) return false;
   return VALIDATION_PATTERNS.companyName.test(name);
 };
@@ -39,6 +37,15 @@ const validateCompanyName = (name) => {
 const validateState = (state) => {
   if (!state) return true; // State is optional
   return VALIDATION_PATTERNS.state.test(state);
+};
+
+// A finite number >= 0, or a non-blank string that Number() turns into one
+const isValidPrice = (price) => {
+  if (typeof price === "string") {
+    if (price.trim() === "") return false;
+    price = Number(price);
+  }
+  return typeof price === "number" && Number.isFinite(price) && price >= 0;
 };
 
 const validateCustomerData = (data) => {
@@ -93,10 +100,7 @@ const validateInvoiceData = (data) => {
 
   if (data.finalPrice === undefined || data.finalPrice === null) {
     errors.push("Final price is required");
-  } else if (
-    isNaN(parseFloat(data.finalPrice)) ||
-    parseFloat(data.finalPrice) < 0
-  ) {
+  } else if (!isValidPrice(data.finalPrice)) {
     errors.push("Final price must be a valid positive number");
   }
 

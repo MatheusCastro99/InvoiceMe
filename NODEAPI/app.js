@@ -13,6 +13,8 @@ const customerRoute = require("./routes/customerRoute");
 const taxRoute = require("./routes/taxRoute");
 const invoiceRoute = require("./routes/invoiceRoute");
 const errorMiddleware = require("./middlewares/errorMiddleware");
+const { ForbiddenError } = require("./utils/errors");
+const { RESPONSE_MESSAGES: MESSAGES } = require("./utils/constants");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
@@ -34,7 +36,9 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    return callback(new Error(`CORS policy block: origin '${origin}' not allowed`), false);
+    // Name the refused origin in the server log only, never in the response
+    console.warn("CORS: origin not allowed:", JSON.stringify(origin));
+    return callback(new ForbiddenError(MESSAGES.ORIGIN_NOT_ALLOWED), false);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
