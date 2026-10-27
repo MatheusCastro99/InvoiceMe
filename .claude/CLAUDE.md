@@ -46,7 +46,7 @@ Working state lives in `.harness/work/<n>/` (gitignored). The approved plan and 
 
 When the forked build's reply has a `MAIN SESSION:` line, do what it says before you reply: the fork can't reach the app's tools.
 
-Project skills: `guardrails-review` checks a change against the ADRs (the red-team preloads it); `ux-design` reviews interface and copy changes.
+Project skills: `guardrails-review` checks a change against the ADRs (the red-team preloads it); `ux-design` reviews interface and copy changes. `frontend-design` guides visual design on UI sub-phases, with `UI_Guidelines.md` as its brief; it is vendored from Anthropic and pinned by the harness installer, so don't edit it here (trial T7).
 
 ## Standing rules
 
