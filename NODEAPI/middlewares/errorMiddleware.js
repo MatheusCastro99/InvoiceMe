@@ -11,7 +11,8 @@ const { AppError } = require("../utils/errors");
 const { RESPONSE_MESSAGES } = require("../utils/constants");
 
 const errorMiddleware = (err, req, res, next) => {
-  let statusCode = err.statusCode || 500;
+  // Library errors may set only `status` (e.g. Express's URI decode failure)
+  let statusCode = err.statusCode || err.status || 500;
   let message = err.message;
   let errors;
 

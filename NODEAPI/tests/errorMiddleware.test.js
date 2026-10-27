@@ -110,4 +110,14 @@ describe("errorMiddleware", () => {
     expect(status).toBe(400);
     expect(body.message).toBe("Unexpected token } in JSON");
   });
+
+  it("keeps a library 4xx that sets only status, such as a URI decode failure", () => {
+    const err = Object.assign(new URIError("Failed to decode param '%E0%A4%A'"), { status: 400 });
+
+    const { status, body } = run(err);
+
+    expect(status).toBe(400);
+    expect(body.statusCode).toBe(400);
+    expect(body.message).toBe("Failed to decode param '%E0%A4%A'");
+  });
 });
