@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import API_ENDPOINTS from "../config/apiConfig";
+import { formatPhoneNumber } from "../utils/phone";
 
 const CustomerProfile = ({ customer }) => {
     const navigate = useNavigate()
@@ -57,7 +58,7 @@ const CustomerProfile = ({ customer }) => {
                             <input
                                 readOnly={true}
                                 type="text"
-                                value={customer.phoneNumber || ''}
+                                value={formatPhoneNumber(customer.phoneNumber) || ''}
                                 className="text-lg mb-2 block text-center"
                             />
                         </div>

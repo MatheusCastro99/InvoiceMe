@@ -1,6 +1,7 @@
 import { Page, Text, View, Document, Image, Line, Svg } from '@react-pdf/renderer';
 import {pageBox, headerBox, jobInfoBox, priceInfoBox, companyInfoBox, footerBox} from "../pdfStyle";
 import Logo from "../assets/InvoiceMeLogo.PNG"
+import { formatPhoneNumber } from "../utils/phone";
 
 const MyDocument = (info) => {
     const customerInfo = info.customerInfo;
@@ -55,7 +56,7 @@ const MyDocument = (info) => {
                         <Text style={companyInfoBox.spacingCityState}>{customerInfo?.cityAddress||cityAddress}</Text>
                         <Text style={companyInfoBox.spacingCityState}>{customerInfo?.stateAddress||stateAddress} - {customerInfo?.zipAddress||zipAddress}</Text>
                     </View>
-                    <Text style={companyInfoBox.text}>Phone: {customerInfo?.phoneNumber||phoneNumber}</Text>
+                    <Text style={companyInfoBox.text}>Phone: {formatPhoneNumber(customerInfo?.phoneNumber||phoneNumber)}</Text>
                     <Text style={companyInfoBox.text}>Email: {customerInfo?.companyEmail||companyEmail}</Text>
                 </View>
             </View>

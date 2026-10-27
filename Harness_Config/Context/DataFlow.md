@@ -15,7 +15,7 @@ flowchart TD
     C -- "no answer" --> C1["CreatePage.jsx<br/>toast with the axios error message;<br/>the form keeps what was entered"]
     D --> E{"validateCustomerInput<br/>utils/validators.js"}
     E -- "no" --> E1["errorMiddleware<br/>400 with the list of errors"]
-    E -- "yes" --> F{"postCustomer<br/>is the phone number already used?"}
+    E -- "yes" --> F{"postCustomer<br/>is the phone number, as its 10 digits,<br/>already used?"}
     F -- "yes" --> F1["errorMiddleware<br/>409, duplicate customer"]
     F -- "no" --> G[("CustomerModel.create<br/>MongoDB")]
     G -- "fails" --> G1["errorMiddleware<br/>400 (invalid value), 409 (duplicate key)<br/>or 500 with a generic message"]

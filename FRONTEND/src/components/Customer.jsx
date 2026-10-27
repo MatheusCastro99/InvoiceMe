@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import API_ENDPOINTS from "../config/apiConfig";
+import { formatPhoneNumber } from "../utils/phone";
 
 const Customer = ({ customer, getCustomers }) => {
   const deleteCustomer = async (id) => {
@@ -32,7 +33,7 @@ const Customer = ({ customer, getCustomers }) => {
       <Link to={`/profilePage/${customer._id}`}><img src={customer.image} className="w-full h-28 object-contain" /></Link>
       <div className="px-4 pt-2 pb-4">
         <h2 className="text font-semibold">{customer.companyName}</h2>
-        <div className="text-sm">Phone Number: {customer.phoneNumber}</div>
+        <div className="text-sm">Phone Number: {formatPhoneNumber(customer.phoneNumber)}</div>
         <div className="text-sm">Contact Name: {customer.contactName}</div>
         <div className="text-xs">Email: {customer.companyEmail}</div>
 

@@ -7,6 +7,7 @@ import { Divider } from "@mui/material";
 import CollapsibleImport from 'react-collapsible';
 const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import API_ENDPOINTS from "../config/apiConfig";
+import { PHONE_EXAMPLES, isValidPhoneNumber, formatPhoneNumber } from "../utils/phone";
 
 const CreatePage = () => {
 
@@ -83,7 +84,6 @@ const CreatePage = () => {
     }
 
     const validateNumber = (tempNumber) => {
-        const valNumber = '^(\\d{10}|\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4})$'  //^(\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|\d{9})$
         var phoneTemp = document.getElementById(`phoneField`)
 
         if (tempNumber=="") {
@@ -98,14 +98,13 @@ const CreatePage = () => {
             setPhoneValidity(false)
         }
 
-        else if (!tempNumber.match(valNumber)) {
+        else if (!isValidPhoneNumber(tempNumber)) {
             toast.error(
                 <div>
-                    <p>Please input phone number in one of the following format:</p> <br/>
-                    <p>XXX XXX XXXX</p> <br/>
-                    <p>(XXX) XXX-XXXX</p> <br/>
-                    <p>XXX-XXX-XXXX</p>
-                    <p>XXXXXXXXXX</p>
+                    <p>Enter a 10-digit phone number, for example:</p>
+                    {PHONE_EXAMPLES.map((example) => (
+                        <p key={example}>{example}</p>
+                    ))}
                 </div>
             )
 
@@ -118,21 +117,7 @@ const CreatePage = () => {
             phoneTemp.classList.remove('border-2', 'border-red-500')
             phoneTemp.classList.add('border-green-500')
 
-            let chars = [...tempNumber]
-            console.log(chars.length)
-            if (chars.length==12) {
-                chars.splice(0, 0, "(");
-                chars.splice(4, 1, ") ");
-                chars.splice(8, 1, "-");
-                setPhoneNumber(chars.join(''));
-            }
-            else if(chars.length==10){
-                chars.splice(0, 0, "(")
-                chars.splice(4, 0, ") ")
-                chars.splice(8, 0, "-")
-                setPhoneNumber(chars.join(''));
-            }
-            
+            setPhoneNumber(formatPhoneNumber(tempNumber.replace(/\D/g, '')))
             setPhoneValidity(true)
         }
     }

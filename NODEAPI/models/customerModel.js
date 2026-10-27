@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { normalizePhoneNumber } = require("../utils/validators");
 
 const customerSchema = mongoose.Schema(
   {
@@ -10,6 +11,8 @@ const customerSchema = mongoose.Schema(
     phoneNumber: {
       type: String,
       required: [true, "please enter the phone number"],
+      set: normalizePhoneNumber,
+      unique: true,
     },
 
     companyEmail: {

@@ -16,7 +16,8 @@ InvoiceMe/
 │       ├── assets/
 │       ├── components/
 │       ├── config/
-│       └── pages/
+│       ├── pages/
+│       └── utils/
 └── NODEAPI/
     ├── controllers/
     ├── middlewares/
@@ -41,6 +42,7 @@ React single-page app built with Vite (ES modules), styled with Tailwind.
 - src/main.jsx: mounts the app inside `BrowserRouter`
 - src/App.jsx: the routes, the navigation bar and the toast container
 - src/config/apiConfig.js: every API endpoint URL, as `API_ENDPOINTS`, built from `VITE_API_BASE_URL`
+- src/utils/phone.js: the phone check (the server's pattern, ADR-003) and the `(555) 123-4567` display format
 - src/pdfStyle.jsx: styles for the PDF invoice
 - eslint.config.js: ESLint flat config
 
@@ -60,7 +62,7 @@ One file per route.
 
 ### NODEAPI/
 Express API (CommonJS) over MongoDB with Mongoose.
-- server.js: loads `.env`, connects to MongoDB, then listens (port 3000 by default)
+- server.js: loads `.env`, connects to MongoDB, builds the customer indexes (it exits if it cannot), then listens (port 3000 by default)
 - app.js: builds the Express app, CORS, routes, the 404 handler and the error handler; it has no side effects, so it loads without a database
 - .env.example: the environment variables to copy into `.env`
 - tests/: the Jest + Supertest suite (`npm test`), run against an in-memory MongoDB; its setup is in `tests/setup/`

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import API_ENDPOINTS from "../config/apiConfig";
+import { PHONE_EXAMPLES, isValidPhoneNumber, formatPhoneNumber } from "../utils/phone";
 
 const EditPage = () => {
   let { id } = useParams();
@@ -31,7 +32,7 @@ const EditPage = () => {
       const payload = response?.data?.data ?? response?.data ?? {};
       setCustomer({
         companyName: payload.companyName || "",
-        phoneNumber: payload.phoneNumber || "",
+        phoneNumber: formatPhoneNumber(payload.phoneNumber) || "",
         contactName: payload.contactName || "",
         companyEmail: payload.companyEmail || "",
         image: payload.image || "",
@@ -94,7 +95,6 @@ const EditPage = () => {
 }
 
   const validateNumber = (tempNumber) => {
-    const valNumber = '^(\\d{10}|\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4})$$'
     var phoneTempField = document.getElementById(`phoneField`)
 
     if (tempNumber=="") {
@@ -109,13 +109,13 @@ const EditPage = () => {
       setPhoneValidity(false)
     }
 
-    else if (!tempNumber.match(valNumber)) {
+    else if (!isValidPhoneNumber(tempNumber)) {
         toast.error(
             <div>
-                <p>Please input phone number in one of the following format:</p> <br/>
-                <p>XXX XXX XXXX</p> <br/>
-                <p>(XXX) XXX-XXXX</p> <br/>
-                <p>XXX-XXX-XXXX</p>
+                <p>Enter a 10-digit phone number, for example:</p>
+                {PHONE_EXAMPLES.map((example) => (
+                    <p key={example}>{example}</p>
+                ))}
             </div>
         )
 
@@ -128,20 +128,7 @@ const EditPage = () => {
         phoneTempField.classList.remove('border-2', 'border-red-500')
         phoneTempField.classList.add('border-green-500')
 
-        let chars = [...tempNumber]
-        if (chars.length==12) {
-          chars.splice(0, 0, "(");
-          chars.splice(4, 1, ") ");
-          chars.splice(8, 1, "-");
-          setCustomer((prev) => ({ ...prev, phoneNumber: chars.join('') }));
-      }
-      else if(chars.length==10){
-          chars.splice(0, 0, "(")
-          chars.splice(4, 0, ") ")
-          chars.splice(8, 0, "-")
-          setCustomer((prev) => ({ ...prev, phoneNumber: chars.join('') }));
-      }
-
+        setCustomer((prev) => ({ ...prev, phoneNumber: formatPhoneNumber(tempNumber.replace(/\D/g, '')) }));
         setPhoneValidity(true)
     }
   }

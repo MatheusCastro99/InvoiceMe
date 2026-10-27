@@ -40,7 +40,6 @@ Status: Accepted, current
 The server's validators in `NODEAPI/utils/validators.js` are the source of truth for what a valid customer or invoice is.
 
 Reason:
-- The client and the server validate today with rules of their own, and they disagree: the client requires email and ZIP, which the server accepts empty; the client allows company-name characters and lengths the server rejects, does not check the state's format, and requires separators in phone numbers that the server treats as optional.
 - Only the server's check protects what is stored.
 
 Rules:

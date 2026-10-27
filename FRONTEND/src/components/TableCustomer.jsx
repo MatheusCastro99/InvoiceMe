@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import axios from "axios";
 import API_ENDPOINTS from "../config/apiConfig";
+import { formatPhoneNumber } from "../utils/phone";
 
 const TableCustomer = ({ customers, getCustomers }) => {
   const deleteCustomer = async (id) => {
@@ -41,7 +42,7 @@ const TableCustomer = ({ customers, getCustomers }) => {
             return (
               <tr key={index}>
                 <td className="p-4 border-b ">{customer.companyName}</td>
-                <td className="p-4 border-b ">{customer.phoneNumber}</td>
+                <td className="p-4 border-b ">{formatPhoneNumber(customer.phoneNumber)}</td>
                 <td className="p-4 border-b ">{customer.contactName}</td>
                 <td className="p-4 border-b ">
                     <img src={customer.image} className="w-full"/>
