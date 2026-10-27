@@ -44,8 +44,8 @@ All endpoints return JSON responses with the following structure:
 
 **Query Parameters:**
 
-- `page` (optional): Page number, default: 1
-- `limit` (optional): Items per page, default: 20
+- `page` (optional): Page number, default: 1. A value that is not a whole number of 1 or more falls back to 1
+- `limit` (optional): Items per page, default: 20, maximum: 100. A value that is not a whole number of 1 or more falls back to 20; a value above 100 is capped at 100. The answer's `pagination.limit` is the value used
 
 **Response:**
 
@@ -56,7 +56,7 @@ All endpoints return JSON responses with the following structure:
     {
       "_id": "507f1f77bcf86cd799439011",
       "companyName": "Acme Corp",
-      "phoneNumber": "(555) 123-4567",
+      "phoneNumber": "5551234567",
       "companyEmail": "info@acme.com",
       "contactName": "John Doe",
       "streetAddress": "123 Main St",
@@ -95,7 +95,7 @@ All endpoints return JSON responses with the following structure:
   "data": {
     "_id": "507f1f77bcf86cd799439011",
     "companyName": "Acme Corp",
-    "phoneNumber": "(555) 123-4567",
+    "phoneNumber": "5551234567",
     ...
   }
 }
@@ -136,7 +136,7 @@ All endpoints return JSON responses with the following structure:
 **Validation Rules:**
 
 - `companyName` (required): String, max 100 chars, no special chars except &.,()-
-- `phoneNumber` (required): String, valid US phone format (10 digits or formatted)
+- `phoneNumber` (required): String, valid US phone format (10 digits or formatted). It is stored and answered as its 10 digits (`"(555) 123-4567"` becomes `"5551234567"`)
 - `companyEmail` (optional): Valid email format, max 150 chars
 - `stateAddress` (optional): 2-letter state abbreviation
 - `zipAddress` (optional): Valid 5 or 9-digit zip code
@@ -168,6 +168,8 @@ All endpoints return JSON responses with the following structure:
 
 **Error Response (409 - Duplicate):**
 
+The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"5551234567"` are the same number. The database also refuses a duplicate (`unique` index); a duplicate that reaches it answers 409 `A record with this value already exists`.
+
 ```json
 {
   "success": false,
@@ -195,6 +197,8 @@ All endpoints return JSON responses with the following structure:
   "contactName": "Jane Smith"
 }
 ```
+
+`phoneNumber` follows the same rules as on create: it is stored as its 10 digits, and a number that another customer already has, in any format, answers 409.
 
 **Response (200):**
 
@@ -443,7 +447,7 @@ All endpoints return JSON responses with the following structure:
 | Invalid email format                             | Email is malformed                          | Use standard email format: user@domain.com |
 | Invalid zip code format                          | Zip code is malformed                       | Use format: 12345 or 12345-6789            |
 | Invalid state abbreviation                       | State code is not 2 letters                 | Use 2-letter state code (e.g., CA, NY)     |
-| A customer with this phone number already exists | Phone number is duplicate                   | Use a different phone number               |
+| A customer with this phone number already exists | Phone number is duplicate, in any format    | Use a different phone number               |
 | Customer not found                               | ID doesn't exist                            | Verify the customer ID                     |
 | Invoice not found                                | Invoice ID doesn't exist                    | Verify the invoice ID                      |
 | Invalid id format                                | The id in the URL is not a valid id         | Use the id the API returned                |

@@ -148,3 +148,13 @@ Currently, 5 states are available for auto tax calculation. They are:
 - A duplicate-key error answers 409. Any other unexpected error answers 500 with a generic message; the real message is only logged.
 - The validators and the tax controller reject wrong-typed values (a number for a phone number, company name or state) instead of failing; an email over 150 characters is an invalid email, and a final price must be fully numeric.
 - Added a ForbiddenError (403) class.
+
+
+## v1.23
+
+### Customer integrity:
+
+- A customer's phone number is stored as its 10 digits (`"(555) 123-4567"` is saved as `"5551234567"`), and the unique index on `phoneNumber` makes the database refuse a duplicate. A phone number that matches another customer in any accepted format answers 409 on create and update.
+- The server builds the customer index before it starts listening, and exits with a clear error if it cannot.
+- A duplicate that reaches the database through a race answers 409 `A record with this value already exists`.
+- Customers already stored are not rewritten; a number stored in another format is not matched until the stored numbers are normalized.

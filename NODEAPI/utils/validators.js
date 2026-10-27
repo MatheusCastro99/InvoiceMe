@@ -17,6 +17,12 @@ const validatePhoneNumber = (phone) => {
   return VALIDATION_PATTERNS.phoneNumber.test(phone.replace(/\s/g, ""));
 };
 
+// A phone number is stored as its digits only; any other value is returned as it came
+const normalizePhoneNumber = (value) => {
+  if (typeof value !== "string") return value;
+  return value.replace(/\D/g, "");
+};
+
 const validateEmail = (email) => {
   if (!email) return true; // Email is optional
   if (typeof email !== "string" || email.length > 150) return false;
@@ -112,6 +118,7 @@ const validateInvoiceData = (data) => {
 
 module.exports = {
   validatePhoneNumber,
+  normalizePhoneNumber,
   validateEmail,
   validateZipCode,
   validateCompanyName,

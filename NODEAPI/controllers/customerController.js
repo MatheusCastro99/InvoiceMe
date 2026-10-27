@@ -13,6 +13,7 @@ const {
   RESPONSE_MESSAGES,
 } = require("../utils/errors");
 const { RESPONSE_MESSAGES: MESSAGES } = require("../utils/constants");
+const { normalizePhoneNumber } = require("../utils/validators");
 
 /**
  * Get all customers with pagination
@@ -69,6 +70,9 @@ const getCustomerByID = asyncHandler(async (req, res) => {
  * @body {string} phoneNumber - Required
  */
 const postCustomer = asyncHandler(async (req, res) => {
+  // Phone numbers are stored as digits, so a duplicate is found in any accepted format
+  req.body.phoneNumber = normalizePhoneNumber(req.body.phoneNumber);
+
   // Check for duplicate phone number
   const existingCustomer = await CustomerModel.findOne({
     phoneNumber: req.body.phoneNumber,
@@ -98,6 +102,8 @@ const updateCustomer = asyncHandler(async (req, res) => {
   if (!customer) {
     throw new NotFoundError(MESSAGES.CUSTOMER_NOT_FOUND);
   }
+
+  req.body.phoneNumber = normalizePhoneNumber(req.body.phoneNumber);
 
   // Check for duplicate phone number if changed
   if (req.body.phoneNumber && req.body.phoneNumber !== customer.phoneNumber) {

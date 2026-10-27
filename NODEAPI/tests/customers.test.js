@@ -23,6 +23,9 @@ const validCustomer = (overrides = {}) => ({
 
 const unusedId = () => new mongoose.Types.ObjectId().toString();
 
+// The unique phoneNumber index is built by server.js in production; build it once for this file
+beforeAll(() => CustomerModel.init());
+
 describe("GET /api/v1/customers", () => {
   describe("with 25 customers", () => {
     beforeEach(async () => {
@@ -199,13 +202,55 @@ describe("POST /api/v1/customers", () => {
       });
     });
 
-    test.failing("#70: a duplicate phone number in another format answers 409", async () => {
+    it.each(["(555) 123-4567", "555-123-4567", "555.123.4567", "(555)1234567"])(
+      "answers 409 for a duplicate phone number written as %s",
+      async (phoneNumber) => {
+        const res = await request(app)
+          .post("/api/v1/customers")
+          .send(validCustomer({ companyName: "Another Co", phoneNumber }));
+
+        expect(res.status).toBe(409);
+        expect(res.body.message).toBe(RESPONSE_MESSAGES.DUPLICATE_CUSTOMER);
+        expect(await CustomerModel.countDocuments()).toBe(1);
+      }
+    );
+
+    it("the database refuses a duplicate phone number even without the controller's check", async () => {
+      await expect(
+        CustomerModel.create(validCustomer({ companyName: "Another Co" }))
+      ).rejects.toMatchObject({ code: 11000 });
+    });
+
+    it("answers 409 DUPLICATE_RECORD when the duplicate gets past the controller's check", async () => {
+      const findOne = jest.spyOn(CustomerModel, "findOne").mockResolvedValueOnce(null);
+
       const res = await request(app)
         .post("/api/v1/customers")
-        .send(validCustomer({ companyName: "Another Co", phoneNumber: "(555) 123-4567" }));
+        .send(validCustomer({ companyName: "Another Co" }));
 
+      findOne.mockRestore();
       expect(res.status).toBe(409);
+      expect(res.body.message).toBe(RESPONSE_MESSAGES.DUPLICATE_RECORD);
+      expect(await CustomerModel.countDocuments()).toBe(1);
     });
+  });
+
+  it.each([
+    ["(555) 123-4567", "with parentheses and a space"],
+    ["555-123-4567", "with dashes"],
+    ["555.123.4567", "with dots"],
+    ["(555)1234567", "with a parenthesis and no separator"],
+    ["555 123 4567", "with spaces"],
+  ])("stores and answers %s as its 10 digits (%s)", async (phoneNumber) => {
+    const res = await request(app)
+      .post("/api/v1/customers")
+      .send(validCustomer({ phoneNumber }));
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.phoneNumber).toBe("5551234567");
+
+    const stored = await CustomerModel.findById(res.body.data._id);
+    expect(stored.phoneNumber).toBe("5551234567");
   });
 
   it("a companyEmail over 150 characters answers 400", async () => {
@@ -301,12 +346,37 @@ describe("PUT /api/v1/customers/:id", () => {
     expect(res.body.message).toBe(RESPONSE_MESSAGES.DUPLICATE_CUSTOMER);
   });
 
-  test.failing("#70: a phone number of another customer in another format answers 409", async () => {
+  it("answers 409 when the phone number of another customer is written in another format", async () => {
     const res = await request(app)
       .put(`/api/v1/customers/${other._id}`)
       .send(validCustomer({ companyName: "Other Co", phoneNumber: "(555) 123-4567" }));
 
     expect(res.status).toBe(409);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.DUPLICATE_CUSTOMER);
+
+    const stored = await CustomerModel.findById(other._id);
+    expect(stored.phoneNumber).toBe("5559876543");
+  });
+
+  it("stores a phone number sent in another format as its 10 digits", async () => {
+    const res = await request(app)
+      .put(`/api/v1/customers/${customer._id}`)
+      .send(validCustomer({ phoneNumber: "(555) 000-1111" }));
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.phoneNumber).toBe("5550001111");
+
+    const stored = await CustomerModel.findById(customer._id);
+    expect(stored.phoneNumber).toBe("5550001111");
+  });
+
+  it("accepts the customer's own phone number written in another format", async () => {
+    const res = await request(app)
+      .put(`/api/v1/customers/${customer._id}`)
+      .send(validCustomer({ companyName: "Acme Renamed", phoneNumber: "(555) 123-4567" }));
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.phoneNumber).toBe("5551234567");
   });
 
   it("a malformed id answers 400", async () => {

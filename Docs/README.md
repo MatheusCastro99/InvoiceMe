@@ -2,7 +2,7 @@
 
 A comprehensive, production-ready CRUD application for managing customers and generating invoices for a small businesses.
 
-**Version:** 1.22
+**Version:** 1.23
 **Status:** Production-ready MVP
 **Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
@@ -47,7 +47,7 @@ The project is currently in an active MVP / production-ready iteration for small
 - Create customer records with validation
 - Edit existing profiles
 - Delete records with confirmation flows
-- Prevent duplicate phone numbers on create/update
+- Prevent duplicate phone numbers on create/update, whatever the format they are typed in
 
 **Invoice Management**
 
@@ -120,7 +120,7 @@ curl -X POST http://localhost:3000/api/v1/customers \
 
 ## Version History
 
-### v1.22 (current)
+### v1.23 (current)
 
 The full history is in [`NODEAPI/VersionLog.md`](../NODEAPI/VersionLog.md).
 
@@ -184,7 +184,7 @@ InvoiceMe/
 │   ├── utils/          # Shared helpers and constants
 │   ├── tests/          # Jest + Supertest suite; setup in tests/setup/
 │   ├── app.js          # Express app: middleware, routes, error handling
-│   ├── server.js       # Bootstrap: env, MongoDB connection, listen
+│   ├── server.js       # Bootstrap: env, MongoDB connection, customer index, listen
 │   ├── jest.config.js
 │   ├── API_DOCUMENTATION.md # API reference
 │   ├── VersionLog.md   # API change log
