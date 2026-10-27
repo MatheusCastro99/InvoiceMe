@@ -4,6 +4,7 @@
 
 const request = require("supertest");
 const app = require("../app");
+const { RESPONSE_MESSAGES } = require("../utils/constants");
 
 describe("CORS", () => {
   it("allows the local frontend origin, with credentials", async () => {
@@ -23,11 +24,17 @@ describe("CORS", () => {
     expect(res.headers["access-control-allow-origin"]).toBeUndefined();
   });
 
-  test.failing("#69: a disallowed origin answers 403", async () => {
+  it("a disallowed origin answers 403 and the body does not echo the origin", async () => {
     const res = await request(app)
       .get("/health")
       .set("Origin", "http://not-allowed.example");
 
     expect(res.status).toBe(403);
+    expect(res.body).toMatchObject({
+      success: false,
+      message: RESPONSE_MESSAGES.ORIGIN_NOT_ALLOWED,
+      statusCode: 403,
+    });
+    expect(JSON.stringify(res.body)).not.toContain("not-allowed.example");
   });
 });

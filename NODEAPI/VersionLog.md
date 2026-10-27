@@ -139,3 +139,12 @@ Currently, 5 states are available for auto tax calculation. They are:
 ### PdfPage:
 
 - refactored the table styles components.
+
+## v1.22
+
+### API error handling:
+
+- Client mistakes no longer answer 500: a malformed id in the URL, a value of the wrong type and a disallowed CORS origin now answer 400 (or 403 for the origin), with no internal details in the message.
+- A duplicate-key error answers 409. Any other unexpected error answers 500 with a generic message; the real message is only logged.
+- The validators and the tax controller reject wrong-typed values (a number for a phone number, company name or state) instead of failing; an email over 150 characters is an invalid email, and a final price must be fully numeric.
+- Added a ForbiddenError (403) class.

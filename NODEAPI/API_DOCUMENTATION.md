@@ -428,6 +428,7 @@ All endpoints return JSON responses with the following structure:
 | 200  | OK - Request succeeded                                       |
 | 201  | Created - Resource created successfully                      |
 | 400  | Bad Request - Invalid input data                             |
+| 403  | Forbidden - Request origin is not allowed (CORS)             |
 | 404  | Not Found - Resource not found                               |
 | 409  | Conflict - Duplicate resource (e.g., duplicate phone number) |
 | 500  | Internal Server Error                                        |
