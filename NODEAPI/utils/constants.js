@@ -70,6 +70,8 @@ const RESPONSE_MESSAGES = {
   CUSTOMER_NOT_FOUND: "Customer not found",
   INVOICE_NOT_FOUND: "Invoice not found",
   INVALID_REQUEST: "Invalid request data",
+  INVALID_ID: "Invalid id format",
+  DUPLICATE_RECORD: "A record with this value already exists",
   SERVER_ERROR: "An error occurred while processing your request",
   DUPLICATE_CUSTOMER: "A customer with this phone number already exists",
 };

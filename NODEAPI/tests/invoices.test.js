@@ -118,7 +118,7 @@ describe("POST /api/v1/invoices", () => {
     });
   });
 
-  test.failing("#69: a finalPrice that is only partly numeric answers 400", async () => {
+  it("a finalPrice that is only partly numeric answers 400", async () => {
     const res = await request(app)
       .post("/api/v1/invoices")
       .send(validInvoice({ finalPrice: "12abc" }));
@@ -183,9 +183,10 @@ describe("DELETE /api/v1/invoices/:id", () => {
     });
   });
 
-  test.failing("#69: a malformed id answers 400", async () => {
+  it("a malformed id answers 400", async () => {
     const res = await request(app).delete("/api/v1/invoices/not-an-id");
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);
   });
 });

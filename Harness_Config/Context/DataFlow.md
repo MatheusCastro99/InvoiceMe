@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-20
 
-Every request to `/api/v1/` takes the same path: a page calls the API with axios, using a URL from `API_ENDPOINTS` (`FRONTEND/src/config/apiConfig.js`); an Express router under `/api/v1/` runs the validation middleware, where the route has one, then a controller wrapped in `express-async-handler`; the controller reads or writes through a Mongoose model, for customers and invoices, and answers with `{ success, data, message? }`. Any error a controller throws or passes on reaches `errorMiddleware`, which answers with `{ success: false, message, statusCode, errors? }`.
+Every request to `/api/v1/` takes the same path: a page calls the API with axios, using a URL from `API_ENDPOINTS` (`FRONTEND/src/config/apiConfig.js`); an Express router under `/api/v1/` runs the validation middleware, where the route has one, then a controller wrapped in `express-async-handler`; the controller reads or writes through a Mongoose model, for customers and invoices, and answers with `{ success, data, message? }`. Any error a controller throws or passes on reaches `errorMiddleware`, which answers with `{ success: false, message, statusCode, errors? }`. It turns a Mongoose cast or validation error into 400 and a duplicate-key error into 409; any other unexpected error answers 500 with a generic message, and the real message is only logged.
 
 ## Save a new customer
 
@@ -18,7 +18,7 @@ flowchart TD
     E -- "yes" --> F{"postCustomer<br/>is the phone number already used?"}
     F -- "yes" --> F1["errorMiddleware<br/>409, duplicate customer"]
     F -- "no" --> G[("CustomerModel.create<br/>MongoDB")]
-    G -- "fails" --> G1["errorMiddleware<br/>500"]
+    G -- "fails" --> G1["errorMiddleware<br/>400 (invalid value), 409 (duplicate key)<br/>or 500 with a generic message"]
     G -- "succeeds" --> H["postCustomer<br/>201 with the new customer"]
     E1 --> I["CreatePage.jsx<br/>toast with the axios error message"]
     F1 --> I
@@ -47,7 +47,7 @@ flowchart TD
     E -- "no" --> E1["errorMiddleware<br/>400 with the list of errors"]
     E -- "yes" --> F["postInvoice"]
     F --> G[("InvoiceModel.create<br/>MongoDB")]
-    G -- "fails" --> G1["errorMiddleware<br/>500"]
+    G -- "fails" --> G1["errorMiddleware<br/>400 (invalid value), 409 (duplicate key)<br/>or 500 with a generic message"]
     G -- "succeeds" --> H["postInvoice<br/>201 with the new invoice"]
     E1 --> I["PdfPage.jsx<br/>toast with the axios error message"]
     G1 --> I

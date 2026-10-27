@@ -445,6 +445,10 @@ All endpoints return JSON responses with the following structure:
 | A customer with this phone number already exists | Phone number is duplicate                   | Use a different phone number               |
 | Customer not found                               | ID doesn't exist                            | Verify the customer ID                     |
 | Invoice not found                                | Invoice ID doesn't exist                    | Verify the invoice ID                      |
+| Invalid id format                                | The id in the URL is not a valid id         | Use the id the API returned                |
+| Invalid request data                             | A value could not be stored as sent         | Check the field types and formats          |
+| A record with this value already exists          | A unique value is already stored            | Use a different value                      |
+| An error occurred while processing your request  | Unexpected server error (details are logged)| Retry; check the API log if it persists    |
 
 ---
 

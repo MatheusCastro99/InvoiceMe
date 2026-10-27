@@ -121,10 +121,11 @@ describe("GET /api/v1/customers/:id", () => {
     });
   });
 
-  test.failing("#69: a malformed id answers 400", async () => {
+  it("a malformed id answers 400", async () => {
     const res = await request(app).get("/api/v1/customers/not-an-id");
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);
   });
 });
 
@@ -305,12 +306,13 @@ describe("PUT /api/v1/customers/:id", () => {
     expect(res.status).toBe(409);
   });
 
-  test.failing("#69: a malformed id answers 400", async () => {
+  it("a malformed id answers 400", async () => {
     const res = await request(app)
       .put("/api/v1/customers/not-an-id")
       .send(validCustomer());
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);
   });
 });
 
@@ -338,9 +340,10 @@ describe("DELETE /api/v1/customers/:id", () => {
     expect(res.body.message).toBe(RESPONSE_MESSAGES.CUSTOMER_NOT_FOUND);
   });
 
-  test.failing("#69: a malformed id answers 400", async () => {
+  it("a malformed id answers 400", async () => {
     const res = await request(app).delete("/api/v1/customers/not-an-id");
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);
   });
 });
