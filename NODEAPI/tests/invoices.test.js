@@ -1,6 +1,6 @@
 /**
  * Characterization tests: /api/v1/invoices (list, create, delete).
- * Known bugs (#69, #70) are pinned as test.failing that asserts the correct behavior.
+ * Known bugs (#70) are pinned as test.failing that asserts the correct behavior.
  */
 
 const mongoose = require("mongoose");
@@ -84,6 +84,15 @@ describe("POST /api/v1/invoices", () => {
     expect(res.body.data.finalPrice).toBe(0);
   });
 
+  it("accepts a finalPrice sent as a numeric string", async () => {
+    const res = await request(app)
+      .post("/api/v1/invoices")
+      .send(validInvoice({ finalPrice: "858.50" }));
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.finalPrice).toBe(858.5);
+  });
+
   describe("validation", () => {
     it.each([
       ["a missing companyName", { companyName: undefined }, "Company name is required"],
@@ -124,14 +133,16 @@ describe("POST /api/v1/invoices", () => {
       .send(validInvoice({ finalPrice: "12abc" }));
 
     expect(res.status).toBe(400);
+    expect(res.body.errors).toContain("Final price must be a valid positive number");
   });
 
-  test.failing("#69: a numeric phoneNumber answers 400", async () => {
+  it("a numeric phoneNumber answers 400", async () => {
     const res = await request(app)
       .post("/api/v1/invoices")
       .send(validInvoice({ phoneNumber: 5551234567 }));
 
     expect(res.status).toBe(400);
+    expect(res.body.errors).toContain("Invalid phone number format");
   });
 
   test.failing("#70: a non-date dateOfService answers 400", async () => {

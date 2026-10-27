@@ -1,6 +1,5 @@
 /**
  * Characterization tests: /api/v1/tax (rate by state, tax calculation).
- * Known bugs (#69) are pinned as test.failing that asserts the correct behavior.
  */
 
 const request = require("supertest");
@@ -42,10 +41,11 @@ describe("POST /api/v1/tax/rate", () => {
     expect(res.body.message).toBe("Invalid state code: XX");
   });
 
-  test.failing("#69: a numeric state answers 400", async () => {
+  it("a numeric state answers 400", async () => {
     const res = await request(app).post("/api/v1/tax/rate").send({ state: 123 });
 
     expect(res.status).toBe(400);
+    expect(res.body.message).toBe("Invalid state code: 123");
   });
 });
 
