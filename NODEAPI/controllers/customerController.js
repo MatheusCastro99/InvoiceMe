@@ -12,18 +12,27 @@ const {
   ConflictError,
   RESPONSE_MESSAGES,
 } = require("../utils/errors");
-const { RESPONSE_MESSAGES: MESSAGES } = require("../utils/constants");
+const { RESPONSE_MESSAGES: MESSAGES, PAGINATION } = require("../utils/constants");
 const { normalizePhoneNumber } = require("../utils/validators");
+
+// A whole number of 1 or more, read from a query value; anything else gives the fallback
+const toPositiveInteger = (value, fallback) => {
+  const number = Number(value);
+  return Number.isSafeInteger(number) && number >= 1 ? number : fallback;
+};
 
 /**
  * Get all customers with pagination
  * @route GET /api/v1/customers
- * @param {number} page - Page number (default: 1)
- * @param {number} limit - Items per page (default: 20)
+ * @param {number} page - Page number (default: 1; a value that is not a whole number of 1 or more falls back to 1)
+ * @param {number} limit - Items per page (default: 20, max: 100; a value that is not a whole number of 1 or more falls back to 20)
  */
 const getCustomers = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
+  const page = toPositiveInteger(req.query.page, PAGINATION.DEFAULT_PAGE);
+  const limit = Math.min(
+    toPositiveInteger(req.query.limit, PAGINATION.DEFAULT_LIMIT),
+    PAGINATION.MAX_LIMIT
+  );
   const skip = (page - 1) * limit;
 
   const customers = await CustomerModel.find({})

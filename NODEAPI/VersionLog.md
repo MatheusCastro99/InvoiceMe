@@ -158,3 +158,4 @@ Currently, 5 states are available for auto tax calculation. They are:
 - The server builds the customer index before it starts listening, and exits with a clear error if it cannot.
 - A duplicate that reaches the database through a race answers 409 `A record with this value already exists`.
 - Customers already stored are not rewritten; a number stored in another format is not matched until the stored numbers are normalized.
+- The customer list caps `limit` at 100 and falls back to the defaults (`limit` 20, `page` 1) for a value that is not a whole number of 1 or more, instead of passing it to the database (a negative or non-numeric `page` no longer answers 500).

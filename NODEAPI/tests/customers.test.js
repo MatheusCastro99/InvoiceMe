@@ -62,10 +62,47 @@ describe("GET /api/v1/customers", () => {
       expect(res.body.data).toHaveLength(5);
     });
 
-    test.failing("#70: limit=1000 is capped at 100", async () => {
+    it("caps limit=1000 at 100", async () => {
       const res = await request(app).get("/api/v1/customers?limit=1000");
 
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveLength(25);
+      expect(res.body.pagination).toEqual({ page: 1, limit: 100, total: 25, pages: 1 });
+    });
+
+    it("accepts limit=100 as it is", async () => {
+      const res = await request(app).get("/api/v1/customers?limit=100");
+
       expect(res.body.pagination.limit).toBe(100);
+    });
+
+    it.each(["0", "-5", "abc", "2.5", "12abc", ""])(
+      "falls back to the default limit of 20 for limit=%s",
+      async (limit) => {
+        const res = await request(app).get(`/api/v1/customers?limit=${limit}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data).toHaveLength(20);
+        expect(res.body.pagination).toEqual({ page: 1, limit: 20, total: 25, pages: 2 });
+      }
+    );
+
+    it.each(["0", "-1", "abc", "1.5", "2abc", "", "9007199254740993"])(
+      "falls back to page 1 for page=%s",
+      async (page) => {
+        const res = await request(app).get(`/api/v1/customers?page=${page}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data).toHaveLength(20);
+        expect(res.body.pagination).toEqual({ page: 1, limit: 20, total: 25, pages: 2 });
+      }
+    );
+
+    it("falls back to the defaults for a repeated parameter", async () => {
+      const res = await request(app).get("/api/v1/customers?page=1&page=2&limit=5&limit=6");
+
+      expect(res.status).toBe(200);
+      expect(res.body.pagination).toEqual({ page: 1, limit: 20, total: 25, pages: 2 });
     });
   });
 
