@@ -1,23 +1,34 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# Dependabot version updates, InvoiceMe.
+# Minor and patch bumps are grouped into ONE pull request per ecosystem, so the
+# ruleset's "branch must be up to date" rule only has to be satisfied once
+# instead of once per dependency. Major bumps are not grouped: each one stays
+# its own PR so it gets its own review.
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
 updates:
-  # Frontend (Vite) - npm/yarn
+  # Frontend (Vite) and backend (Node API) share one grouped PR
   - package-ecosystem: "npm"
-    directory: "/FRONTEND"
+    directories:
+      - "/FRONTEND"
+      - "/NODEAPI"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-
-  # Backend (Node API) - npm/yarn
-  - package-ecosystem: "npm"
-    directory: "/NODEAPI"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
+    groups:
+      # Security updates for any npm dependency, in one PR
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      # Routine minor/patch bumps, in one PR
+      npm-minor-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # GitHub Actions updates
   - package-ecosystem: "github-actions"
@@ -25,3 +36,11 @@ updates:
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 5
+    groups:
+      actions-minor-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
