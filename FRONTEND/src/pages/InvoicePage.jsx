@@ -325,7 +325,7 @@ const InvoicePage = () => {
                       id="pdfButton"
                       to = {`/pdfPage`}
                       onClick={checkValidity}
-                      state= {{customerInfo: tempCustomer, subtotal: jobPrice, taxRate: correspondingTax, jobDescription: jobDescription, finalPrice: finalPrice, dateOfService: dateOfService, invoiceNumber: invoiceNumber, tableData: tableData}}
+                      state= {{customerInfo: tempCustomer, subtotal: jobPrice, taxRate: correspondingTax, jobDescription: jobDescription, finalPrice: finalPrice, dateOfService: dateOfService, invoiceNumber: invoiceNumber?.trim(), tableData: tableData}}
                       className={`inline-block w-1/2 text-center shadow-md text-sm bg-blue-500 text-white rounded-lg px-4 py-1 font-bold transition ease-in-out duration-300 hover:scale-110 hover:bg-blue-600 ${invoiceNumInvalid ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}`}>
                       Generate PDF
                   </Link>
