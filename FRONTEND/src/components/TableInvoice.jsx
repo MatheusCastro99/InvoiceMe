@@ -244,7 +244,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
                   <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded-sm transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
                   <Link
                       to = {`/pdfPage`}
-                      state= {{customerInfo: customers, subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, dateOfService: currInvoice.dateOfService}}
+                      state= {{customerInfo: customers, subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, tableData: currInvoice.tableData}}
                       className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
                       PDF
                   </Link>
