@@ -13,7 +13,7 @@ This skill adds a UX lens on top of the session context. It produces a **recomme
 - Styles: Tailwind utility classes in the JSX, with Tailwind v4's default theme (there is no `tailwind.config` and no token file), and the few custom classes in `FRONTEND/src/index.css`. The PDF has its own styles in `FRONTEND/src/pdfStyle.jsx`.
 - The source of the screen or component being changed, in `FRONTEND/src/pages/` and `FRONTEND/src/components/`.
 
-You can't see the running app. Base findings on the source and say what the owner should look at on screen.
+This lens works from the source. Base findings on it and say what the owner should look at on screen; the builder's UI check (section 4) is where the running app is seen.
 
 ## 2. Check
 
@@ -47,3 +47,14 @@ You can't see the running app. Base findings on the source and say what the owne
 - **Accessibility result:** pass, or the specific failures
 - **Recommendation:** Approve / Adjust / Redesign, with advantages and disadvantages
 - **Check on screen:** the specific things the owner should look at while running the app
+
+## 4. The UI check (T6)
+
+A UI sub-phase's check drives the app in the built-in browser pane. The builder runs it, on either tier (harness D25).
+
+- **Data:** a throwaway database, never the owner's. Start a `MongoMemoryServer` from `NODEAPI/node_modules/mongodb-memory-server` on a free port, from a script in the session's scratchpad, and seed what the plan needs. The check never writes to the owner's database, even to undo a change.
+- **Run:** in `NODEAPI/`, `MONGO_URL=<the memory server's URL> PORT=3000 node server.js`, so the real `.env` database isn't used; in `FRONTEND/`, `npm run dev`. Then drive each step the plan names in the browser pane, and stop both servers afterwards.
+- **Evidence:** a screenshot per step under `.harness/work/<n>/ui/`, listed under the handoff's Checks.
+- **Limits:**
+  - The pane may not draw the PDF viewer or the invoice table. Check the PDF through the component tree or the page's contents, and say so in the handoff.
+  - The browser runs in one time zone. A date shown on screen in a zone ahead of UTC needs a Node check of the display helpers.
