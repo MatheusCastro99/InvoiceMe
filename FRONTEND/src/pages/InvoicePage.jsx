@@ -62,6 +62,7 @@ const InvoicePage = () => {
         if(e.target.value == "Select Company") {
           setTempCustomer([]);
           setCorrespondingTax();
+          setFinalPrice(0);
           return;
         }
         selectCustomer(e.target.value, jobPrice);
