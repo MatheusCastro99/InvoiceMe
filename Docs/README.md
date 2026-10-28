@@ -2,7 +2,7 @@
 
 A comprehensive, production-ready CRUD application for managing customers and generating invoices for a small businesses.
 
-**Version:** 1.23
+**Version:** 1.24
 **Status:** Production-ready MVP
 **Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
@@ -76,7 +76,7 @@ The project is currently in an active MVP / production-ready iteration for small
 **Invoice:**
 
 - Phone: Valid US format
-- Date of service: required (the format isn't checked yet)
+- Date of service: required, a real date written YYYY-MM-DD
 - Price: a number, 0 or more
 
 ## API Testing Example
@@ -120,7 +120,7 @@ curl -X POST http://localhost:3000/api/v1/customers \
 
 ## Version History
 
-### v1.23 (current)
+### v1.24 (current)
 
 The full history is in [`NODEAPI/VersionLog.md`](../NODEAPI/VersionLog.md).
 

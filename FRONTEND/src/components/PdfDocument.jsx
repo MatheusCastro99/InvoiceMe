@@ -2,6 +2,7 @@ import { Page, Text, View, Document, Image, Line, Svg } from '@react-pdf/rendere
 import {pageBox, headerBox, jobInfoBox, priceInfoBox, companyInfoBox, footerBox} from "../pdfStyle";
 import Logo from "../assets/InvoiceMeLogo.PNG"
 import { formatPhoneNumber } from "../utils/phone";
+import { formatDateOfService } from "../utils/date";
 
 const MyDocument = (info) => {
     const customerInfo = info.customerInfo;
@@ -32,7 +33,7 @@ const MyDocument = (info) => {
                     <Text style={headerBox.addressNumber}>Contact Information</Text>
                 </View>
                 <View style={headerBox.dateInvoiceBox}>
-                    <Text style={headerBox.dateInvoice}>{dateOfService}</Text>
+                    <Text style={headerBox.dateInvoice}>{formatDateOfService(dateOfService)}</Text>
                     <Text style={headerBox.dateInvoice}>Invoice #{invoiceNumber}</Text>
                 </View>
             </View>

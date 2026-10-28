@@ -24,7 +24,7 @@ invoiceRouter.get("/", getInvoice);
  * @route POST /api/v1/invoices
  * @body {string} companyName - Required
  * @body {string} phoneNumber - Required
- * @body {string} dateOfService - Required
+ * @body {string} dateOfService - Required, a real date as YYYY-MM-DD
  * @body {number} finalPrice - Required
  * @returns {Object} Created invoice
  */

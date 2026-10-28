@@ -71,6 +71,7 @@ const RESPONSE_MESSAGES = {
   INVOICE_NOT_FOUND: "Invoice not found",
   INVALID_REQUEST: "Invalid request data",
   INVALID_ID: "Invalid id format",
+  INVALID_DATE_OF_SERVICE: "Date of service must be a real date in YYYY-MM-DD format",
   ORIGIN_NOT_ALLOWED: "Origin not allowed",
   DUPLICATE_RECORD: "A record with this value already exists",
   SERVER_ERROR: "An error occurred while processing your request",

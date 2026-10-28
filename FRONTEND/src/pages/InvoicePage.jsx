@@ -5,11 +5,16 @@ import axios from "axios";
 import {Select} from "flowbite-react"
 import Divider from '@mui/material/Divider'
 import { Chip, Switch, FormControlLabel } from "@mui/material";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CollapsibleImport from 'react-collapsible';
 const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import CustomerInfo from "../components/CustomerInfo";
 import TableDescription from "../components/TableDescription";
 import API_ENDPOINTS from "../config/apiConfig";
+import { isValidDateOfService } from "../utils/date";
 
 const InvoicePage = () => {
     const [jobPrice, setJobPrice] = useState(Number)
@@ -20,14 +25,13 @@ const InvoicePage = () => {
     const [finalPrice, setFinalPrice] = useState(0.00);
     const [dateOfService, setDateOfService] = useState('');
     const [invoiceNumber, setInvoiceNumber]= useState();
-    const [dateValidity, setDateValidity] = useState(false);
+    const [dateTouched, setDateTouched] = useState(false);
     const [invoiceNumValidity, setInvoiceNumValidity] = useState(false);
     const [invoicesArr, setInvoicesArr] = useState([]);
     const [openTable, setOpenTable] = useState(false);
     const [tableData, setTableData] = useState([]);
     const invoiceNumField = document.getElementById("invoiceNum");
     const pdfButtonField = document.getElementById("pdfButton");
-    const dateField = document.getElementById('dateField');
 
     const requestInfo = async (e) => {
         try {
@@ -83,34 +87,6 @@ const InvoicePage = () => {
       setCorrespondingTax(Number(parsedRate) || 0);
     }
 
-    const validateDate = (date) => {
-      const valDate = '^\\d{2}/?\\d{2}/?\\d{4}$'
-      if (!date.match(valDate)) {
-        toast.error(
-          <div>
-              <p>Please input date in the following format:</p> <br/>
-              <p>MMDDYYYY</p>
-          </div>
-      )
-
-      dateField.classList.add('border', 'border-red-500')
-      pdfButtonField.classList.add('hover:cursor-not-allowed');
-      setDateValidity(false)
-      }
-
-      else {
-        dateField.classList.remove('border', 'border-red-500');
-        pdfButtonField.classList.remove('hover:cursor-not-allowed');
-        let chars = [...date]
-        if(chars.length<10){
-          chars.splice(2, 0, "/")
-          chars.splice(5, 0, "/")
-        }
-        setDateOfService(chars.join(''))
-        setDateValidity(true)
-      }
-    }
-
     const validateInvoiceNum = (invoiceNum) => {
       const lastInvoice = invoicesArr[((invoicesArr.length)-1)];
 
@@ -144,8 +120,11 @@ const InvoicePage = () => {
       }
     }
 
+    const dateIsValid = isValidDateOfService(dateOfService);
+    const dateHasError = dateTouched && !dateIsValid;
+
     const checkValidity = (e) => {
-      if(!(dateValidity&&invoiceNumValidity) || jobPrice == 0) {
+      if(!(dateIsValid&&invoiceNumValidity) || jobPrice == 0) {
         e.preventDefault();
         toast.error(
           <div>
@@ -216,18 +195,26 @@ const InvoicePage = () => {
                   <Collapsible trigger={<Divider variant="middle" className="bg-color-red"><Chip label="Job Information ⤵" size="small" /></Divider>} open={true}>
                     <div className="rows mt-2">
                     <div className="ml-3 font-semibold"><FormControlLabel control={<Switch onChange={handleJobInfo}/>}/>Table Form</div>
-                        <label className="mb-2 block font-semibold row">
-                          Date of Service:
-                        </label>
-                        <input
-                          type="text"
-                          id="dateField"
-                          value={dateOfService || ''}
-                          onChange={(e) => setDateOfService(e.target.value)}
-                          onBlur={(e) => {validateDate(e.target.value)}}
-                          className="w-1/2 font-semibold text-lg mb-2 ml-4 block row"
-                          placeholder="Date of Service: mmddyyyy"
-                        />
+                        <div className="ml-4 mb-2 w-1/2">
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              label="Date of Service"
+                              format="MM/DD/YYYY"
+                              value={dateOfService ? dayjs(dateOfService) : null}
+                              onChange={(v) => setDateOfService(v?.isValid() ? v.format("YYYY-MM-DD") : "")}
+                              slotProps={{
+                                textField: {
+                                  id: "dateField",
+                                  size: "small",
+                                  fullWidth: true,
+                                  error: dateHasError,
+                                  helperText: dateHasError ? "Enter a real date as MM/DD/YYYY" : undefined,
+                                  onBlur: () => setDateTouched(true),
+                                },
+                              }}
+                            />
+                          </LocalizationProvider>
+                        </div>
                         <label className="mb-2 block font-semibold row">
                           Invoice Number:
                         </label>

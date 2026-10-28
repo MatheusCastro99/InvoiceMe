@@ -38,7 +38,7 @@ const invoiceSchema = mongoose.Schema(
     },
 
     dateOfService: {
-      type: String,
+      type: Date,
       required: [true, "Please enter Date"],
     },
 
@@ -74,6 +74,17 @@ const invoiceSchema = mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      // dateOfService is stored at UTC midnight and answered as YYYY-MM-DD.
+      // A value that is not a valid Date (an old row) is left as it is: toISOString() would throw.
+      transform: (doc, ret) => {
+        const date = ret.dateOfService;
+        if (date instanceof Date && !Number.isNaN(date.getTime())) {
+          ret.dateOfService = date.toISOString().slice(0, 10);
+        }
+        return ret;
+      },
+    },
   }
 );
 

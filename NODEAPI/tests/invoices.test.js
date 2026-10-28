@@ -1,6 +1,6 @@
 /**
  * Characterization tests: /api/v1/invoices (list, create, delete).
- * Known bugs (#70) are pinned as test.failing that asserts the correct behavior.
+ * The remaining known bug (#70, a duplicate invoiceNumber) is pinned as test.failing that asserts the correct behavior.
  */
 
 const mongoose = require("mongoose");
@@ -55,11 +55,29 @@ describe("GET /api/v1/invoices", () => {
       expect(res.body.data).toHaveLength(3);
     });
 
+    it("answers every dateOfService as YYYY-MM-DD", async () => {
+      const res = await request(app).get("/api/v1/invoices");
+
+      expect(res.body.data.map((i) => i.dateOfService)).toEqual(["2026-03-15", "2026-03-15", "2026-03-15"]);
+    });
+
     it("lists the newest invoice first", async () => {
       const res = await request(app).get("/api/v1/invoices");
 
       expect(res.body.data.map((i) => i.invoiceNumber)).toEqual(["NEWEST", "MIDDLE", "OLDEST"]);
     });
+  });
+});
+
+describe("GET /api/v1/invoices with a row stored before dateOfService was a date", () => {
+  it("answers 200 and the invoice, without breaking the list", async () => {
+    await InvoiceModel.collection.insertOne({ ...validInvoice(), dateOfService: "banana" });
+
+    const res = await request(app).get("/api/v1/invoices");
+
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(1);
+    expect(res.body.data[0].invoiceNumber).toBe("INV-001");
   });
 });
 
@@ -145,12 +163,71 @@ describe("POST /api/v1/invoices", () => {
     expect(res.body.errors).toContain("Invalid phone number format");
   });
 
-  test.failing("#70: a non-date dateOfService answers 400", async () => {
+  it("a non-date dateOfService answers 400", async () => {
     const res = await request(app)
       .post("/api/v1/invoices")
       .send(validInvoice({ dateOfService: "banana" }));
 
     expect(res.status).toBe(400);
+    expect(res.body.errors).toContain(RESPONSE_MESSAGES.INVALID_DATE_OF_SERVICE);
+  });
+
+  it.each([
+    ["a date written MM/DD/YYYY", "10/27/2026"],
+    ["a date that does not exist", "2026-02-30"],
+    ["a month that does not exist", "2026-13-01"],
+    ["a year below 100", "0026-01-01"],
+    ["a number", 20260315],
+  ])("answers 400 for dateOfService as %s", async (_name, dateOfService) => {
+    const res = await request(app)
+      .post("/api/v1/invoices")
+      .send(validInvoice({ dateOfService }));
+
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toContain(RESPONSE_MESSAGES.INVALID_DATE_OF_SERVICE);
+    expect(await InvoiceModel.countDocuments()).toBe(0);
+  });
+
+  it("accepts 29 February of a leap year", async () => {
+    const res = await request(app)
+      .post("/api/v1/invoices")
+      .send(validInvoice({ dateOfService: "2024-02-29" }));
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.dateOfService).toBe("2024-02-29");
+  });
+
+  it("stores dateOfService as a Date at UTC midnight and answers YYYY-MM-DD", async () => {
+    const res = await request(app)
+      .post("/api/v1/invoices")
+      .send(validInvoice({ dateOfService: "2026-03-15" }));
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.dateOfService).toBe("2026-03-15");
+
+    const stored = await InvoiceModel.findById(res.body.data._id).lean();
+    expect(stored.dateOfService).toBeInstanceOf(Date);
+    expect(stored.dateOfService.toISOString()).toBe("2026-03-15T00:00:00.000Z");
+  });
+
+  describe("in another time zone", () => {
+    const originalTZ = process.env.TZ;
+
+    afterEach(() => {
+      if (originalTZ === undefined) delete process.env.TZ;
+      else process.env.TZ = originalTZ;
+    });
+
+    it.each(["America/Los_Angeles", "Asia/Tokyo"])("answers the date that was sent (%s)", async (zone) => {
+      process.env.TZ = zone;
+
+      const res = await request(app)
+        .post("/api/v1/invoices")
+        .send(validInvoice({ dateOfService: "2026-03-15" }));
+
+      expect(res.status).toBe(201);
+      expect(res.body.data.dateOfService).toBe("2026-03-15");
+    });
   });
 
   describe("with an invoice already stored", () => {
@@ -180,6 +257,7 @@ describe("DELETE /api/v1/invoices/:id", () => {
     expect(res.body.success).toBe(true);
     expect(res.body.message).toBe(RESPONSE_MESSAGES.INVOICE_DELETED);
     expect(res.body.data._id).toBe(invoice._id.toString());
+    expect(res.body.data.dateOfService).toBe("2026-03-15");
     expect(await InvoiceModel.countDocuments()).toBe(0);
   });
 
