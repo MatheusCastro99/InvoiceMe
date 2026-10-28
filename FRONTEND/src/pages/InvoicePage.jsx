@@ -27,11 +27,10 @@ const InvoicePage = () => {
     const [invoiceNumber, setInvoiceNumber]= useState();
     const [dateTouched, setDateTouched] = useState(false);
     const [invoiceNumValidity, setInvoiceNumValidity] = useState(false);
+    const [invoiceNumChecked, setInvoiceNumChecked] = useState(false);
     const [invoicesArr, setInvoicesArr] = useState([]);
     const [openTable, setOpenTable] = useState(false);
     const [tableData, setTableData] = useState([]);
-    const invoiceNumField = document.getElementById("invoiceNum");
-    const pdfButtonField = document.getElementById("pdfButton");
 
     const requestInfo = async (e) => {
         try {
@@ -87,38 +86,57 @@ const InvoicePage = () => {
       setCorrespondingTax(Number(parsedRate) || 0);
     }
 
-    const validateInvoiceNum = (invoiceNum) => {
-      const lastInvoice = invoicesArr[((invoicesArr.length)-1)];
+    // Same rule as the server (ADR-003): blank and an exact match (after trimming) of a stored number are blocked.
+    // A gap or a lower number compared with the newest invoice only warns.
+    const validateInvoiceNum = (value) => {
+      const num = value.trim();
+      const newest = invoicesArr[0];
+      const newestNum = newest?.invoiceNumber?.trim();
+      setInvoiceNumChecked(true);
 
-      if (invoiceNum <= lastInvoice.invoiceNumber) {
+      if (num === "") {
+        toast.error("Invoice number is required");
+        setInvoiceNumValidity(false);
+        return;
+      }
+
+      if (invoicesArr.some((invoice) => invoice.invoiceNumber?.trim() === num)) {
         toast.error(
           <div>
               <p>Error: Invoice Number is not unique</p> <br/>
-              <p>last invoice number is #{lastInvoice.invoiceNumber}</p>
+              <p>last invoice number is #{newestNum}</p>
           </div>
         )
-        invoiceNumField.classList.remove('border-green-500');
-        invoiceNumField.classList.add('border', 'border-red-500');
-        pdfButtonField.classList.add('hover:cursor-not-allowed');
         setInvoiceNumValidity(false);
+        return;
       }
-      else if (invoiceNum >= (parseInt(lastInvoice.invoiceNumber)+2)) {
-        toast.error(
-          <div>
-              <p>Attention: Invoice Number skipped one or more numbers</p> <br/>
-              <p>last invoice number is #{lastInvoice.invoiceNumber}</p> <br/>
-              <p>If you wish to proceed, ignore this warning</p>
-          </div>
-        )
-        setInvoiceNumValidity(true);
-      }
-      else {
-        invoiceNumField.classList.remove('border-red-500');
-        invoiceNumField.classList.add('border', 'border-green-500');
-        pdfButtonField.classList.remove('hover:cursor-not-allowed');
-        setInvoiceNumValidity(true);
+
+      setInvoiceNumValidity(true);
+
+      if (newestNum && /^\d+$/.test(num) && /^\d+$/.test(newestNum)) {
+        const expected = BigInt(newestNum) + BigInt(1);
+        if (BigInt(num) > expected) {
+          toast.error(
+            <div>
+                <p>Attention: Invoice Number skipped one or more numbers</p> <br/>
+                <p>last invoice number is #{newestNum}</p> <br/>
+                <p>If you wish to proceed, ignore this warning</p>
+            </div>
+          )
+        }
+        else if (BigInt(num) < expected) {
+          toast.error(
+            <div>
+                <p>Attention: Invoice Number is lower than the last invoice number</p> <br/>
+                <p>last invoice number is #{newestNum}</p> <br/>
+                <p>If you wish to proceed, ignore this warning</p>
+            </div>
+          )
+        }
       }
     }
+
+    const invoiceNumInvalid = invoiceNumChecked && !invoiceNumValidity;
 
     const dateIsValid = isValidDateOfService(dateOfService);
     const dateHasError = dateTouched && !dateIsValid;
@@ -224,7 +242,8 @@ const InvoicePage = () => {
                           value={invoiceNumber || ''}
                           onChange={(e) => setInvoiceNumber(e.target.value)}
                           onBlur={(e) => validateInvoiceNum(e.target.value)}
-                          className="w-1/2 font-semibold text-lg mb-2 ml-4 block row"
+                          aria-invalid={invoiceNumInvalid}
+                          className={`w-1/2 font-semibold text-lg mb-2 ml-4 block row${invoiceNumChecked ? (invoiceNumValidity ? " border border-green-500" : " border border-red-500") : ""}`}
                           placeholder="Enter Invoice Number"
                         />
                       </div>
@@ -307,7 +326,7 @@ const InvoicePage = () => {
                       to = {`/pdfPage`}
                       onClick={checkValidity}
                       state= {{customerInfo: tempCustomer, subtotal: jobPrice, taxRate: correspondingTax, jobDescription: jobDescription, finalPrice: finalPrice, dateOfService: dateOfService, invoiceNumber: invoiceNumber, tableData: tableData}}
-                      className="inline-block w-1/2 text-center shadow-md text-sm bg-blue-500 text-white rounded-lg px-4 py-1 font-bold transition ease-in-out duration-300 hover:scale-110 hover:bg-blue-600 hover:cursor-pointer">
+                      className={`inline-block w-1/2 text-center shadow-md text-sm bg-blue-500 text-white rounded-lg px-4 py-1 font-bold transition ease-in-out duration-300 hover:scale-110 hover:bg-blue-600 ${invoiceNumInvalid ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}`}>
                       Generate PDF
                   </Link>
                 </div>      
