@@ -49,8 +49,12 @@ const InvoicePage = () => {
             if (Number(subtotal)) {
               await requestTotal(subtotal, rate);
             }
-        } catch {
-            setTempCustomer([])
+        } catch (error) {
+            // A refused rate or total (a customer with no state or one the tax table lacks, say) is shown, not swallowed
+            setTempCustomer([]);
+            setCorrespondingTax();
+            setFinalPrice(0);
+            toast.error(error.response?.data?.message ?? error.message);
         }
     }
 
