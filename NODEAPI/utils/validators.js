@@ -4,12 +4,15 @@
  * API v1.0+
  */
 
+const { RESPONSE_MESSAGES } = require("./constants");
+
 const VALIDATION_PATTERNS = {
   phoneNumber: /^(\d{10}|\(?(\d{3})\)?[\s.-]?(\d{3})[\s.-]?(\d{4}))$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   zipCode: /^\d{5}(-\d{4})?$/,
   companyName: /^[a-zA-Z0-9\s\-&.,()]+$/,
   state: /^[A-Z]{2}$/,
+  dateOfService: /^\d{4}-\d{2}-\d{2}$/,
 };
 
 const validatePhoneNumber = (phone) => {
@@ -43,6 +46,16 @@ const validateCompanyName = (name) => {
 const validateState = (state) => {
   if (!state) return true; // State is optional
   return VALIDATION_PATTERNS.state.test(state);
+};
+
+// A real calendar date written YYYY-MM-DD: a string only (Mongoose would cast a number to a Date),
+// and one that survives a UTC round trip, which refuses 2026-02-30, 2026-13-01 and years below 100
+// (Date.UTC maps those to 1900-1999)
+const validateDateOfService = (value) => {
+  if (typeof value !== "string" || !VALIDATION_PATTERNS.dateOfService.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 };
 
 // A finite number >= 0, or a non-blank string that Number() turns into one
@@ -102,6 +115,8 @@ const validateInvoiceData = (data) => {
 
   if (!data.dateOfService) {
     errors.push("Date of service is required");
+  } else if (!validateDateOfService(data.dateOfService)) {
+    errors.push(RESPONSE_MESSAGES.INVALID_DATE_OF_SERVICE);
   }
 
   if (data.finalPrice === undefined || data.finalPrice === null) {
@@ -123,6 +138,7 @@ module.exports = {
   validateZipCode,
   validateCompanyName,
   validateState,
+  validateDateOfService,
   validateCustomerData,
   validateInvoiceData,
   VALIDATION_PATTERNS,

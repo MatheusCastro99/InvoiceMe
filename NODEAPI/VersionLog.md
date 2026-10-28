@@ -159,3 +159,12 @@ Currently, 5 states are available for auto tax calculation. They are:
 - A duplicate that reaches the database through a race answers 409 `A record with this value already exists`.
 - Customers already stored are not rewritten; a number stored in another format is not matched until the stored numbers are normalized.
 - The customer list caps `limit` at 100 and falls back to the defaults (`limit` 20, `page` 1) for a value that is not a whole number of 1 or more, instead of passing it to the database (a negative or non-numeric `page` no longer answers 500).
+
+
+## v1.24
+
+### Date of service:
+
+- `dateOfService` on an invoice is now a real calendar date written `YYYY-MM-DD`: `POST /api/v1/invoices` answers 400 `Date of service must be a real date in YYYY-MM-DD format` for a value that is not a string in that format or is not a real date (`10/27/2026`, `2026-02-30`, `2026-13-01`, a number).
+- It is stored as a Date at UTC midnight, and every answer that returns an invoice sends it back as `YYYY-MM-DD`, whatever the server time zone.
+- Invoices already stored are not rewritten (#141); a stored `MM/DD/YYYY` value is read in the server's local time and can come back a day off, and a value that is not a date is left out of the answer.
