@@ -168,3 +168,14 @@ Currently, 5 states are available for auto tax calculation. They are:
 - `dateOfService` on an invoice is now a real calendar date written `YYYY-MM-DD`: `POST /api/v1/invoices` answers 400 `Date of service must be a real date in YYYY-MM-DD format` for a value that is not a string in that format or is not a real date (`10/27/2026`, `2026-02-30`, `2026-13-01`, a number).
 - It is stored as a Date at UTC midnight, and every answer that returns an invoice sends it back as `YYYY-MM-DD`, whatever the server time zone.
 - Invoices already stored are not rewritten (#141); a stored `MM/DD/YYYY` value is read in the server's local time and can come back a day off, and a value that is not a date is left out of the answer.
+
+
+## v1.25
+
+### Unique invoice numbers:
+
+- `invoiceNumber` on an invoice is now required: `POST /api/v1/invoices` answers 400 `Invoice number is required` for a missing, blank or non-string value. It stays a string and is stored trimmed, so prefixes such as `INV-0042` keep working.
+- A unique index on `invoiceNumber` makes the database refuse a duplicate: an invoice whose number (after trimming, exact match) is already used answers 409 `A record with this value already exists`.
+- The index is partial, so invoices stored before this version without a number do not collide with each other.
+- The server builds the invoice index before it starts listening, next to the customer index. A local database that already holds duplicate invoice numbers cannot build it, so the server exits at startup with a clear error until the duplicates are resolved (the migration in #141 reports them). Invoices already stored are not rewritten.
+- The invoice page blocks a number already in the list and warns, without blocking, about a gap or a lower number; the PDF page shows the API's message when saving fails.

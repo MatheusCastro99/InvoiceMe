@@ -49,7 +49,7 @@ flowchart TD
     F --> G[("InvoiceModel.create<br/>MongoDB")]
     G -- "fails" --> G1["errorMiddleware<br/>400 (invalid value), 409 (duplicate key)<br/>or 500 with a generic message"]
     G -- "succeeds" --> H["postInvoice<br/>201 with the new invoice"]
-    E1 --> I["PdfPage.jsx<br/>toast with the axios error message"]
+    E1 --> I["PdfPage.jsx<br/>toast with the API's message"]
     G1 --> I
     H --> K["PdfPage.jsx<br/>success toast"]
 ```
@@ -57,5 +57,6 @@ flowchart TD
 Notes:
 - The server computes the tax rate and the final price. The page sums the line items into the subtotal it sends, and shows a tax line it derives as subtotal × rate.
 - The date of service travels as `YYYY-MM-DD` (ADR-013). `InvoicePage.jsx` enters it with a date picker and checks it with `isValidDateOfService` (`utils/date.js`, the server's rule); the invoice table and the PDF show it as `MM/DD/YYYY` by cutting the string. The server stores it as a date at UTC midnight and sends it back as `YYYY-MM-DD`.
+- The invoice number is required and unique (exact match after trimming). `InvoicePage.jsx` blocks a blank number and one already in the loaded list, and only warns about a gap or a lower number; the server's unique index is the guard when two saves race, and its 409 reaches the toast on `PdfPage.jsx`.
 - The invoice stores a copy of the customer's name, phone, email and address at the time it is saved. A later change to the customer does not change the invoice.
 - Downloading the PDF (`saveFile` in `PdfPage.jsx`) happens in the browser with `@react-pdf/renderer` and does not call the API.

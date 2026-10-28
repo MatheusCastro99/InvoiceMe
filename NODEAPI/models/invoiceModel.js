@@ -44,7 +44,8 @@ const invoiceSchema = mongoose.Schema(
 
     invoiceNumber: {
       type: String,
-      required: false,
+      required: [true, "Please enter Invoice Number"],
+      trim: true,
     },
 
     finalPrice: {
@@ -86,6 +87,13 @@ const invoiceSchema = mongoose.Schema(
       },
     },
   }
+);
+
+// Unique invoice numbers. The index is partial so old rows without a number don't collide with each other.
+// server.js builds it before the API takes requests (InvoiceModel.init()).
+invoiceSchema.index(
+  { invoiceNumber: 1 },
+  { unique: true, partialFilterExpression: { invoiceNumber: { $type: "string" } } }
 );
 
 const InvoiceModel = mongoose.model("Invoice", invoiceSchema);

@@ -25,6 +25,7 @@ invoiceRouter.get("/", getInvoice);
  * @body {string} companyName - Required
  * @body {string} phoneNumber - Required
  * @body {string} dateOfService - Required, a real date as YYYY-MM-DD
+ * @body {string} invoiceNumber - Required, unique (trimmed, exact match)
  * @body {number} finalPrice - Required
  * @returns {Object} Created invoice
  */
