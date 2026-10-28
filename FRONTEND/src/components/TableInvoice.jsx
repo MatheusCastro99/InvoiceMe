@@ -17,6 +17,7 @@ import API_ENDPOINTS from "../config/apiConfig";
 import CollapsibleImport from 'react-collapsible';
 const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import { useState } from "react";
+import { formatDateOfService, monthOfService } from "../utils/date";
 
 const TableInvoice = ({ invoices, getInvoices, customers}) => {
     
@@ -162,13 +163,13 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
     let tableItem = () => { 
       return invoices.map((currInvoice) => {
 
-        let monthOfService = parseInt(currInvoice.dateOfService.slice(0, 2));
+        const invoiceMonth = monthOfService(currInvoice.dateOfService);
         if(customers.companyName==undefined && month==undefined) {
           return(
             <tr key={currInvoice._id}>
               <td className="p-4 border-b ">{currInvoice.companyName}</td>
               <td className="p-4 border-b ">{`$${currInvoice.finalPrice}`}</td>
-              <td className="p-4 border-b ">{currInvoice.dateOfService}</td>
+              <td className="p-4 border-b ">{formatDateOfService(currInvoice.dateOfService)}</td>
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
                 <div className="flex gap-2">
@@ -197,12 +198,12 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
           )
         }
 
-        else if ((month===monthOfService)) {
+        else if ((month===invoiceMonth)) {
           return (
             <tr key={currInvoice._id}>
               <td className="p-4 border-b ">{currInvoice.companyName}</td>
               <td className="p-4 border-b ">{currInvoice.finalPrice}</td>
-              <td className="p-4 border-b ">{currInvoice.dateOfService}</td>
+              <td className="p-4 border-b ">{formatDateOfService(currInvoice.dateOfService)}</td>
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
                 <div className="flex gap-2">
@@ -236,7 +237,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
             <tr key={currInvoice._id}>
               <td className="p-4 border-b ">{currInvoice.companyName}</td>
               <td className="p-4 border-b ">{currInvoice.finalPrice}</td>
-              <td className="p-4 border-b ">{currInvoice.dateOfService}</td>
+              <td className="p-4 border-b ">{formatDateOfService(currInvoice.dateOfService)}</td>
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
                 <div className="flex gap-2">

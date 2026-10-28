@@ -1,6 +1,6 @@
 # Architecture Design
 
-Last updated: 2026-10-26
+Last updated: 2026-10-28
 
 ## Structure
 
@@ -43,6 +43,7 @@ React single-page app built with Vite (ES modules), styled with Tailwind.
 - src/App.jsx: the routes, the navigation bar and the toast container
 - src/config/apiConfig.js: every API endpoint URL, as `API_ENDPOINTS`, built from `VITE_API_BASE_URL`
 - src/utils/phone.js: the phone check (the server's pattern, ADR-003) and the `(555) 123-4567` display format
+- src/utils/date.js: the date-of-service check (the server's rule, ADR-003), the `MM/DD/YYYY` display format and the month, all read from the `YYYY-MM-DD` string without parsing it into a `Date` (ADR-013)
 - src/pdfStyle.jsx: styles for the PDF invoice
 - eslint.config.js: ESLint flat config
 
