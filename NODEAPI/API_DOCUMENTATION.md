@@ -308,6 +308,7 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
 - `companyName` (required): String
 - `phoneNumber` (required): String, valid US phone format
 - `dateOfService` (required): a real calendar date written `YYYY-MM-DD` (a string; `10/27/2026`, `2026-02-30` and a number are refused with 400 `Date of service must be a real date in YYYY-MM-DD format`). It is stored as a date at UTC midnight and every answer that returns an invoice (list, create, delete) sends it back as `YYYY-MM-DD`, whatever the server's time zone. An invoice stored before v1.24 with a non-date value in this field still lists, but its answer leaves out `dateOfService`; it is converted in #141
+- `invoiceNumber` (required): a non-blank string (a missing, blank or non-string value is refused with 400 `Invoice number is required`). It is stored trimmed and must be unique: the comparison is an exact match on the trimmed value, so `"INV-001"` and `" INV-001 "` are the same number, and `"042"` and `"42"` are different. A number that another invoice already has answers 409 `A record with this value already exists`. Invoices stored before v1.25 without a number are kept as they are and do not collide with each other
 - `finalPrice` (required): a number, or a numeric string such as "858.50", 0 or more
 
 **Response (201):**
@@ -320,6 +321,16 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
     "_id": "507f1f77bcf86cd799439021",
     ...
   }
+}
+```
+
+**Error Response (409 - Duplicate invoice number):**
+
+```json
+{
+  "success": false,
+  "message": "A record with this value already exists",
+  "statusCode": 409
 }
 ```
 

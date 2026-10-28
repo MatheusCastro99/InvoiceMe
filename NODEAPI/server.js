@@ -9,6 +9,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const app = require("./app");
 const CustomerModel = require("./models/customerModel");
+const InvoiceModel = require("./models/invoiceModel");
 
 // Configuration
 const DEFAULT_MONGO_URL = "mongodb://127.0.0.1:27017/API-test";
@@ -33,9 +34,10 @@ const start = async () => {
   }
   console.log("✓ Connected to MongoDB");
 
-  // The unique phone number index must exist before the API takes requests
+  // The unique indexes (customer phone number, invoice number) must exist before the API takes requests
   try {
     await CustomerModel.init();
+    await InvoiceModel.init();
   } catch (error) {
     console.error("✗ Could not build indexes:", error.message);
     process.exit(1);

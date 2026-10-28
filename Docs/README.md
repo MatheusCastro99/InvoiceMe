@@ -184,7 +184,7 @@ InvoiceMe/
 │   ├── utils/          # Shared helpers and constants
 │   ├── tests/          # Jest + Supertest suite; setup in tests/setup/
 │   ├── app.js          # Express app: middleware, routes, error handling
-│   ├── server.js       # Bootstrap: env, MongoDB connection, customer index, listen
+│   ├── server.js       # Bootstrap: env, MongoDB connection, customer and invoice indexes, listen
 │   ├── jest.config.js
 │   ├── API_DOCUMENTATION.md # API reference
 │   ├── VersionLog.md   # API change log

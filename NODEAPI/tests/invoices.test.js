@@ -1,6 +1,6 @@
 /**
  * Characterization tests: /api/v1/invoices (list, create, delete).
- * The remaining known bug (#70, a duplicate invoiceNumber) is pinned as test.failing that asserts the correct behavior.
+ * invoiceNumber is required and unique (#139); the unique index is built once for this file.
  */
 
 const mongoose = require("mongoose");
@@ -28,6 +28,9 @@ const validInvoice = (overrides = {}) => ({
 });
 
 const unusedId = () => new mongoose.Types.ObjectId().toString();
+
+// The unique invoiceNumber index is built by server.js in production; build it once for this file
+beforeAll(() => InvoiceModel.init());
 
 describe("GET /api/v1/invoices", () => {
   it("answers an empty list when there are no invoices", async () => {
@@ -117,6 +120,9 @@ describe("POST /api/v1/invoices", () => {
       ["a missing phoneNumber", { phoneNumber: undefined }, "Phone number is required"],
       ["a badly formatted phoneNumber", { phoneNumber: "12345" }, "Invalid phone number format"],
       ["a missing dateOfService", { dateOfService: undefined }, "Date of service is required"],
+      ["a missing invoiceNumber", { invoiceNumber: undefined }, RESPONSE_MESSAGES.INVOICE_NUMBER_REQUIRED],
+      ["a blank invoiceNumber", { invoiceNumber: "   " }, RESPONSE_MESSAGES.INVOICE_NUMBER_REQUIRED],
+      ["an invoiceNumber that is not a string", { invoiceNumber: 42 }, RESPONSE_MESSAGES.INVOICE_NUMBER_REQUIRED],
       ["a missing finalPrice", { finalPrice: undefined }, "Final price is required"],
       ["a non-numeric finalPrice", { finalPrice: "abc" }, "Final price must be a valid positive number"],
       ["a negative finalPrice", { finalPrice: -5 }, "Final price must be a valid positive number"],
@@ -140,6 +146,7 @@ describe("POST /api/v1/invoices", () => {
         "Company name is required",
         "Phone number is required",
         "Date of service is required",
+        RESPONSE_MESSAGES.INVOICE_NUMBER_REQUIRED,
         "Final price is required",
       ]);
     });
@@ -235,11 +242,55 @@ describe("POST /api/v1/invoices", () => {
       await InvoiceModel.create(validInvoice());
     });
 
-    test.failing("#70: a duplicate invoiceNumber answers 409", async () => {
+    it("answers 409 for a duplicate invoiceNumber", async () => {
       const res = await request(app).post("/api/v1/invoices").send(validInvoice());
 
       expect(res.status).toBe(409);
+      expect(res.body).toEqual({
+        success: false,
+        message: RESPONSE_MESSAGES.DUPLICATE_RECORD,
+        statusCode: 409,
+      });
+      expect(await InvoiceModel.countDocuments()).toBe(1);
     });
+
+    it("answers 409 for a duplicate written with surrounding spaces", async () => {
+      const res = await request(app)
+        .post("/api/v1/invoices")
+        .send(validInvoice({ invoiceNumber: "  INV-001  " }));
+
+      expect(res.status).toBe(409);
+      expect(res.body.message).toBe(RESPONSE_MESSAGES.DUPLICATE_RECORD);
+      expect(await InvoiceModel.countDocuments()).toBe(1);
+    });
+
+    it("creates an invoice with a different invoiceNumber", async () => {
+      const res = await request(app)
+        .post("/api/v1/invoices")
+        .send(validInvoice({ invoiceNumber: "INV-002" }));
+
+      expect(res.status).toBe(201);
+      expect(await InvoiceModel.countDocuments()).toBe(2);
+    });
+  });
+
+  it("stores the invoiceNumber trimmed", async () => {
+    const res = await request(app)
+      .post("/api/v1/invoices")
+      .send(validInvoice({ invoiceNumber: "  INV-007  " }));
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.invoiceNumber).toBe("INV-007");
+  });
+
+  it("accepts two old rows without an invoiceNumber (the index is partial)", async () => {
+    const { invoiceNumber, ...oldRow } = validInvoice();
+
+    await InvoiceModel.collection.insertMany([{ ...oldRow }, { ...oldRow }]);
+
+    expect(await InvoiceModel.countDocuments()).toBe(2);
+    const res = await request(app).post("/api/v1/invoices").send(validInvoice());
+    expect(res.status).toBe(201);
   });
 });
 

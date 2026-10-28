@@ -119,6 +119,10 @@ const validateInvoiceData = (data) => {
     errors.push(RESPONSE_MESSAGES.INVALID_DATE_OF_SERVICE);
   }
 
+  if (typeof data.invoiceNumber !== "string" || data.invoiceNumber.trim() === "") {
+    errors.push(RESPONSE_MESSAGES.INVOICE_NUMBER_REQUIRED);
+  }
+
   if (data.finalPrice === undefined || data.finalPrice === null) {
     errors.push("Final price is required");
   } else if (!isValidPrice(data.finalPrice)) {
