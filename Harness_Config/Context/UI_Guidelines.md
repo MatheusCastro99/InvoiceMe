@@ -34,7 +34,7 @@ Answers:
 - What does this job cost, with tax?
 
 ### Invoice preview (`/pdfPage`)
-Purpose: check the invoice, save it, and download it as a PDF
+Purpose: check the invoice, save it, and download it as a PDF, or go back to change it
 
 ### Customer profile (`/profilePage/:id`)
 Purpose: one customer's details and their invoices

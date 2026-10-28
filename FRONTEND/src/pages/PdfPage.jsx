@@ -149,6 +149,7 @@ const PdfPage = () => {
                   <button id="saveButton" onClick={saveInvoice} disabled={!newCustomer} className="mt-3 mb-4 shadow-md bg-blue-700 text-white rounded-xl px-6 py-2 font-bold inline-block transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer enabled:hover:scale-110 disabled:bg-gray-500 disabled:hover:cursor-not-allowed">Save Invoice</button>
                   <Link
                     to="/invoice"
+                    state={rawState}
                     className="inline-block mt-3 mb-4 ml-5 shadow-md bg-gray-400 text-white rounded-xl px-6 py-2 font-bold transition ease-in-out duration-300 hover:bg-gray-300 hover:cursor-pointer hover:scale-110"
                   >
                     Edit Invoice
