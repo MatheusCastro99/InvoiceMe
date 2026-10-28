@@ -307,7 +307,7 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
 
 - `companyName` (required): String
 - `phoneNumber` (required): String, valid US phone format
-- `dateOfService` (required): a real calendar date written `YYYY-MM-DD` (a string; `10/27/2026`, `2026-02-30` and a number are refused with 400 `Date of service must be a real date in YYYY-MM-DD format`). It is stored as a date at UTC midnight and every answer that returns an invoice (list, create, delete) sends it back as `YYYY-MM-DD`, whatever the server's time zone. An invoice stored before v1.24 with a non-date value in this field still lists; it is converted in #141
+- `dateOfService` (required): a real calendar date written `YYYY-MM-DD` (a string; `10/27/2026`, `2026-02-30` and a number are refused with 400 `Date of service must be a real date in YYYY-MM-DD format`). It is stored as a date at UTC midnight and every answer that returns an invoice (list, create, delete) sends it back as `YYYY-MM-DD`, whatever the server's time zone. An invoice stored before v1.24 with a non-date value in this field still lists, but its answer leaves out `dateOfService`; it is converted in #141
 - `finalPrice` (required): a number, or a numeric string such as "858.50", 0 or more
 
 **Response (201):**
