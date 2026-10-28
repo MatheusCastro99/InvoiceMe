@@ -9,9 +9,10 @@ const emptyRow = (id) => ({
 });
 
 const TableDescription = (props) => {
-    // Start with one empty row so the table is usable immediately.
-    const [rows, setRows] = useState(() => [emptyRow(1)]);
-    const [rowNum, setRowNum] = useState(2);
+    // Rows carried back from the PDF page seed the table; otherwise start with one empty row so it is usable immediately.
+    const initialRows = props.initialRows?.length ? props.initialRows.map((row, index) => ({ ...row, id: index + 1 })) : null;
+    const [rows, setRows] = useState(() => initialRows ?? [emptyRow(1)]);
+    const [rowNum, setRowNum] = useState(() => (initialRows ? initialRows.length : 1) + 1);
     const dataCallBack = props.dataCallBack;
 
     const addItemRow = () => {

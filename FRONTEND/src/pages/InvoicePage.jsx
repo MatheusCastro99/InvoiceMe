@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import {Select} from "flowbite-react"
@@ -16,38 +16,51 @@ import TableDescription from "../components/TableDescription";
 import API_ENDPOINTS from "../config/apiConfig";
 import { isValidDateOfService } from "../utils/date";
 
+const digitsOnly = (value) => String(value ?? "").replace(/\D/g, "");
+
 const InvoicePage = () => {
-    const [jobPrice, setJobPrice] = useState(Number)
-    const [jobDescription, setJobDescription] = useState();
+    // The invoice carried back from the PDF page ("Edit Invoice"), in either of its two shapes; none when opened from the home page.
+    const carried = useLocation().state;
+    const carriedRows = Array.isArray(carried?.tableData) ? carried.tableData : [];
+    const carriedSubtotal = typeof carried?.subtotal === "object" ? carried.subtotal?.subtotal : carried?.subtotal;
+
+    const [jobPrice, setJobPrice] = useState(() => Number(carriedSubtotal) || 0)
+    const [jobDescription, setJobDescription] = useState(carried?.jobDescription);
     const [customers, setCustomers] = useState([]);
     const [tempCustomer, setTempCustomer] = useState([]);
     const [correspondingTax, setCorrespondingTax] = useState();
     const [finalPrice, setFinalPrice] = useState(0.00);
-    const [dateOfService, setDateOfService] = useState('');
-    const [invoiceNumber, setInvoiceNumber]= useState();
+    const [dateOfService, setDateOfService] = useState(carried?.dateOfService || '');
+    const [invoiceNumber, setInvoiceNumber]= useState(carried?.invoiceNumber);
     const [dateTouched, setDateTouched] = useState(false);
     const [invoiceNumValidity, setInvoiceNumValidity] = useState(false);
     const [invoiceNumChecked, setInvoiceNumChecked] = useState(false);
     const [invoicesArr, setInvoicesArr] = useState([]);
-    const [openTable, setOpenTable] = useState(false);
-    const [tableData, setTableData] = useState([]);
+    const [openTable, setOpenTable] = useState(carriedRows.length > 0);
+    const [tableData, setTableData] = useState(carriedRows);
 
-    const requestInfo = async (e) => {
+    // Loads the customer's current record and asks the server for the state's rate and, when a subtotal is set, the total at that rate.
+    const selectCustomer = async (id, subtotal) => {
         try {
-            if(e.target.value == "Select Company") {
-              setTempCustomer([]);
-              setCorrespondingTax();
-              return;
-            }
-            const info = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(e.target.value));
+            const info = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
             const payload = info?.data?.data ?? info?.data ?? {};
-            console.log(info)
             setTempCustomer(payload);
-            handleTax(payload.stateAddress);
-            console.log(payload.stateAddress);
+            const rate = await handleTax(payload.stateAddress);
+            if (Number(subtotal)) {
+              await requestTotal(subtotal, rate);
+            }
         } catch {
             setTempCustomer([])
-        }    
+        }
+    }
+
+    const requestInfo = (e) => {
+        if(e.target.value == "Select Company") {
+          setTempCustomer([]);
+          setCorrespondingTax();
+          return;
+        }
+        selectCustomer(e.target.value, jobPrice);
     }
 
     const getInvoices = async() => {
@@ -56,6 +69,10 @@ const InvoicePage = () => {
           //console.log(response.data);
           const payload = response?.data?.data ?? response?.data ?? [];
           setInvoicesArr(payload);
+          // A number carried back from the PDF page is checked against the list just fetched.
+          if (typeof carried?.invoiceNumber === "string" && carried.invoiceNumber.trim() !== "") {
+            validateInvoiceNum(carried.invoiceNumber, payload);
+          }
         } catch (error) {
           toast.error(error.message);
         }
@@ -72,8 +89,13 @@ const InvoicePage = () => {
       }
 
       setJobPrice(tempSubtotal)
+      await requestTotal(tempSubtotal, correspondingTax)
+    }
+
+    // The total always comes from the server (ADR-004), at the rate it is given.
+    const requestTotal = async(subtotal, rate) => {
       const getFinalPrice = await axios.post(API_ENDPOINTS.TAX.CALCULATE, 
-        {jobPrice:tempSubtotal, taxRate: correspondingTax, jobDescription: jobDescription})
+        {jobPrice:subtotal, taxRate: rate, jobDescription: jobDescription})
       const responsePayload = getFinalPrice?.data?.data ?? getFinalPrice?.data;
       const calculatedFinalPrice = responsePayload?.finalPrice ?? responsePayload;
       setFinalPrice(Number(calculatedFinalPrice) || 0)
@@ -83,14 +105,16 @@ const InvoicePage = () => {
       const getTaxRate = await axios.post(API_ENDPOINTS.TAX.GET_RATE, {state:state});
       const fetchedRate = getTaxRate?.data?.data ?? getTaxRate?.data;
       const parsedRate = typeof fetchedRate === "object" ? fetchedRate?.taxRate : fetchedRate;
-      setCorrespondingTax(Number(parsedRate) || 0);
+      const rate = Number(parsedRate) || 0;
+      setCorrespondingTax(rate);
+      return rate;
     }
 
     // Same rule as the server (ADR-003): blank and an exact match (after trimming) of a stored number are blocked.
     // A gap or a lower number compared with the newest invoice only warns.
-    const validateInvoiceNum = (value) => {
+    const validateInvoiceNum = (value, invoices = invoicesArr) => {
       const num = value.trim();
-      const newest = invoicesArr[0];
+      const newest = invoices[0];
       const newestNum = newest?.invoiceNumber?.trim();
       setInvoiceNumChecked(true);
 
@@ -100,7 +124,7 @@ const InvoicePage = () => {
         return;
       }
 
-      if (invoicesArr.some((invoice) => invoice.invoiceNumber?.trim() === num)) {
+      if (invoices.some((invoice) => invoice.invoiceNumber?.trim() === num)) {
         toast.error(
           <div>
               <p>Error: Invoice Number is not unique</p> <br/>
@@ -174,10 +198,20 @@ const InvoicePage = () => {
             const response = await axios.get(API_ENDPOINTS.CUSTOMERS.LIST);
             const payload = response?.data?.data ?? response?.data ?? [];
             setCustomers(payload)
+            // The carried customer is selected by id, or else by the one customer whose phone digits match (a stored invoice has no id).
+            const carriedPhone = digitsOnly(carried?.customerInfo?.phoneNumber ?? carried?.phoneNumber);
+            const byId = carried?.customerInfo?._id && payload.find((c) => c._id === carried.customerInfo._id);
+            const byPhone = carriedPhone ? payload.filter((c) => digitsOnly(c.phoneNumber) === carriedPhone) : [];
+            const match = byId || (byPhone.length === 1 ? byPhone[0] : null);
+            if (match) {
+                selectCustomer(match._id, jobPrice);
+            }
         } catch (error) {
             toast.error(error.message);
         }};
 
+    // Run once on mount: the carried invoice (if any) is read from router state and checked against the lists just fetched.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect( () => {fetchData(), getInvoices()},[]);
         return (
             <div className="max-w-xl bg-white shadow-lg mx-auto p-7 rounded-sm mt-6">
@@ -186,7 +220,7 @@ const InvoicePage = () => {
                 </h2>
                 <div className="w-full px-4">
                     <div className="mt-3">
-                        <Select onChange = {(e)=>(requestInfo(e))} id="customers" required>
+                        <Select value={tempCustomer?._id || "Select Company"} onChange = {(e)=>(requestInfo(e))} id="customers" required>
                             <option>Select Company</option>
                             {customers?.map((customers, index) => {
                                 return(
@@ -212,7 +246,7 @@ const InvoicePage = () => {
                 <div className="mt-7 mb-3 px-3">
                   <Collapsible trigger={<Divider variant="middle" className="bg-color-red"><Chip label="Job Information ⤵" size="small" /></Divider>} open={true}>
                     <div className="rows mt-2">
-                    <div className="ml-3 font-semibold"><FormControlLabel control={<Switch onChange={handleJobInfo}/>}/>Table Form</div>
+                    <div className="ml-3 font-semibold"><FormControlLabel control={<Switch checked={openTable} onChange={handleJobInfo}/>}/>Table Form</div>
                         <div className="ml-4 mb-2 w-1/2">
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
@@ -250,6 +284,7 @@ const InvoicePage = () => {
                       <div><Collapsible open={openTable}>
                         <div>
                           <TableDescription 
+                            initialRows = {carriedRows}
                             dataCallBack = {handleChildData} />
                         </div>
                       </Collapsible></div>
