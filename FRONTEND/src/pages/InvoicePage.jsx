@@ -15,21 +15,28 @@ import CustomerInfo from "../components/CustomerInfo";
 import TableDescription from "../components/TableDescription";
 import API_ENDPOINTS from "../config/apiConfig";
 import { isValidDateOfService } from "../utils/date";
+import { parseDollarsToCents, formatCents, centsToDollarString } from "../utils/money";
 
 const digitsOnly = (value) => String(value ?? "").replace(/\D/g, "");
 
 const InvoicePage = () => {
     // The invoice carried back from the PDF page ("Edit Invoice"), in either of its two shapes; none when opened from the home page.
+    // Amounts in it are integer cents (ADR-012); a stored invoice from before cents has none, and starts with empty amounts.
     const carried = useLocation().state;
-    const carriedRows = Array.isArray(carried?.tableData) ? carried.tableData : [];
-    const carriedSubtotal = typeof carried?.subtotal === "object" ? carried.subtotal?.subtotal : carried?.subtotal;
+    const carriedLines = Array.isArray(carried?.lineItems) ? carried.lineItems : [];
+    const carriedRows = carriedLines.map((line) => ({
+        description: line.description,
+        quantity: String(line.quantity),
+        price: centsToDollarString(line.unitPriceCents),
+    }));
 
-    const [jobPrice, setJobPrice] = useState(() => Number(carriedSubtotal) || 0)
+    const [manualSubtotal, setManualSubtotal] = useState(() => (carriedLines.length === 0 ? centsToDollarString(carried?.subtotalCents) : ""));
     const [jobDescription, setJobDescription] = useState(carried?.jobDescription);
     const [customers, setCustomers] = useState([]);
     const [tempCustomer, setTempCustomer] = useState([]);
     const [correspondingTax, setCorrespondingTax] = useState();
-    const [finalPrice, setFinalPrice] = useState(0.00);
+    // The server's answer for one subtotal at one rate; it counts only while both still match the page
+    const [totals, setTotals] = useState(null);
     const [dateOfService, setDateOfService] = useState(carried?.dateOfService || '');
     const [invoiceNumber, setInvoiceNumber]= useState(carried?.invoiceNumber);
     const [dateTouched, setDateTouched] = useState(false);
@@ -37,35 +44,69 @@ const InvoicePage = () => {
     const [invoiceNumChecked, setInvoiceNumChecked] = useState(false);
     const [invoicesArr, setInvoicesArr] = useState([]);
     const [openTable, setOpenTable] = useState(carriedRows.length > 0);
-    const [tableData, setTableData] = useState(carriedRows);
+    // The table's valid lines (each with its displayed line total) and whether every filled row is valid
+    const [tableLines, setTableLines] = useState(() => ({ lineItems: carriedLines, valid: true }));
 
-    // Loads the customer's current record and asks the server for the state's rate and, when a subtotal is set, the total at that rate.
-    const selectCustomer = async (id, subtotal) => {
+    // Only the displayed line totals and subtotal are derived here (ADR-004): the sum of the line totals, or the typed amount.
+    // null when an amount is invalid or too large; the total is then held.
+    const lineItems = openTable ? tableLines.lineItems : [];
+    const linesSum = lineItems.reduce((sum, line) => sum + line.lineTotalCents, 0);
+    let subtotalCents = null;
+    if (openTable) {
+        subtotalCents = tableLines.valid && Number.isSafeInteger(linesSum) ? linesSum : null;
+    } else if (manualSubtotal.trim() === "") {
+        subtotalCents = 0;
+    } else {
+        subtotalCents = parseDollarsToCents(manualSubtotal);
+    }
+    const subtotalInvalid = !openTable && manualSubtotal.trim() !== "" && subtotalCents === null;
+
+    const totalsCurrent = totals !== null && totals.subtotalCents === subtotalCents && totals.taxRate === correspondingTax;
+    const totalReady = subtotalCents === 0 || totalsCurrent;
+    const taxCents = subtotalCents === 0 ? 0 : totals?.taxCents;
+    const finalPriceCents = subtotalCents === 0 ? 0 : totals?.finalPriceCents;
+
+    // Asks the server for the state's rate; the total follows from the effect below.
+    const selectCustomer = async (id) => {
         try {
             const info = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
             const payload = info?.data?.data ?? info?.data ?? {};
             setTempCustomer(payload);
-            const rate = await handleTax(payload.stateAddress);
-            if (Number(subtotal)) {
-              await requestTotal(subtotal, rate);
-            }
+            await handleTax(payload.stateAddress);
         } catch (error) {
-            // A refused rate or total (a customer with no state or one the tax table lacks, say) is shown, not swallowed
+            // A refused rate (a customer with no state or one the tax table lacks, say) is shown, not swallowed
             setTempCustomer([]);
             setCorrespondingTax();
-            setFinalPrice(0);
             toast.error(error.response?.data?.message ?? error.message);
         }
     }
+
+    // The total always comes from the server (ADR-004), only for a valid subtotal above 0 and a known rate.
+    // Nothing is requested while a row or the typed amount is invalid, and an answer for an older subtotal is dropped.
+    useEffect(() => {
+        if (!subtotalCents || correspondingTax === undefined) return;
+        let stale = false;
+        axios.post(API_ENDPOINTS.TAX.CALCULATE, { subtotalCents, taxRate: correspondingTax })
+            .then((response) => {
+                if (stale) return;
+                const data = response?.data?.data ?? response?.data;
+                setTotals({ subtotalCents, taxRate: correspondingTax, taxCents: data?.taxCents, finalPriceCents: data?.finalPriceCents });
+            })
+            .catch((error) => {
+                if (stale) return;
+                setTotals(null);
+                toast.error(error.response?.data?.message ?? error.message);
+            });
+        return () => { stale = true; };
+    }, [subtotalCents, correspondingTax]);
 
     const requestInfo = (e) => {
         if(e.target.value == "Select Company") {
           setTempCustomer([]);
           setCorrespondingTax();
-          setFinalPrice(0);
           return;
         }
-        selectCustomer(e.target.value, jobPrice);
+        selectCustomer(e.target.value);
     }
 
     const getInvoices = async() => {
@@ -82,29 +123,6 @@ const InvoicePage = () => {
           toast.error(error.message);
         }
   }
-
-    const handleJobPrice = async(e) => {
-      let tempSubtotal;
-      
-      if(e.target === undefined) {
-        tempSubtotal = e;
-      }
-      else{
-        tempSubtotal = e.target.value
-      }
-
-      setJobPrice(tempSubtotal)
-      await requestTotal(tempSubtotal, correspondingTax)
-    }
-
-    // The total always comes from the server (ADR-004), at the rate it is given.
-    const requestTotal = async(subtotal, rate) => {
-      const getFinalPrice = await axios.post(API_ENDPOINTS.TAX.CALCULATE, 
-        {jobPrice:subtotal, taxRate: rate, jobDescription: jobDescription})
-      const responsePayload = getFinalPrice?.data?.data ?? getFinalPrice?.data;
-      const calculatedFinalPrice = responsePayload?.finalPrice ?? responsePayload;
-      setFinalPrice(Number(calculatedFinalPrice) || 0)
-    }
 
     const handleTax = async(state) => {
       const getTaxRate = await axios.post(API_ENDPOINTS.TAX.GET_RATE, {state:state});
@@ -171,7 +189,7 @@ const InvoicePage = () => {
     const dateHasError = dateTouched && !dateIsValid;
 
     const checkValidity = (e) => {
-      if(!(dateIsValid&&invoiceNumValidity) || jobPrice == 0) {
+      if(!(dateIsValid&&invoiceNumValidity) || !subtotalCents || !totalReady) {
         e.preventDefault();
         toast.error(
           <div>
@@ -180,19 +198,6 @@ const InvoicePage = () => {
         )
       }
     }
-    const handleChildData = (descriptionData) => {
-      setTableData(descriptionData);
-
-      let updatedSubtotal = 0;
-      descriptionData.map((item, i) => {
-        updatedSubtotal += descriptionData[i]['itemTotal'];
-      })
-
-      setJobPrice(updatedSubtotal);
-      handleJobPrice(updatedSubtotal);
-      //console.log(tableData);
-    }
-
     const handleJobInfo = () => {
       //console.log("test")
       openTable?setOpenTable(false):setOpenTable(true);
@@ -209,7 +214,7 @@ const InvoicePage = () => {
             const byPhone = carriedPhone ? payload.filter((c) => digitsOnly(c.phoneNumber) === carriedPhone) : [];
             const match = byId || (byPhone.length === 1 ? byPhone[0] : null);
             if (match) {
-                selectCustomer(match._id, jobPrice);
+                selectCustomer(match._id);
             }
         } catch (error) {
             toast.error(error.message);
@@ -290,7 +295,7 @@ const InvoicePage = () => {
                         <div>
                           <TableDescription 
                             initialRows = {carriedRows}
-                            dataCallBack = {handleChildData} />
+                            dataCallBack = {setTableLines} />
                         </div>
                       </Collapsible></div>
                       <div><Collapsible open={!openTable}>
@@ -312,11 +317,14 @@ const InvoicePage = () => {
                         <input
                           readOnly={openTable}
                           type="text"
-                          value={ (jobPrice===0.00?'':jobPrice)}
-                          onChange={handleJobPrice}
-                          className="w-full font-semibold text-lg mb-2 block text-right"
+                          value={openTable ? (subtotalCents === null ? "—" : subtotalCents === 0 ? "" : centsToDollarString(subtotalCents)) : manualSubtotal}
+                          onChange={(e) => setManualSubtotal(e.target.value)}
+                          aria-invalid={subtotalInvalid}
+                          aria-describedby={subtotalInvalid ? "subtotalError" : undefined}
+                          className={`w-full font-semibold text-lg mb-2 block text-right${subtotalInvalid ? " border border-red-500" : ""}`}
                           placeholder="Enter Job Subtotal"
                         />
+                        {subtotalInvalid && <p id="subtotalError" className="text-sm text-red-600 text-right mb-2">Enter an amount like 19.99</p>}
                     </div>
                     <div>
                         <label className="mb-2 block font-semibold">
@@ -342,7 +350,7 @@ const InvoicePage = () => {
                           type="text"
                           className="inline-block font-semibold mb-2 text-center"
                           placeholder="State Taxes">
-                            {"$"+(parseFloat((jobPrice*(correspondingTax/100)).toFixed(2))||0)}
+                            {totalReady ? formatCents(taxCents) : "—"}
                           </label>
                         </div>
                     </div>
@@ -355,7 +363,7 @@ const InvoicePage = () => {
                           type="text"
                           className="w-full font-semibold text-lg mb-2 block text-center"
                           placeholder="Total Price"
-                          value={"$"+[parseFloat(finalPrice).toFixed(2) || 0]}
+                          value={totalReady ? formatCents(finalPriceCents) : "—"}
                         />
                     </div>
                   </Collapsible>
@@ -365,7 +373,7 @@ const InvoicePage = () => {
                       id="pdfButton"
                       to = {`/pdfPage`}
                       onClick={checkValidity}
-                      state= {{customerInfo: tempCustomer, subtotal: jobPrice, taxRate: correspondingTax, jobDescription: jobDescription, finalPrice: finalPrice, dateOfService: dateOfService, invoiceNumber: invoiceNumber?.trim(), tableData: tableData}}
+                      state= {{customerInfo: tempCustomer, subtotalCents: subtotalCents, taxRate: correspondingTax, taxCents: taxCents, finalPriceCents: finalPriceCents, jobDescription: jobDescription, dateOfService: dateOfService, invoiceNumber: invoiceNumber?.trim(), lineItems: lineItems}}
                       className={`inline-block w-1/2 text-center shadow-md text-sm bg-blue-500 text-white rounded-lg px-4 py-1 font-bold transition ease-in-out duration-300 hover:scale-110 hover:bg-blue-600 ${invoiceNumInvalid ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}`}>
                       Generate PDF
                   </Link>

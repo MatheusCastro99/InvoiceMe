@@ -8,6 +8,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import API_ENDPOINTS from "../config/apiConfig";
+import { formatCents } from "../utils/money";
 
 const styles = tableDataStyle;
 
@@ -16,7 +17,7 @@ const PdfPage = () => {
     const [newCustomer, setNewCustomer] = useState();
     const rawState = location.state || {};
     const customerInfo = rawState.customerInfo;
-    const tableData = rawState.tableData;
+    const lineItems = rawState.lineItems;
     const companyName = rawState.companyName;
     const companyEmail = rawState.companyEmail;
     const phoneNumber = rawState.phoneNumber;
@@ -24,15 +25,14 @@ const PdfPage = () => {
     const cityAddress = rawState.cityAddress;
     const stateAddress = rawState.stateAddress;
     const zipAddress = rawState.zipAddress;
-    const subtotal = typeof rawState.subtotal === 'object' ? Number(rawState.subtotal?.subtotal ?? 0) : Number(rawState.subtotal ?? 0);
-    const taxRate = typeof rawState.taxRate === 'object' ? Number(rawState.taxRate?.taxRate ?? 0) : Number(rawState.taxRate ?? 0);
-    const finalPrice = typeof rawState.finalPrice === 'object' ? Number(rawState.finalPrice?.finalPrice ?? 0) : Number(rawState.finalPrice ?? 0);
+    // Amounts are integer cents (ADR-012); an invoice stored before cents has none and shows dashes
+    const { subtotalCents, taxRate, taxCents, finalPriceCents } = rawState;
     const dateOfService = rawState.dateOfService;
     const invoiceNumber = rawState.invoiceNumber;
     const jobDescription = rawState.jobDescription;
     
     const handleTableData = () => {
-      if(tableData===undefined) return;
+      if(!Array.isArray(lineItems) || lineItems.length === 0) return;
 
         return (
           <View style={styles.table} id="Table">
@@ -50,7 +50,7 @@ const PdfPage = () => {
                 <Text style={styles.tableCell}>Item Total</Text>
               </View>
             </View>
-            {tableData.map((row, index) => (
+            {lineItems.map((row, index) => (
               <View style={styles.tableRow} key={index}>
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>{row.description}</Text>
@@ -59,10 +59,10 @@ const PdfPage = () => {
                   <Text style={styles.tableCell}>{row.quantity}</Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{"$"+row.price}</Text>
+                  <Text style={styles.tableCell}>{formatCents(row.unitPriceCents)}</Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{"$"+row.itemTotal}</Text>
+                  <Text style={styles.tableCell}>{formatCents(row.lineTotalCents)}</Text>
                 </View>
               </View>
             ))}
@@ -70,7 +70,6 @@ const PdfPage = () => {
           </View>
         )}
   
-    console.log(tableData)
     
     const isNew = (customerInfo) => {
       if (customerInfo==undefined) {
@@ -81,7 +80,7 @@ const PdfPage = () => {
 
     const saveInvoice = async(e) => { 
       e.preventDefault()
-      if(customerInfo.companyName === undefined || dateOfService === undefined || finalPrice===undefined){
+      if(customerInfo.companyName === undefined || dateOfService === undefined || finalPriceCents === undefined){
         toast.error('Please fill out all input completely');
         return;
       }
@@ -95,13 +94,11 @@ const PdfPage = () => {
                 cityAddress:customerInfo.cityAddress,
                 stateAddress:customerInfo.stateAddress,
                 zipAddress:customerInfo.zipAddress,
-                subtotal:subtotal,
-                taxRate:taxRate,
+                subtotalCents:subtotalCents,
                 jobDescription:jobDescription,
-                finalPrice:finalPrice,
                 dateOfService:dateOfService,
                 invoiceNumber:invoiceNumber,
-                tableData:tableData,
+                lineItems:(lineItems ?? []).map(({ description, quantity, unitPriceCents }) => ({ description, quantity, unitPriceCents })),
             });
 
         toast.success(`Saved ${customerInfo.companyName}'s Job Successfully`);
@@ -123,13 +120,13 @@ const PdfPage = () => {
         cityAddress = {cityAddress}
         stateAddress = {stateAddress}
         zipAddress = {zipAddress}
-        subtotal = {subtotal}
+        subtotalCents = {subtotalCents}
         taxRate = {taxRate}
+        taxCents = {taxCents}
         jobDescription = {jobDescription}
-        finalPrice = {finalPrice}
+        finalPriceCents = {finalPriceCents}
         dateOfService = {dateOfService}
         invoiceNumber = {invoiceNumber}
-        tableData = {tableData}
         handleTableData = {handleTableData()}/>)
         .toBlob()
         .then((blob) => saveAs(blob, `#${invoiceNumber} - ${customerInfo?.companyName || companyName}`));
@@ -167,13 +164,13 @@ const PdfPage = () => {
                     cityAddress = {cityAddress}
                     stateAddress = {stateAddress}
                     zipAddress = {zipAddress}
-                    subtotal = {subtotal}
+                    subtotalCents = {subtotalCents}
                     taxRate = {taxRate}
+                    taxCents = {taxCents}
                     jobDescription = {jobDescription}
-                    finalPrice = {finalPrice}
+                    finalPriceCents = {finalPriceCents}
                     dateOfService = {dateOfService}
                     invoiceNumber = {invoiceNumber}
-                    tableData = {tableData}
                     handleTableData = {handleTableData()}/>
             </PDFViewer>
         </div>

@@ -35,8 +35,8 @@ Notes:
 
 ```mermaid
 flowchart TD
-    A["InvoicePage.jsx<br/>the user picks a customer and enters a price;<br/>the state comes from the customer's address"] --> T["InvoicePage.jsx, axios.post<br/>tax/rate, then tax/calculate"]
-    T --> T1["taxController.js<br/>rate from STATE_TAX_RATES, final price"]
+    A["InvoicePage.jsx<br/>the user picks a customer and enters line items or a subtotal in dollars;<br/>the state comes from the customer's address"] --> T["InvoicePage.jsx, axios.post<br/>tax/rate, then tax/calculate with subtotalCents,<br/>only while every row is valid"]
+    T --> T1["taxController.js<br/>rate from STATE_TAX_RATES, tax and final price in cents"]
     T1 --> A2["InvoicePage.jsx<br/>Generate PDF: navigates to /pdfPage<br/>with the invoice in router state"]
     A2 --> B{"PdfPage.jsx, saveInvoice<br/>are company, date and final price set?"}
     B -- "no" --> B1["PdfPage.jsx<br/>toast: fill out all input"]
