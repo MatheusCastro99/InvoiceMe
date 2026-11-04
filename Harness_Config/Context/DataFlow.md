@@ -35,8 +35,8 @@ Notes:
 
 ```mermaid
 flowchart TD
-    A["InvoicePage.jsx<br/>the user picks a customer and enters a price;<br/>the state comes from the customer's address"] --> T["InvoicePage.jsx, axios.post<br/>tax/rate, then tax/calculate"]
-    T --> T1["taxController.js<br/>rate from STATE_TAX_RATES, final price"]
+    A["InvoicePage.jsx<br/>the user picks a customer and enters line items or a subtotal in dollars;<br/>the state comes from the customer's address"] --> T["InvoicePage.jsx, axios.post<br/>tax/rate, then tax/calculate with subtotalCents,<br/>only while every row is valid"]
+    T --> T1["taxController.js<br/>rate from STATE_TAX_RATES, tax and final price in cents"]
     T1 --> A2["InvoicePage.jsx<br/>Generate PDF: navigates to /pdfPage<br/>with the invoice in router state"]
     A2 --> B{"PdfPage.jsx, saveInvoice<br/>are company, date and final price set?"}
     B -- "no" --> B1["PdfPage.jsx<br/>toast: fill out all input"]
@@ -56,7 +56,7 @@ flowchart TD
 ```
 
 Notes:
-- The server computes the tax rate and the final price. The page sums the line items into the subtotal it sends, and shows a tax line it derives as subtotal × rate.
+- The server computes every stored figure (ADR-004, ADR-012): `postInvoice` takes the tax rate from the invoice's state, each line total, the subtotal, the tax and the final price, all in integer cents, and ignores any such figure the client sends. The page sends the lines (`description`, `quantity`, `unitPriceCents`) and the customer's copy, and only derives the line totals and the subtotal it displays.
 - The date of service travels as `YYYY-MM-DD` (ADR-013). `InvoicePage.jsx` enters it with a date picker and checks it with `isValidDateOfService` (`utils/date.js`, the server's rule); the invoice table and the PDF show it as `MM/DD/YYYY` by cutting the string. The server stores it as a date at UTC midnight and sends it back as `YYYY-MM-DD`.
 - The invoice number is required and unique (exact match after trimming). `InvoicePage.jsx` blocks a blank number and one already in the loaded list, and only warns about a gap or a lower number; the server's unique index is the guard when two saves race, and its 409 reaches the toast on `PdfPage.jsx`.
 - The invoice stores a copy of the customer's name, phone, email and address at the time it is saved. A later change to the customer does not change the invoice.

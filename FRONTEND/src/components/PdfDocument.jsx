@@ -3,6 +3,7 @@ import {pageBox, headerBox, jobInfoBox, priceInfoBox, companyInfoBox, footerBox}
 import Logo from "../assets/InvoiceMeLogo.PNG"
 import { formatPhoneNumber } from "../utils/phone";
 import { formatDateOfService } from "../utils/date";
+import { formatCents } from "../utils/money";
 
 const MyDocument = (info) => {
     const customerInfo = info.customerInfo;
@@ -13,10 +14,11 @@ const MyDocument = (info) => {
     const {cityAddress} = info;
     const {stateAddress} = info;
     const {zipAddress} = info;
-    const {subtotal} = info;
+    const {subtotalCents} = info;
     const {taxRate} = info;
+    const {taxCents} = info;
     const {jobDescription} = info;
-    const {finalPrice} = info;
+    const {finalPriceCents} = info;
     const {dateOfService} = info;
     const {invoiceNumber} = info;
     const handlaTableData = info.handleTableData;
@@ -71,9 +73,9 @@ const MyDocument = (info) => {
             <View style={priceInfoBox.fields}>
                 <Text style={priceInfoBox.title}>Price:</Text>
                 <View>
-                    <Text style={priceInfoBox.text}>Subtotal: ${Number(subtotal).toFixed(2)}</Text>
-                    <Text style={priceInfoBox.text}>Tax Rate ({taxRate}%): ${(subtotal*(taxRate/100)).toFixed(2)}</Text>
-                    <Text style={priceInfoBox.text}>Total: ${Number(finalPrice).toFixed(2)}</Text>
+                    <Text style={priceInfoBox.text}>Subtotal: {formatCents(subtotalCents)}</Text>
+                    <Text style={priceInfoBox.text}>Tax Rate ({taxRate}%): {formatCents(taxCents)}</Text>
+                    <Text style={priceInfoBox.text}>Total: {formatCents(finalPriceCents)}</Text>
                 </View>
             </View>
             <View>

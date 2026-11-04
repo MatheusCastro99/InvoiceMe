@@ -22,13 +22,13 @@ taxRouter.post("/rate", defineTaxRate);
 
 /**
  * @route POST /api/v1/tax/calculate
- * @body {number} jobPrice - Base job price
- * @body {number} taxRate - Tax rate as percentage
- * @returns {Object} Breakdown with tax and final price
+ * @body {number} subtotalCents - Integer cents, 0 or more
+ * @body {number} taxRate - Tax rate as a percentage, 0 to 100 with at most 3 decimals
+ * @returns {Object} subtotalCents, taxRate, taxCents and finalPriceCents (integer cents)
  * @example
  * POST /api/v1/tax/calculate
- * { "jobPrice": 100, "taxRate": 7.25 }
- * Response: { "success": true, "data": { "jobPrice": 100, "taxRate": 7.25, "taxAmount": 7.25, "finalPrice": 107.25 } }
+ * { "subtotalCents": 5997, "taxRate": 7.25 }
+ * Response: { "success": true, "data": { "subtotalCents": 5997, "taxRate": 7.25, "taxCents": 435, "finalPriceCents": 6432 } }
  */
 taxRouter.post("/calculate", calculateTax);
 

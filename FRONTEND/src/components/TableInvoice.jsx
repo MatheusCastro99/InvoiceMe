@@ -18,6 +18,7 @@ import CollapsibleImport from 'react-collapsible';
 const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import { useState } from "react";
 import { formatDateOfService, monthOfService } from "../utils/date";
+import { formatCents } from "../utils/money";
 
 const TableInvoice = ({ invoices, getInvoices, customers}) => {
     
@@ -39,14 +40,14 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
         cityAddress = {invoice.cityAddress}
         stateAddress = {invoice.stateAddress}
         zipAddress = {invoice.zipAddress}
-        subtotal = {invoice.subtotal}
+        subtotalCents = {invoice.subtotalCents}
         taxRate = {invoice.taxRate}
+        taxCents = {invoice.taxCents}
         jobDescription = {invoice.jobDescription}
-        finalPrice = {invoice.finalPrice}
+        finalPriceCents = {invoice.finalPriceCents}
         dateOfService = {invoice.dateOfService}
         invoiceNumber = {invoice.invoiceNumber}
-        tableData = {invoice.tableData}
-        handleTableData = {handleTableData(invoice.tableData)}/>)
+        handleTableData = {handleTableData(invoice.lineItems)}/>)
         .toBlob()
         .then((blob) => saveAs(blob, `#${invoice.invoiceNumber} - ${invoice.customerInfo?.companyName || invoice.companyName}`));
   }
@@ -121,8 +122,9 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
       })
     }
 
-    const handleTableData = (tableData) => {
-      if(tableData===undefined) return;
+    // A stored invoice from before cents has no lineItems, so it has no table
+    const handleTableData = (lineItems) => {
+      if(!Array.isArray(lineItems) || lineItems.length === 0) return;
 
         return (
           <View style={styles.table} id="Table">
@@ -140,7 +142,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
                 <Text style={styles.tableCell}>Item Total</Text>
               </View>
             </View>
-            {tableData.map((row, index) => (
+            {lineItems.map((row, index) => (
               <View style={styles.tableRow} key={index}>
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>{row.description}</Text>
@@ -149,10 +151,10 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
                   <Text style={styles.tableCell}>{row.quantity}</Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{"$"+row.price}</Text>
+                  <Text style={styles.tableCell}>{formatCents(row.unitPriceCents)}</Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{"$"+row.itemTotal}</Text>
+                  <Text style={styles.tableCell}>{formatCents(row.lineTotalCents)}</Text>
                 </View>
               </View>
             ))}
@@ -168,7 +170,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
           return(
             <tr key={currInvoice._id}>
               <td className="p-4 border-b ">{currInvoice.companyName}</td>
-              <td className="p-4 border-b ">{`$${currInvoice.finalPrice}`}</td>
+              <td className="p-4 border-b ">{formatCents(currInvoice.finalPriceCents)}</td>
               <td className="p-4 border-b ">{formatDateOfService(currInvoice.dateOfService)}</td>
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
@@ -177,8 +179,8 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
                   <Link
                       to = {`/pdfPage`}
                       state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.cityAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress,
-                                subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, 
-                                dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, tableData: currInvoice.tableData}}
+                                subtotalCents: currInvoice.subtotalCents, taxRate: currInvoice.taxRate, taxCents: currInvoice.taxCents, jobDescription: currInvoice.jobDescription, finalPriceCents: currInvoice.finalPriceCents, 
+                                dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, lineItems: currInvoice.lineItems}}
                       className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
                       PDF
                   </Link>
@@ -190,8 +192,8 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
               <td className="p-4 border-b ">
                 <Collapsible trigger={"Show"}>
                   <p>Job Breakdown: {currInvoice.jobDescription || "Check PDF"}</p>
-                  <p>Subtotal: ${currInvoice.subtotal}</p>
-                  <p>Tax: ${(currInvoice.subtotal*(currInvoice.taxRate/100)).toFixed(2)}</p>  
+                  <p>Subtotal: {formatCents(currInvoice.subtotalCents)}</p>
+                  <p>Tax: {formatCents(currInvoice.taxCents)}</p>  
                 </Collapsible>
               </td>
             </tr>
@@ -202,7 +204,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
           return (
             <tr key={currInvoice._id}>
               <td className="p-4 border-b ">{currInvoice.companyName}</td>
-              <td className="p-4 border-b ">{currInvoice.finalPrice}</td>
+              <td className="p-4 border-b ">{formatCents(currInvoice.finalPriceCents)}</td>
               <td className="p-4 border-b ">{formatDateOfService(currInvoice.dateOfService)}</td>
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
@@ -211,8 +213,8 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
                   <Link
                       to = {`/pdfPage`}
                       state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.cityAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress,
-                        subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, 
-                        dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, tableData: currInvoice.tableData}}
+                        subtotalCents: currInvoice.subtotalCents, taxRate: currInvoice.taxRate, taxCents: currInvoice.taxCents, jobDescription: currInvoice.jobDescription, finalPriceCents: currInvoice.finalPriceCents, 
+                        dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, lineItems: currInvoice.lineItems}}
                       className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
                       PDF
                   </Link>
@@ -224,8 +226,8 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
               <td className="p-4 border-b ">
                 <Collapsible trigger={"Show"}>
                   <p>Job Breakdown: {currInvoice.jobDescription || "Check PDF"}</p>
-                  <p>Subtotal: ${currInvoice.subtotal}</p>
-                  <p>Tax: ${(currInvoice.subtotal*(currInvoice.taxRate/100)).toFixed(2)}</p>
+                  <p>Subtotal: {formatCents(currInvoice.subtotalCents)}</p>
+                  <p>Tax: {formatCents(currInvoice.taxCents)}</p>
                 </Collapsible>
               </td>
             </tr>
@@ -236,7 +238,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
           return (
             <tr key={currInvoice._id}>
               <td className="p-4 border-b ">{currInvoice.companyName}</td>
-              <td className="p-4 border-b ">{currInvoice.finalPrice}</td>
+              <td className="p-4 border-b ">{formatCents(currInvoice.finalPriceCents)}</td>
               <td className="p-4 border-b ">{formatDateOfService(currInvoice.dateOfService)}</td>
               <td className="p-4 border-b ">{currInvoice.invoiceNumber}</td>
               <td className="p-4 border-b ">
@@ -244,7 +246,7 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
                   <button onClick={() => deleteInvoice(currInvoice._id)} className="inline-block text-sm font-semibold text-white px-2 py-1 bg-red-500 rounded-sm transition ease-in-out duration-300 hover:bg-red-700">Delete</button>
                   <Link
                       to = {`/pdfPage`}
-                      state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.cityAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress, subtotal: currInvoice.subtotal, taxRate: currInvoice.taxRate, jobDescription: currInvoice.jobDescription, finalPrice: currInvoice.finalPrice, dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, tableData: currInvoice.tableData}}
+                      state= {{companyName: currInvoice.companyName, phoneNumber: currInvoice.phoneNumber, companyEmail: currInvoice.companyEmail, streetAddress: currInvoice.streetAddress, cityAddress: currInvoice.cityAddress, stateAddress: currInvoice.stateAddress, zipAddress: currInvoice.zipAddress, subtotalCents: currInvoice.subtotalCents, taxRate: currInvoice.taxRate, taxCents: currInvoice.taxCents, jobDescription: currInvoice.jobDescription, finalPriceCents: currInvoice.finalPriceCents, dateOfService: currInvoice.dateOfService, invoiceNumber: currInvoice.invoiceNumber, lineItems: currInvoice.lineItems}}
                       className="inline-block text-center text-sm bg-blue-500 font-semibold text-white rounded-sm px-2 py-1 transition ease-in-out duration-300 hover:bg-blue-600 hover:cursor-pointer">
                       PDF
                   </Link>
@@ -256,8 +258,8 @@ const TableInvoice = ({ invoices, getInvoices, customers}) => {
               <td className="p-4 border-b ">
                 <Collapsible trigger={"Show"}>
                   <p>Job Breakdown: {currInvoice.jobDescription || "Check PDF"}</p>
-                  <p>Subtotal: ${currInvoice.subtotal}</p>
-                  <p>Tax: ${(currInvoice.subtotal*(currInvoice.taxRate/100)).toFixed(2)}</p>
+                  <p>Subtotal: {formatCents(currInvoice.subtotalCents)}</p>
+                  <p>Tax: {formatCents(currInvoice.taxCents)}</p>
                 </Collapsible>
               </td>
             </tr>

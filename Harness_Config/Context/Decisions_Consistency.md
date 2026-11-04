@@ -149,7 +149,7 @@ Every money amount (line-item price, subtotal, tax, final price) is an integer n
 Reason:
 - Floating-point dollars round inconsistently, and tax math compounds the error.
 
-Status: Accepted, pending (the Schema epic converts the model, the API and the frontend; today `subtotal` and `finalPrice` are `Number` dollars)
+Status: Accepted, pending (new invoices in cents since v1.26; old rows convert in #141)
 
 ### ADR-013
 A date of service is a calendar date: stored as a Date at UTC midnight, sent and accepted as ISO `YYYY-MM-DD`.

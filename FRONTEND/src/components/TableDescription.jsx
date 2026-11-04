@@ -1,12 +1,42 @@
 import { useState } from "react";
+import { TextField } from "@mui/material";
+import { parseDollarsToCents, parseQuantity, lineTotalCents, formatCents } from "../utils/money";
 
 const emptyRow = (id) => ({
     id,
     description: "",
     quantity: "",
     price: "",
-    itemTotal: ""
 });
+
+// A row with nothing typed in it is skipped, not flagged
+const isBlank = (row) => row.description.trim() === "" && row.quantity.trim() === "" && row.price.trim() === "";
+
+// What one row holds once parsed with the server's rules (ADR-003); a field that fails is null.
+// The row total is for display only: the server computes the stored one (ADR-004).
+const parseRow = (row) => {
+    const description = row.description.trim() === "" ? null : row.description.trim();
+    const quantity = parseQuantity(row.quantity);
+    const unitPriceCents = parseDollarsToCents(row.price);
+    const total = quantity !== null && unitPriceCents !== null ? lineTotalCents(quantity, unitPriceCents) : null;
+    return { description, quantity, unitPriceCents, lineTotalCents: total };
+};
+
+// The valid rows as line items, and whether every row that is not blank is valid
+const summarize = (rows) => {
+    const lineItems = [];
+    let valid = true;
+    rows.forEach((row) => {
+        if (isBlank(row)) return;
+        const parsed = parseRow(row);
+        if (parsed.description === null || parsed.lineTotalCents === null) {
+            valid = false;
+            return;
+        }
+        lineItems.push(parsed);
+    });
+    return { lineItems, valid };
+};
 
 const TableDescription = (props) => {
     // Rows carried back from the PDF page seed the table; otherwise start with one empty row so it is usable immediately.
@@ -14,6 +44,9 @@ const TableDescription = (props) => {
     const [rows, setRows] = useState(() => initialRows ?? [emptyRow(1)]);
     const [rowNum, setRowNum] = useState(() => (initialRows ? initialRows.length : 1) + 1);
     const dataCallBack = props.dataCallBack;
+
+    // Tells the page the valid lines and whether every filled row is valid; the page holds the total while one is not
+    const report = (updatedRows) => dataCallBack(summarize(updatedRows));
 
     const addItemRow = () => {
         setRows(prevRows => [...prevRows, emptyRow(rowNum)]);
@@ -27,17 +60,25 @@ const TableDescription = (props) => {
         setRows(updatedRows);
         setRowNum(rowNum > 1 ? rowNum-1 : 1);
 
-        dataCallBack(updatedRows);
+        report(updatedRows);
     }
 
     const handleChange = (rowIndex, field, value) => {
-        const updatedRow = { ...rows[rowIndex], [field]: value };
-        updatedRow.itemTotal = parseFloat((updatedRow.price * updatedRow.quantity).toFixed(2), 10);
-
-        const updatedRows = rows.map((row, i) => (i === rowIndex ? updatedRow : row));
+        const updatedRows = rows.map((row, i) => (i === rowIndex ? { ...row, [field]: value } : row));
         setRows(updatedRows);
-        dataCallBack(updatedRows);
+        report(updatedRows);
     }
+
+    const cell = (row, rowIndex, field, label, invalid, message, size) => (
+        <TextField
+            size="small"
+            value={row[field]}
+            onChange={(e) => handleChange(rowIndex, field, e.target.value)}
+            error={invalid}
+            helperText={invalid ? message : undefined}
+            slotProps={{ htmlInput: { "aria-label": `${label}, row ${rowIndex + 1}`, size } }}
+        />
+    );
 
     return (
         <div className="overflow-auto">
@@ -57,35 +98,21 @@ const TableDescription = (props) => {
                 </thead>
                 <tbody>
                     {rows.map((row, rowIndex) => {
+                        const filled = !isBlank(row);
+                        const parsed = parseRow(row);
                         return (
                             <tr key={row.id}>
-                                <td className="border">
-                                    <input 
-                                        type="text"
-                                        value={row.description}
-                                        onChange={(e) => handleChange(rowIndex, 'description', e.target.value)} />
+                                <td className="border align-top p-1">
+                                    {cell(row, rowIndex, "description", "Item", filled && parsed.description === null, "Enter a description")}
                                 </td>
-                                <td className="border">
-                                    <input 
-                                        size="8"
-                                        type="text" 
-                                        value={row.quantity}
-                                        onChange={(e) => handleChange(rowIndex, 'quantity', e.target.value)}/>
+                                <td className="border align-top p-1">
+                                    {cell(row, rowIndex, "quantity", "Quantity", filled && parsed.quantity === null, "More than 0, up to 2 decimals", 8)}
                                 </td>
-                                <td className="border">
-                                    <input 
-                                        size="8"
-                                        type="text"
-                                        value={row.price}
-                                        onChange={(e) => handleChange(rowIndex, 'price', e.target.value)}/>
+                                <td className="border align-top p-1">
+                                    {cell(row, rowIndex, "price", "Each price", filled && parsed.unitPriceCents === null, "An amount like 19.99", 8)}
                                 </td>
-                                <td className="border">
-                                    <input 
-                                        size="8"
-                                        type="text"
-                                        readOnly={true}
-                                        value={row.itemTotal}
-                                        onChange={(e) => handleChange(rowIndex, 'itemTotal', e.target.value)}/>
+                                <td className="border align-top p-1 text-right font-semibold" aria-live="polite">
+                                    {filled ? formatCents(parsed.lineTotalCents ?? undefined) : ""}
                                 </td>
                             </tr>
                         )

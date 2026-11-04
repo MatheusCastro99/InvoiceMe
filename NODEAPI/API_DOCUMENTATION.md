@@ -257,17 +257,23 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
       "phoneNumber": "(555) 123-4567",
       "dateOfService": "2024-01-10",
       "invoiceNumber": "INV-001",
-      "finalPrice": 1075.5,
+      "stateAddress": "IL",
       "jobDescription": "Roof inspection and repairs",
-      "taxRate": 7.25,
-      "subtotal": 1000,
-      "tableData": [],
+      "lineItems": [
+        { "description": "Service call", "quantity": 2, "unitPriceCents": 50000, "lineTotalCents": 100000 }
+      ],
+      "subtotalCents": 100000,
+      "taxRate": 6.25,
+      "taxCents": 6250,
+      "finalPriceCents": 106250,
       "createdAt": "2024-01-15T10:30:00Z"
     }
   ],
   "count": 25
 }
 ```
+
+Every money amount is an integer number of cents (ADR-012): `106250` is $1,062.50. `taxRate` is a percentage (`6.25` is 6.25%). An invoice stored before v1.26 keeps its old dollar fields (`finalPrice`, `subtotal`, `tableData`) as they were and has none of the cents fields; it is converted in #141.
 
 ---
 
@@ -288,20 +294,18 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
   "zipAddress": "62701",
   "dateOfService": "2024-01-10",
   "invoiceNumber": "INV-001",
-  "finalPrice": 1075.5,
   "jobDescription": "Roof inspection and repairs",
-  "tableData": [
+  "lineItems": [
     {
       "description": "Service call",
-      "quantity": 1,
-      "unitPrice": 500,
-      "total": 500
+      "quantity": 2,
+      "unitPriceCents": 50000
     }
-  ],
-  "taxRate": 7.25,
-  "subtotal": 1000
+  ]
 }
 ```
+
+The server computes every figure. With the lines above in IL (6.25%), the answer holds `lineTotalCents: 100000`, `subtotalCents: 100000`, `taxRate: 6.25`, `taxCents: 6250` and `finalPriceCents: 106250`. A `lineTotalCents`, `subtotalCents` (when there are lines), `taxRate`, `taxCents` or `finalPriceCents` in the request is ignored.
 
 **Validation Rules:**
 
@@ -309,7 +313,18 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
 - `phoneNumber` (required): String, valid US phone format
 - `dateOfService` (required): a real calendar date written `YYYY-MM-DD` (a string; `10/27/2026`, `2026-02-30` and a number are refused with 400 `Date of service must be a real date in YYYY-MM-DD format`). It is stored as a date at UTC midnight and every answer that returns an invoice (list, create, delete) sends it back as `YYYY-MM-DD`, whatever the server's time zone. An invoice stored before v1.24 with a non-date value in this field still lists, but its answer leaves out `dateOfService`; it is converted in #141
 - `invoiceNumber` (required): a non-blank string (a missing, blank or non-string value is refused with 400 `Invoice number is required`). It is stored trimmed and must be unique: the comparison is an exact match on the trimmed value, so `"INV-001"` and `" INV-001 "` are the same number, and `"042"` and `"42"` are different. A number that another invoice already has answers 409 `A record with this value already exists`. Invoices stored before v1.25 without a number are kept as they are and do not collide with each other
-- `finalPrice` (required): a number, or a numeric string such as "858.50", 0 or more
+- `stateAddress` (required): a state code in the tax table (`CA`, `NY`, ...), exactly as written: a missing value answers 400 `State is required`, an unknown one (including `DC` and lowercase) 400 `State must be a valid state code`. The server takes the tax rate from it
+- `lineItems` (optional list): each line is `{ description, quantity, unitPriceCents }`. `description` is a non-blank string (stored trimmed); `quantity` is a JSON number above 0 with at most 2 decimals; `unitPriceCents` is an integer of 0 or more. A line that fails answers 400 with `Each line item needs a description`, `Each line item quantity must be more than 0, with at most 2 decimals` or `Each line item price must be a whole number of cents, 0 or more`
+- `subtotalCents` (required when there are no `lineItems`, ignored when there are): an integer of 0 or more. A missing value answers 400 `Subtotal is required when there are no line items`; a float, a negative number or a string answers 400 `Subtotal must be a whole number of cents, 0 or more`
+- Amounts are JSON integers of cents (`Number.isSafeInteger`). A string (`"1999"`, `"12abc"`), a float or a negative number is refused. A result that is not a safe integer answers 400 `Amount is too large`
+
+**How the server computes the figures** (the same functions as `/tax/calculate`):
+
+- `lineTotalCents` = `quantity` × `unitPriceCents`, rounded half-up to a whole cent (1.5 × 333 is 500)
+- `subtotalCents` = the sum of the line totals, or the sent `subtotalCents` when there are no lines
+- `taxRate` = the percentage for `stateAddress` in the tax table (7.25 for CA)
+- `taxCents` = `subtotalCents` × `taxRate`, rounded half-up once for the whole invoice (1000 in CT at 6.35% is 64). The rate is read as integer thousandths of a percent, so rates such as 6.875 are exact
+- `finalPriceCents` = `subtotalCents` + `taxCents`
 
 **Response (201):**
 
@@ -401,11 +416,13 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
 
 **POST** `/tax/calculate`
 
+All amounts are integer cents (ADR-012). `taxRate` is a percentage.
+
 **Request Body:**
 
 ```json
 {
-  "jobPrice": 1000,
+  "subtotalCents": 5997,
   "taxRate": 7.25
 }
 ```
@@ -416,20 +433,31 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
 {
   "success": true,
   "data": {
-    "jobPrice": 1000,
+    "subtotalCents": 5997,
     "taxRate": 7.25,
-    "taxAmount": 72.5,
-    "finalPrice": 1072.5
+    "taxCents": 435,
+    "finalPriceCents": 6432
   }
 }
 ```
+
+**Validation Rules:**
+
+- `subtotalCents` (required): a JSON integer of 0 or more. A missing value answers 400 `Subtotal is required`; a float, a negative number or a string (including `"12abc"`) answers 400 `Subtotal must be a whole number of cents, 0 or more`
+- `taxRate` (required): a JSON number from 0 to 100 with at most 3 decimals. A missing value answers 400 `Tax rate is required`; a string, a value outside 0 to 100 or one with 4 decimals answers 400 `Tax rate must be a number from 0 to 100, with at most 3 decimals`
+- A result that is not a safe integer answers 400 `Amount is too large`
+
+**Rounding rule** (the same functions that `POST /invoices` uses):
+
+- `taxCents` = `subtotalCents` × `taxRate` / 100, rounded half-up to a whole cent, once. The rate is read as integer thousandths of a percent, so rates such as 6.875 and 4.225 are exact (1000 at 6.35% is 64; 1999 at 6.625% is 132)
+- `finalPriceCents` = `subtotalCents` + `taxCents`
 
 **Error Response (400):**
 
 ```json
 {
   "success": false,
-  "message": "Tax rate must be between 0 and 100",
+  "message": "Tax rate must be a number from 0 to 100, with at most 3 decimals",
   "statusCode": 400
 }
 ```
