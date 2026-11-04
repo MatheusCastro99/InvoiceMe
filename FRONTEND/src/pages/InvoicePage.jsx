@@ -189,13 +189,19 @@ const InvoicePage = () => {
     const dateHasError = dateTouched && !dateIsValid;
 
     const checkValidity = (e) => {
-      if(!(dateIsValid&&invoiceNumValidity) || !subtotalCents || !totalReady) {
+      if(!(dateIsValid&&invoiceNumValidity) || !subtotalCents) {
         e.preventDefault();
         toast.error(
           <div>
               <p>Check Date, Invoice Number, and Subtotal</p> <br/>
           </div>
         )
+      } else if (!totalReady) {
+        // The fields are fine; the server's tax and total are what's missing
+        e.preventDefault();
+        toast.error(correspondingTax === undefined
+          ? "Pick a company to get the tax and total"
+          : "The total isn't ready yet");
       }
     }
     const handleJobInfo = () => {
