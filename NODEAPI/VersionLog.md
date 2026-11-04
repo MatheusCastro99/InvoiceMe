@@ -179,3 +179,14 @@ Currently, 5 states are available for auto tax calculation. They are:
 - The index is partial, so invoices stored before this version without a number do not collide with each other.
 - The server builds the invoice index before it starts listening, next to the customer index. A local database that already holds duplicate invoice numbers cannot build it, so the server exits at startup with a clear error until the duplicates are resolved (the migration in #141 reports them). Invoices already stored are not rewritten.
 - The invoice page blocks a number already in the list and warns, without blocking, about a gap or a lower number; the PDF page shows the API's message when saving fails.
+
+
+## v1.26
+
+### Money in integer cents (ADR-012):
+
+- Every money amount on an invoice is an integer number of cents: `subtotalCents`, `taxCents`, `finalPriceCents`, and per line `unitPriceCents` and `lineTotalCents`. `finalPrice`, `subtotal` and `tableData` are gone from the model, replaced by these and `lineItems: [{ description, quantity, unitPriceCents, lineTotalCents }]`. `taxRate` stays a percentage (7.25) and is now required.
+- `POST /api/v1/invoices` computes the line totals, the subtotal, the tax and the final price on the server (ADR-004) and ignores any such figure the client sends. The tax rate comes from `stateAddress`, which is now required and must be a state in the tax table. With no `lineItems`, `subtotalCents` is required.
+- Rounding: a line total is quantity × unit price rounded half-up to a cent; the tax is subtotal × rate rounded half-up once for the invoice; the final price is their sum.
+- A float, negative or string amount (including `"12abc"`), a quantity of 0 or less or with more than 2 decimals, a blank description, and a missing or unknown state each answer 400. A result that is not a safe integer answers 400.
+- Invoices already stored keep their old dollar fields and show none of the new ones; they are converted in #141.

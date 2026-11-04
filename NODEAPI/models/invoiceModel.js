@@ -1,5 +1,22 @@
 const mongoose = require("mongoose");
 
+// Money is stored as integer cents (ADR-012). Rows from before v1.26 keep finalPrice, subtotal and tableData
+// (dollars) as raw fields until #141 converts them; they are not part of this schema.
+const isCents = {
+  validator: Number.isSafeInteger,
+  message: "{PATH} must be a whole number of cents",
+};
+
+const lineItemSchema = new mongoose.Schema(
+  {
+    description: { type: String, required: true, trim: true },
+    quantity: { type: Number, required: true, min: 0 },
+    unitPriceCents: { type: Number, required: true, min: 0, validate: isCents },
+    lineTotalCents: { type: Number, required: true, min: 0, validate: isCents },
+  },
+  { _id: false }
+);
+
 const invoiceSchema = mongoose.Schema(
   {
     companyName: {
@@ -48,29 +65,41 @@ const invoiceSchema = mongoose.Schema(
       trim: true,
     },
 
-    finalPrice: {
-      type: Number,
-      required: [true, "Please enter Final Price"],
-    },
-
     jobDescription: {
       type: String,
       required: false,
     },
 
-    tableData: {
-      type: Array,
-      required: false,
+    lineItems: {
+      type: [lineItemSchema],
+      default: [],
     },
 
+    // The tax rate used, as a percentage (7.25); the server sets it from the state
     taxRate: {
       type: Number,
-      required: false,
+      required: [true, "Please enter Tax Rate"],
     },
 
-    subtotal: {
+    subtotalCents: {
       type: Number,
-      required: false,
+      required: [true, "Please enter Subtotal"],
+      min: 0,
+      validate: isCents,
+    },
+
+    taxCents: {
+      type: Number,
+      required: [true, "Please enter Tax"],
+      min: 0,
+      validate: isCents,
+    },
+
+    finalPriceCents: {
+      type: Number,
+      required: [true, "Please enter Final Price"],
+      min: 0,
+      validate: isCents,
     },
   },
   {

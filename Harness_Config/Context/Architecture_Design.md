@@ -76,7 +76,7 @@ One controller per router: customerController.js, invoiceController.js, taxContr
 
 ### NODEAPI/models/
 - customerModel.js: the Customer collection
-- invoiceModel.js: the Invoice collection; an invoice stores a copy of the customer's fields, not a reference to the customer
+- invoiceModel.js: the Invoice collection; an invoice stores a copy of the customer's fields, not a reference to the customer, and its money as integer cents with `lineItems`
 
 ### NODEAPI/middlewares/
 - validationMiddleware.js: runs the validators on a request body before the controller
@@ -84,6 +84,7 @@ One controller per router: customerController.js, invoiceController.js, taxContr
 
 ### NODEAPI/utils/
 - validators.js: the server's validation rules
+- money.js: the integer-cent math (line total, tax, final price) behind `postInvoice` and `/tax/calculate`
 - errors.js: the error classes, each with its HTTP status
 - constants.js: the state tax-rate table and the response messages
 
