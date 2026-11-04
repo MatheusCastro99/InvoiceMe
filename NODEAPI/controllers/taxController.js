@@ -5,8 +5,10 @@
  */
 
 const asyncHandler = require("express-async-handler");
-const { STATE_TAX_RATES } = require("../utils/constants");
+const { STATE_TAX_RATES, RESPONSE_MESSAGES } = require("../utils/constants");
 const { ValidationError } = require("../utils/errors");
+const { isValidCents, isValidTaxRate } = require("../utils/validators");
+const { computeTax } = require("../utils/money");
 
 /**
  * Get tax rate by state
@@ -18,18 +20,18 @@ const defineTaxRate = asyncHandler((req, res) => {
   const { state } = req.body;
 
   if (!state) {
-    throw new ValidationError("State parameter is required");
+    throw new ValidationError(RESPONSE_MESSAGES.STATE_PARAMETER_REQUIRED);
   }
 
   if (typeof state !== "string") {
-    throw new ValidationError(`Invalid state code: ${state}`);
+    throw new ValidationError(`${RESPONSE_MESSAGES.INVALID_STATE_CODE}: ${state}`);
   }
 
   const stateCode = state.toUpperCase();
   const taxRate = STATE_TAX_RATES[stateCode];
 
   if (taxRate === undefined) {
-    throw new ValidationError(`Invalid state code: ${state}`);
+    throw new ValidationError(`${RESPONSE_MESSAGES.INVALID_STATE_CODE}: ${state}`);
   }
 
   res.status(200).json({
@@ -42,44 +44,37 @@ const defineTaxRate = asyncHandler((req, res) => {
 });
 
 /**
- * Calculate tax amount and final price
+ * Calculate tax and final price, in integer cents (ADR-012)
  * @route POST /api/v1/tax/calculate
- * @body {number} jobPrice - Base job price
- * @body {number} taxRate - Tax rate as percentage
- * @returns {Object} taxAmount, finalPrice, and breakdown
+ * @body {number} subtotalCents - Integer cents, 0 or more
+ * @body {number} taxRate - Tax rate as a percentage, 0 to 100 with at most 3 decimals
+ * @returns {Object} subtotalCents, taxRate, taxCents and finalPriceCents
  */
 const calculateTax = asyncHandler((req, res) => {
-  let { taxRate, jobPrice } = req.body;
+  const { subtotalCents, taxRate } = req.body;
 
-  if (jobPrice === undefined || jobPrice === null) {
-    throw new ValidationError("Job price is required");
+  if (subtotalCents === undefined || subtotalCents === null) {
+    throw new ValidationError(RESPONSE_MESSAGES.SUBTOTAL_CENTS_REQUIRED);
   }
 
   if (taxRate === undefined || taxRate === null) {
-    throw new ValidationError("Tax rate is required");
+    throw new ValidationError(RESPONSE_MESSAGES.TAX_RATE_REQUIRED);
   }
 
-  const jobPriceNum = parseFloat(jobPrice);
-  const taxRateNum = parseFloat(taxRate);
-
-  if (isNaN(jobPriceNum) || jobPriceNum < 0) {
-    throw new ValidationError("Job price must be a valid positive number");
+  if (!isValidCents(subtotalCents)) {
+    throw new ValidationError(RESPONSE_MESSAGES.SUBTOTAL_INVALID);
   }
 
-  if (isNaN(taxRateNum) || taxRateNum < 0 || taxRateNum > 100) {
-    throw new ValidationError("Tax rate must be between 0 and 100");
+  if (!isValidTaxRate(taxRate)) {
+    throw new ValidationError(RESPONSE_MESSAGES.TAX_RATE_INVALID);
   }
-
-  const taxAmount = (taxRateNum / 100) * jobPriceNum;
-  const finalPrice = jobPriceNum + taxAmount;
 
   res.status(200).json({
     success: true,
     data: {
-      jobPrice: jobPriceNum,
-      taxRate: taxRateNum,
-      taxAmount: parseFloat(taxAmount.toFixed(2)),
-      finalPrice: parseFloat(finalPrice.toFixed(2)),
+      subtotalCents,
+      taxRate,
+      ...computeTax(subtotalCents, taxRate),
     },
   });
 });

@@ -1,9 +1,10 @@
 /**
- * Characterization tests: /api/v1/tax (rate by state, tax calculation).
+ * Characterization tests: /api/v1/tax (rate by state, tax calculation in integer cents, #140).
  */
 
 const request = require("supertest");
 const app = require("../app");
+const { RESPONSE_MESSAGES } = require("../utils/constants");
 
 describe("POST /api/v1/tax/rate", () => {
   it.each([
@@ -29,7 +30,7 @@ describe("POST /api/v1/tax/rate", () => {
     expect(res.status).toBe(400);
     expect(res.body).toMatchObject({
       success: false,
-      message: "State parameter is required",
+      message: RESPONSE_MESSAGES.STATE_PARAMETER_REQUIRED,
       statusCode: 400,
     });
   });
@@ -50,66 +51,72 @@ describe("POST /api/v1/tax/rate", () => {
 });
 
 describe("POST /api/v1/tax/calculate", () => {
-  it("answers the tax amount and the final price", async () => {
-    const res = await request(app)
-      .post("/api/v1/tax/calculate")
-      .send({ jobPrice: 100, taxRate: 7.25 });
+  const calculate = (body) => request(app).post("/api/v1/tax/calculate").send(body);
+
+  it.each([
+    ["3 x $19.99 in CA", 5997, 7.25, 435, 6432],
+    ["1000 in CT rounds half-up", 1000, 6.35, 64, 1064],
+    ["1999 at 6.625", 1999, 6.625, 132, 2131],
+    ["10000 in MN at 6.875 (a rate with 3 decimals is exact)", 10000, 6.875, 688, 10688],
+    ["a rate of 0", 12345, 0, 0, 12345],
+    ["a subtotal and a rate of 0", 0, 0, 0, 0],
+    ["a rate of 100", 250, 100, 250, 500],
+  ])("answers the tax and the final price in cents: %s", async (_name, subtotalCents, taxRate, taxCents, finalPriceCents) => {
+    const res = await calculate({ subtotalCents, taxRate });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
       success: true,
-      data: { jobPrice: 100, taxRate: 7.25, taxAmount: 7.25, finalPrice: 107.25 },
+      data: { subtotalCents, taxRate, taxCents, finalPriceCents },
     });
   });
 
-  it("rounds the tax amount and the final price to 2 decimals", async () => {
-    const res = await request(app)
-      .post("/api/v1/tax/calculate")
-      .send({ jobPrice: 19.99, taxRate: 6.625 });
+  it("gives the same figures as POST /invoices for the same lines", async () => {
+    const invoice = await request(app)
+      .post("/api/v1/invoices")
+      .send({
+        companyName: "Acme Plumbing",
+        phoneNumber: "5551234567",
+        stateAddress: "CA",
+        dateOfService: "2026-03-15",
+        invoiceNumber: "INV-TAX",
+        lineItems: [{ description: "Faucet", quantity: 3, unitPriceCents: 1999 }],
+      });
+    const calc = await calculate({ subtotalCents: 5997, taxRate: 7.25 });
 
-    expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({
-      jobPrice: 19.99,
-      taxRate: 6.625,
-      taxAmount: 1.32,
-      finalPrice: 21.31,
+    expect(invoice.status).toBe(201);
+    expect(calc.body.data).toMatchObject({
+      subtotalCents: invoice.body.data.subtotalCents,
+      taxCents: invoice.body.data.taxCents,
+      finalPriceCents: invoice.body.data.finalPriceCents,
     });
-  });
-
-  it("accepts numeric strings", async () => {
-    const res = await request(app)
-      .post("/api/v1/tax/calculate")
-      .send({ jobPrice: "100", taxRate: "10" });
-
-    expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({
-      jobPrice: 100,
-      taxRate: 10,
-      taxAmount: 10,
-      finalPrice: 110,
-    });
-  });
-
-  it("accepts a job price and a tax rate of 0", async () => {
-    const res = await request(app)
-      .post("/api/v1/tax/calculate")
-      .send({ jobPrice: 0, taxRate: 0 });
-
-    expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ jobPrice: 0, taxRate: 0, taxAmount: 0, finalPrice: 0 });
   });
 
   it.each([
-    ["a missing jobPrice", { taxRate: 7.25 }, "Job price is required"],
-    ["a missing taxRate", { jobPrice: 100 }, "Tax rate is required"],
-    ["a negative jobPrice", { jobPrice: -1, taxRate: 7.25 }, "Job price must be a valid positive number"],
-    ["a non-numeric jobPrice", { jobPrice: "abc", taxRate: 7.25 }, "Job price must be a valid positive number"],
-    ["a taxRate above 100", { jobPrice: 100, taxRate: 101 }, "Tax rate must be between 0 and 100"],
-    ["a taxRate below 0", { jobPrice: 100, taxRate: -1 }, "Tax rate must be between 0 and 100"],
+    ["a missing subtotalCents", { taxRate: 7.25 }, RESPONSE_MESSAGES.SUBTOTAL_CENTS_REQUIRED],
+    ["a missing taxRate", { subtotalCents: 100 }, RESPONSE_MESSAGES.TAX_RATE_REQUIRED],
+    ["the old jobPrice instead of subtotalCents", { jobPrice: 100, taxRate: 7.25 }, RESPONSE_MESSAGES.SUBTOTAL_CENTS_REQUIRED],
+    ["a float subtotalCents", { subtotalCents: 19.99, taxRate: 7.25 }, RESPONSE_MESSAGES.SUBTOTAL_INVALID],
+    ["a negative subtotalCents", { subtotalCents: -1, taxRate: 7.25 }, RESPONSE_MESSAGES.SUBTOTAL_INVALID],
+    ["a string subtotalCents", { subtotalCents: "100", taxRate: 7.25 }, RESPONSE_MESSAGES.SUBTOTAL_INVALID],
+    ["a partly numeric subtotalCents", { subtotalCents: "12abc", taxRate: 7.25 }, RESPONSE_MESSAGES.SUBTOTAL_INVALID],
+    ["a subtotalCents that is not a safe integer", { subtotalCents: 2 ** 60, taxRate: 7.25 }, RESPONSE_MESSAGES.SUBTOTAL_INVALID],
+    ["a string taxRate", { subtotalCents: 100, taxRate: "7.25" }, RESPONSE_MESSAGES.TAX_RATE_INVALID],
+    ["a partly numeric taxRate", { subtotalCents: 100, taxRate: "12abc" }, RESPONSE_MESSAGES.TAX_RATE_INVALID],
+    ["a taxRate above 100", { subtotalCents: 100, taxRate: 101 }, RESPONSE_MESSAGES.TAX_RATE_INVALID],
+    ["a taxRate below 0", { subtotalCents: 100, taxRate: -1 }, RESPONSE_MESSAGES.TAX_RATE_INVALID],
+    ["a taxRate with 4 decimals", { subtotalCents: 100, taxRate: 6.6251 }, RESPONSE_MESSAGES.TAX_RATE_INVALID],
   ])("answers 400 for %s", async (_name, body, message) => {
-    const res = await request(app).post("/api/v1/tax/calculate").send(body);
+    const res = await calculate(body);
 
     expect(res.status).toBe(400);
     expect(res.body).toMatchObject({ success: false, message, statusCode: 400 });
+  });
+
+  it("answers 400 when the final price is not a safe integer", async () => {
+    const res = await calculate({ subtotalCents: Number.MAX_SAFE_INTEGER, taxRate: 100 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe(RESPONSE_MESSAGES.AMOUNT_TOO_LARGE);
   });
 });

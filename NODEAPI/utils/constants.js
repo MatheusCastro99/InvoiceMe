@@ -82,6 +82,7 @@ const RESPONSE_MESSAGES = {
   LINE_ITEM_QUANTITY_INVALID: "Each line item quantity must be more than 0, with at most 2 decimals",
   LINE_ITEM_PRICE_INVALID: "Each line item price must be a whole number of cents, 0 or more",
   SUBTOTAL_REQUIRED: "Subtotal is required when there are no line items",
+  SUBTOTAL_CENTS_REQUIRED: "Subtotal is required",
   SUBTOTAL_INVALID: "Subtotal must be a whole number of cents, 0 or more",
   TAX_RATE_REQUIRED: "Tax rate is required",
   TAX_RATE_INVALID: "Tax rate must be a number from 0 to 100, with at most 3 decimals",

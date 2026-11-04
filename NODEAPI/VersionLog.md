@@ -190,3 +190,9 @@ Currently, 5 states are available for auto tax calculation. They are:
 - Rounding: a line total is quantity × unit price rounded half-up to a cent; the tax is subtotal × rate rounded half-up once for the invoice; the final price is their sum.
 - A float, negative or string amount (including `"12abc"`), a quantity of 0 or less or with more than 2 decimals, a blank description, and a missing or unknown state each answer 400. A result that is not a safe integer answers 400.
 - Invoices already stored keep their old dollar fields and show none of the new ones; they are converted in #141.
+
+### Tax calculation in cents:
+
+- `POST /api/v1/tax/calculate` takes `{ subtotalCents, taxRate }` (was `jobPrice` and `taxRate`) and answers `{ subtotalCents, taxRate, taxCents, finalPriceCents }` (was `jobPrice`, `taxAmount`, `finalPrice`), through the same functions as invoices.
+- Parsing is strict (#145): a numeric string or a partly numeric value such as `"12abc"` in either input answers 400. A rate has at most 3 decimals.
+- Every tax message, `/tax/rate`'s included, now comes from `RESPONSE_MESSAGES` (ADR-005). `/tax/rate` answers as before.

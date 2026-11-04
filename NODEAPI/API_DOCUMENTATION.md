@@ -416,11 +416,13 @@ The server computes every figure. With the lines above in IL (6.25%), the answer
 
 **POST** `/tax/calculate`
 
+All amounts are integer cents (ADR-012). `taxRate` is a percentage.
+
 **Request Body:**
 
 ```json
 {
-  "jobPrice": 1000,
+  "subtotalCents": 5997,
   "taxRate": 7.25
 }
 ```
@@ -431,20 +433,31 @@ The server computes every figure. With the lines above in IL (6.25%), the answer
 {
   "success": true,
   "data": {
-    "jobPrice": 1000,
+    "subtotalCents": 5997,
     "taxRate": 7.25,
-    "taxAmount": 72.5,
-    "finalPrice": 1072.5
+    "taxCents": 435,
+    "finalPriceCents": 6432
   }
 }
 ```
+
+**Validation Rules:**
+
+- `subtotalCents` (required): a JSON integer of 0 or more. A missing value answers 400 `Subtotal is required`; a float, a negative number or a string (including `"12abc"`) answers 400 `Subtotal must be a whole number of cents, 0 or more`
+- `taxRate` (required): a JSON number from 0 to 100 with at most 3 decimals. A missing value answers 400 `Tax rate is required`; a string, a value outside 0 to 100 or one with 4 decimals answers 400 `Tax rate must be a number from 0 to 100, with at most 3 decimals`
+- A result that is not a safe integer answers 400 `Amount is too large`
+
+**Rounding rule** (the same functions that `POST /invoices` uses):
+
+- `taxCents` = `subtotalCents` × `taxRate` / 100, rounded half-up to a whole cent, once. The rate is read as integer thousandths of a percent, so rates such as 6.875 and 4.225 are exact (1000 at 6.35% is 64; 1999 at 6.625% is 132)
+- `finalPriceCents` = `subtotalCents` + `taxCents`
 
 **Error Response (400):**
 
 ```json
 {
   "success": false,
-  "message": "Tax rate must be between 0 and 100",
+  "message": "Tax rate must be a number from 0 to 100, with at most 3 decimals",
   "statusCode": 400
 }
 ```
