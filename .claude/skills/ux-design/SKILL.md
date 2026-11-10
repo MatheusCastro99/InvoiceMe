@@ -48,13 +48,13 @@ This lens works from the source. Base findings on it and say what the owner shou
 - **Recommendation:** Approve / Adjust / Redesign, with advantages and disadvantages
 - **Check on screen:** the specific things the owner should look at while running the app
 
-## 4. The UI check (T6)
+## 4. The UI check
 
-A UI sub-phase's check drives the app in the built-in browser pane. The builder runs it, on either tier (harness D25).
+A UI sub-phase's check drives the app in the built-in browser pane. The `ui-check` agent runs it in `review`, at the handed-off SHA, on either tier (harness D26); the builder doesn't.
 
 - **Data:** a throwaway database, never the owner's. Start a `MongoMemoryServer` from `NODEAPI/node_modules/mongodb-memory-server` on a free port, from a script in the session's scratchpad, and seed what the plan needs. The check never writes to the owner's database, even to undo a change.
 - **Run:** in `NODEAPI/`, `MONGO_URL=<the memory server's URL> PORT=3000 node server.js`, so the real `.env` database isn't used; in `FRONTEND/`, `npm run dev`. Then drive each step the plan names in the browser pane, and stop both servers afterwards.
-- **Evidence:** a screenshot per step under `.harness/work/<n>/ui/`, listed under the handoff's Checks.
+- **Evidence:** a screenshot per step under `.harness/work/<n>/ui/`, listed in the `ui-check` report for G2.
 - **Limits:**
   - The pane may not draw the PDF viewer or the invoice table. Check the PDF through the component tree or the page's contents, and say so in the handoff.
   - The browser runs in one time zone. A date shown on screen in a zone ahead of UTC needs a Node check of the display helpers.
