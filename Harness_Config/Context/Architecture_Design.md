@@ -23,6 +23,7 @@ InvoiceMe/
     ├── middlewares/
     ├── models/
     ├── routes/
+    ├── scripts/
     ├── tests/
     └── utils/
 ```
@@ -67,6 +68,7 @@ Express API (CommonJS) over MongoDB with Mongoose.
 - server.js: loads `.env`, connects to MongoDB, builds the customer and invoice unique indexes (it exits if it cannot), then listens (port 3000 by default)
 - app.js: builds the Express app, CORS, routes, the 404 handler and the error handler; it has no side effects, so it loads without a database
 - .env.example: the environment variables to copy into `.env`
+- scripts/v2Migration.js: the one-off data migration to the v2 shapes (`npm run migrate:v2`, `--dry-run` first); it reads and writes the raw collections, is run by hand and is never loaded by `app.js` or `server.js`
 - tests/: the Jest + Supertest suite (`npm test`), run against an in-memory MongoDB; its setup is in `tests/setup/`
 
 ### NODEAPI/routes/
