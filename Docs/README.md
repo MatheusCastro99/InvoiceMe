@@ -23,7 +23,7 @@ InvoiceMe is a full-stack business management app for small businesses that need
 
 Current delivery includes:
 
-- **API versioning** with `/api/v1/` routes
+- **API versioning** with `/api/v2/` routes
 - **Customer CRUD** with validation and duplicate protection
 - **Invoice creation and lookup** with tax-aware business logic
 - **PDF-ready invoice flow** and frontend invoice views
@@ -83,10 +83,10 @@ The project is currently in an active MVP / production-ready iteration for small
 
 ```bash
 # Get all customers
-curl http://localhost:3000/api/v1/customers
+curl http://localhost:3000/api/v2/customers
 
 # Create customer
-curl -X POST http://localhost:3000/api/v1/customers \
+curl -X POST http://localhost:3000/api/v2/customers \
   -H "Content-Type: application/json" \
   -d '{
     "companyName": "Tech Corp",
@@ -120,13 +120,13 @@ curl -X POST http://localhost:3000/api/v1/customers \
 
 ## Version History
 
-### v1.26 (current)
+### v2.0 (current)
 
 The full history is in [`NODEAPI/VersionLog.md`](../NODEAPI/VersionLog.md).
 
 **Released Features:**
 
-- API versioning via `/api/v1/`
+- API versioning via `/api/v2/`
 - Centralized error handling and validation middleware
 - Environment-based backend configuration
 - Customer CRUD with duplicate prevention
@@ -221,31 +221,31 @@ InvoiceMe/
 
 ## API Versioning
 
-All endpoints use versioning: `/api/v1/{resource}`
+All endpoints use versioning: `/api/v2/{resource}`
 
 **Customer Endpoints:**
 
 ```
-GET    /api/v1/customers              # List
-GET    /api/v1/customers/:id          # Get one
-POST   /api/v1/customers              # Create
-PUT    /api/v1/customers/:id          # Update
-DELETE /api/v1/customers/:id          # Delete
+GET    /api/v2/customers              # List
+GET    /api/v2/customers/:id          # Get one
+POST   /api/v2/customers              # Create
+PUT    /api/v2/customers/:id          # Update
+DELETE /api/v2/customers/:id          # Delete
 ```
 
 **Invoice Endpoints:**
 
 ```
-GET    /api/v1/invoices               # List
-POST   /api/v1/invoices               # Create
-DELETE /api/v1/invoices/:id           # Delete
+GET    /api/v2/invoices               # List
+POST   /api/v2/invoices               # Create
+DELETE /api/v2/invoices/:id           # Delete
 ```
 
 **Tax Endpoints:**
 
 ```
-POST   /api/v1/tax/rate               # Get state rate
-POST   /api/v1/tax/calculate          # Calculate
+POST   /api/v2/tax/rate               # Get state rate
+POST   /api/v2/tax/calculate          # Calculate
 ```
 
 ---
@@ -305,7 +305,7 @@ MONGO_URL=mongodb+srv://...
 PORT=3000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
-API_VERSION=v1          # in .env.example, not read by the code yet; routes are fixed at /api/v1/
+API_VERSION=v2          # in .env.example, not read by the code yet; routes are fixed at /api/v2/
 ```
 
 ### Frontend (.env.local)

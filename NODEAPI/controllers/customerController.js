@@ -23,7 +23,7 @@ const toPositiveInteger = (value, fallback) => {
 
 /**
  * Get all customers with pagination
- * @route GET /api/v1/customers
+ * @route GET /api/v2/customers
  * @param {number} page - Page number (default: 1; a value that is not a whole number of 1 or more falls back to 1)
  * @param {number} limit - Items per page (default: 20, max: 100; a value that is not a whole number of 1 or more falls back to 20)
  */
@@ -56,7 +56,7 @@ const getCustomers = asyncHandler(async (req, res) => {
 
 /**
  * Get customer by ID
- * @route GET /api/v1/customers/:id
+ * @route GET /api/v2/customers/:id
  */
 const getCustomerByID = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -74,7 +74,7 @@ const getCustomerByID = asyncHandler(async (req, res) => {
 
 /**
  * Create new customer
- * @route POST /api/v1/customers
+ * @route POST /api/v2/customers
  * @body {string} companyName - Required
  * @body {string} phoneNumber - Required
  */
@@ -102,7 +102,7 @@ const postCustomer = asyncHandler(async (req, res) => {
 
 /**
  * Update customer
- * @route PUT /api/v1/customers/:id
+ * @route PUT /api/v2/customers/:id
  */
 const updateCustomer = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -138,7 +138,7 @@ const updateCustomer = asyncHandler(async (req, res) => {
 
 /**
  * Delete customer
- * @route DELETE /api/v1/customers/:id
+ * @route DELETE /api/v2/customers/:id
  */
 const delCustomer = asyncHandler(async (req, res) => {
   const { id } = req.params;

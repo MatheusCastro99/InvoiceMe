@@ -1,5 +1,5 @@
 /**
- * Characterization tests: /api/v1/invoices (list, create, delete).
+ * Characterization tests: /api/v2/invoices (list, create, delete).
  * invoiceNumber is required and unique (#139); the unique index is built once for this file.
  * Money is integer cents and the server computes every figure (#140, ADR-012).
  */
@@ -42,9 +42,9 @@ const unusedId = () => new mongoose.Types.ObjectId().toString();
 // The unique invoiceNumber index is built by server.js in production; build it once for this file
 beforeAll(() => InvoiceModel.init());
 
-describe("GET /api/v1/invoices", () => {
+describe("GET /api/v2/invoices", () => {
   it("answers an empty list when there are no invoices", async () => {
-    const res = await request(app).get("/api/v1/invoices");
+    const res = await request(app).get("/api/v2/invoices");
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ success: true, data: [], count: 0 });
@@ -60,7 +60,7 @@ describe("GET /api/v1/invoices", () => {
     });
 
     it("answers a count equal to the number stored", async () => {
-      const res = await request(app).get("/api/v1/invoices");
+      const res = await request(app).get("/api/v2/invoices");
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -69,24 +69,24 @@ describe("GET /api/v1/invoices", () => {
     });
 
     it("answers every dateOfService as YYYY-MM-DD", async () => {
-      const res = await request(app).get("/api/v1/invoices");
+      const res = await request(app).get("/api/v2/invoices");
 
       expect(res.body.data.map((i) => i.dateOfService)).toEqual(["2026-03-15", "2026-03-15", "2026-03-15"]);
     });
 
     it("lists the newest invoice first", async () => {
-      const res = await request(app).get("/api/v1/invoices");
+      const res = await request(app).get("/api/v2/invoices");
 
       expect(res.body.data.map((i) => i.invoiceNumber)).toEqual(["NEWEST", "MIDDLE", "OLDEST"]);
     });
   });
 });
 
-describe("GET /api/v1/invoices with a row stored before dateOfService was a date", () => {
+describe("GET /api/v2/invoices with a row stored before dateOfService was a date", () => {
   it("answers 200 and the invoice, without breaking the list", async () => {
     await InvoiceModel.collection.insertOne({ ...storedInvoice(), dateOfService: "banana" });
 
-    const res = await request(app).get("/api/v1/invoices");
+    const res = await request(app).get("/api/v2/invoices");
 
     expect(res.status).toBe(200);
     expect(res.body.count).toBe(1);
@@ -94,7 +94,7 @@ describe("GET /api/v1/invoices with a row stored before dateOfService was a date
   });
 });
 
-describe("GET /api/v1/invoices with a row stored in dollars (before cents)", () => {
+describe("GET /api/v2/invoices with a row stored in dollars (before cents)", () => {
   it("answers 200 and the old row with its old keys and none of the new ones (#141 converts it)", async () => {
     const { lineItems, subtotalCents, taxCents, finalPriceCents, taxRate, ...rest } = storedInvoice();
     await InvoiceModel.collection.insertOne({
@@ -105,7 +105,7 @@ describe("GET /api/v1/invoices with a row stored in dollars (before cents)", () 
       finalPrice: 858,
     });
 
-    const res = await request(app).get("/api/v1/invoices");
+    const res = await request(app).get("/api/v2/invoices");
 
     expect(res.status).toBe(200);
     expect(res.body.count).toBe(1);
@@ -115,8 +115,8 @@ describe("GET /api/v1/invoices with a row stored in dollars (before cents)", () 
   });
 });
 
-describe("POST /api/v1/invoices", () => {
-  const post = (body) => request(app).post("/api/v1/invoices").send(body);
+describe("POST /api/v2/invoices", () => {
+  const post = (body) => request(app).post("/api/v2/invoices").send(body);
 
   it("creates an invoice and answers the server's figures", async () => {
     const res = await post(validInvoice());
@@ -352,7 +352,7 @@ describe("POST /api/v1/invoices", () => {
 
   it("a numeric phoneNumber answers 400", async () => {
     const res = await request(app)
-      .post("/api/v1/invoices")
+      .post("/api/v2/invoices")
       .send(validInvoice({ phoneNumber: 5551234567 }));
 
     expect(res.status).toBe(400);
@@ -361,7 +361,7 @@ describe("POST /api/v1/invoices", () => {
 
   it("a non-date dateOfService answers 400", async () => {
     const res = await request(app)
-      .post("/api/v1/invoices")
+      .post("/api/v2/invoices")
       .send(validInvoice({ dateOfService: "banana" }));
 
     expect(res.status).toBe(400);
@@ -376,7 +376,7 @@ describe("POST /api/v1/invoices", () => {
     ["a number", 20260315],
   ])("answers 400 for dateOfService as %s", async (_name, dateOfService) => {
     const res = await request(app)
-      .post("/api/v1/invoices")
+      .post("/api/v2/invoices")
       .send(validInvoice({ dateOfService }));
 
     expect(res.status).toBe(400);
@@ -386,7 +386,7 @@ describe("POST /api/v1/invoices", () => {
 
   it("accepts 29 February of a leap year", async () => {
     const res = await request(app)
-      .post("/api/v1/invoices")
+      .post("/api/v2/invoices")
       .send(validInvoice({ dateOfService: "2024-02-29" }));
 
     expect(res.status).toBe(201);
@@ -395,7 +395,7 @@ describe("POST /api/v1/invoices", () => {
 
   it("stores dateOfService as a Date at UTC midnight and answers YYYY-MM-DD", async () => {
     const res = await request(app)
-      .post("/api/v1/invoices")
+      .post("/api/v2/invoices")
       .send(validInvoice({ dateOfService: "2026-03-15" }));
 
     expect(res.status).toBe(201);
@@ -418,7 +418,7 @@ describe("POST /api/v1/invoices", () => {
       process.env.TZ = zone;
 
       const res = await request(app)
-        .post("/api/v1/invoices")
+        .post("/api/v2/invoices")
         .send(validInvoice({ dateOfService: "2026-03-15" }));
 
       expect(res.status).toBe(201);
@@ -432,7 +432,7 @@ describe("POST /api/v1/invoices", () => {
     });
 
     it("answers 409 for a duplicate invoiceNumber", async () => {
-      const res = await request(app).post("/api/v1/invoices").send(validInvoice());
+      const res = await request(app).post("/api/v2/invoices").send(validInvoice());
 
       expect(res.status).toBe(409);
       expect(res.body).toEqual({
@@ -445,7 +445,7 @@ describe("POST /api/v1/invoices", () => {
 
     it("answers 409 for a duplicate written with surrounding spaces", async () => {
       const res = await request(app)
-        .post("/api/v1/invoices")
+        .post("/api/v2/invoices")
         .send(validInvoice({ invoiceNumber: "  INV-001  " }));
 
       expect(res.status).toBe(409);
@@ -455,7 +455,7 @@ describe("POST /api/v1/invoices", () => {
 
     it("creates an invoice with a different invoiceNumber", async () => {
       const res = await request(app)
-        .post("/api/v1/invoices")
+        .post("/api/v2/invoices")
         .send(validInvoice({ invoiceNumber: "INV-002" }));
 
       expect(res.status).toBe(201);
@@ -465,7 +465,7 @@ describe("POST /api/v1/invoices", () => {
 
   it("stores the invoiceNumber trimmed", async () => {
     const res = await request(app)
-      .post("/api/v1/invoices")
+      .post("/api/v2/invoices")
       .send(validInvoice({ invoiceNumber: "  INV-007  " }));
 
     expect(res.status).toBe(201);
@@ -478,12 +478,12 @@ describe("POST /api/v1/invoices", () => {
     await InvoiceModel.collection.insertMany([{ ...oldRow }, { ...oldRow }]);
 
     expect(await InvoiceModel.countDocuments()).toBe(2);
-    const res = await request(app).post("/api/v1/invoices").send(validInvoice());
+    const res = await request(app).post("/api/v2/invoices").send(validInvoice());
     expect(res.status).toBe(201);
   });
 });
 
-describe("DELETE /api/v1/invoices/:id", () => {
+describe("DELETE /api/v2/invoices/:id", () => {
   let invoice;
 
   beforeEach(async () => {
@@ -491,7 +491,7 @@ describe("DELETE /api/v1/invoices/:id", () => {
   });
 
   it("deletes the invoice and answers it", async () => {
-    const res = await request(app).delete(`/api/v1/invoices/${invoice._id}`);
+    const res = await request(app).delete(`/api/v2/invoices/${invoice._id}`);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -502,7 +502,7 @@ describe("DELETE /api/v1/invoices/:id", () => {
   });
 
   it("answers 404 for an id that is not stored", async () => {
-    const res = await request(app).delete(`/api/v1/invoices/${unusedId()}`);
+    const res = await request(app).delete(`/api/v2/invoices/${unusedId()}`);
 
     expect(res.status).toBe(404);
     expect(res.body).toMatchObject({
@@ -513,7 +513,7 @@ describe("DELETE /api/v1/invoices/:id", () => {
   });
 
   it("a malformed id answers 400", async () => {
-    const res = await request(app).delete("/api/v1/invoices/not-an-id");
+    const res = await request(app).delete("/api/v2/invoices/not-an-id");
 
     expect(res.status).toBe(400);
     expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);

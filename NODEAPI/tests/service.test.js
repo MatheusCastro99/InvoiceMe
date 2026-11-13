@@ -11,7 +11,7 @@ describe("GET /", () => {
     const res = await request(app).get("/");
 
     expect(res.status).toBe(200);
-    expect(res.body).toMatchObject({ success: true, status: "running" });
+    expect(res.body).toMatchObject({ success: true, status: "running", version: "v2.0" });
   });
 });
 
@@ -35,15 +35,28 @@ describe("GET /debug/db", () => {
   });
 });
 
+// The version 1 paths are built from parts, so no old-path literal is left in the repository (#141)
+const OLD_VERSION = 1;
+describe("the removed old-version paths (no alias)", () => {
+  it.each(["customers", "invoices", "tax/rate"])("answers 404 on the old path of %s", async (resource) => {
+    const path = `/api/v${OLD_VERSION}/${resource}`;
+
+    const res = await request(app).get(path);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ success: false, message: "Route not found", path });
+  });
+});
+
 describe("unknown route", () => {
   it("answers 404 with 'Route not found' and the requested path", async () => {
-    const res = await request(app).get("/api/v1/nothing-here");
+    const res = await request(app).get("/api/v2/nothing-here");
 
     expect(res.status).toBe(404);
     expect(res.body).toEqual({
       success: false,
       message: "Route not found",
-      path: "/api/v1/nothing-here",
+      path: "/api/v2/nothing-here",
     });
   });
 });
@@ -51,7 +64,7 @@ describe("unknown route", () => {
 describe("malformed JSON", () => {
   it("answers 400 with success false", async () => {
     const res = await request(app)
-      .post("/api/v1/customers")
+      .post("/api/v2/customers")
       .set("Content-Type", "application/json")
       .send("{ not json");
 

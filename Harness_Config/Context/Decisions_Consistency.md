@@ -5,7 +5,7 @@ Last updated: 2026-10-26
 The standing rules every change to InvoiceMe must follow. A one-off choice is not a rule: it goes in its issue or pull request.
 
 ### ADR-001
-Every request to a resource under `/api/v1/` takes one path: router, validation middleware where the route has one, controller wrapped in `express-async-handler`, Mongoose model where the resource is stored. Errors are thrown as the error classes in `NODEAPI/utils/errors.js` and answered by `errorMiddleware`.
+Every request to a resource under `/api/v2/` takes one path: router, validation middleware where the route has one, controller wrapped in `express-async-handler`, Mongoose model where the resource is stored. Errors are thrown as the error classes in `NODEAPI/utils/errors.js` and answered by `errorMiddleware`.
 
 Reason:
 - One path means one place to add a check, and one shape for every answer the frontend reads.
@@ -15,7 +15,7 @@ Rules:
 - A success answers `{ success: true, data, message? }`; a list may add `count` or `pagination`.
 - An error answers `{ success: false, message, statusCode, errors? }`, built by `errorMiddleware`.
 - A controller, middleware or validator never calls `res.status(4xx|5xx)` itself; it throws `ValidationError`, `NotFoundError`, `ConflictError` or another `AppError` subclass.
-- Resource routes are mounted under `/api/v1/`. Only `/`, `/health`, `/debug/db` and the 404 handler live outside it, in `app.js`.
+- Resource routes are mounted under `/api/v2/`. Only `/`, `/health`, `/debug/db` and the 404 handler live outside it, in `app.js`.
 
 Examples:
 - `routes/customerRoute.js` → `validateCustomerInput` → `postCustomer` → `CustomerModel.create`
@@ -55,7 +55,7 @@ Reason:
 - One table to update when a rate changes.
 
 Rules:
-- The frontend gets the rate and the final price from `/api/v1/tax/rate` and `/api/v1/tax/calculate`, and never computes either itself.
+- The frontend gets the rate and the final price from `/api/v2/tax/rate` and `/api/v2/tax/calculate`, and never computes either itself.
 - The frontend may derive what it only displays from those figures: the subtotal of the line items, and the tax line (subtotal × rate).
 
 Status: Accepted, current

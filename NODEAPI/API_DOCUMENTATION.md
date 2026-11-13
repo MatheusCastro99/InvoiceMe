@@ -1,11 +1,11 @@
 # InvoiceMe API Documentation
 
-## API Version: v1.0
+## API Version: v2.0
 
 ### Base URL
 
 ```
-http://localhost:3000/api/v1
+http://localhost:3000/api/v2
 ```
 
 ### Response Format
@@ -514,7 +514,7 @@ All amounts are integer cents (ADR-012). `taxRate` is a percentage.
 ### Create a Customer (cURL)
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/customers \
+curl -X POST http://localhost:3000/api/v2/customers \
   -H "Content-Type: application/json" \
   -d '{
     "companyName": "Tech Solutions Inc",
@@ -531,7 +531,7 @@ curl -X POST http://localhost:3000/api/v1/customers \
 ### Get Tax Rate (JavaScript/Fetch)
 
 ```javascript
-const response = await fetch("http://localhost:3000/api/v1/tax/rate", {
+const response = await fetch("http://localhost:3000/api/v2/tax/rate", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ state: "CA" }),
@@ -544,7 +544,14 @@ console.log(data.data.taxRate); // 7.25
 
 ## Version History
 
-### v1.0 (Current)
+The full history is in [`VersionLog.md`](./VersionLog.md).
+
+### v2.0 (Current)
+
+- Every path is now under `/api/v2/`; the version 1 paths are gone, with no alias.
+- Data stored before v2.0 is converted once by `npm run migrate:v2` (see "Migrating a database from before v2.0" in `Docs/README.md`).
+
+### v1.0
 
 - Initial API release
 - Customer CRUD operations with validation

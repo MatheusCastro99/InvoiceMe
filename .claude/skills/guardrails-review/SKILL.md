@@ -22,10 +22,10 @@ A rule whose status says it is not in force yet (pending) describes a target, no
 Confirm each check with evidence from the code (`file:line`), not from memory.
 
 ### Request path and errors (ADR-001, ADR-005)
-- A new resource router is mounted under `/api/v1/` in `NODEAPI/app.js`, before the 404 handler and `errorMiddleware`.
+- A new resource router is mounted under `/api/v2/` in `NODEAPI/app.js`, before the 404 handler and `errorMiddleware`.
 - Every handler in `NODEAPI/controllers/` is wrapped in `asyncHandler`.
 - Errors are thrown as classes from `NODEAPI/utils/errors.js`; search the diff for `res.status(4` and `res.status(5` in controllers, middlewares and validators.
-- Successful answers carry `success` and `data`; error answers from `/api/v1/` handlers come only from `NODEAPI/middlewares/errorMiddleware.js` (the 404 handler in `app.js` is the one exception).
+- Successful answers carry `success` and `data`; error answers from `/api/v2/` handlers come only from `NODEAPI/middlewares/errorMiddleware.js` (the 404 handler in `app.js` is the one exception).
 - New user-facing messages are added to `RESPONSE_MESSAGES` in `NODEAPI/utils/constants.js`, not written as literals.
 
 ### Frontend API calls (ADR-002)
@@ -37,7 +37,7 @@ Confirm each check with evidence from the code (`file:line`), not from memory.
 - A client check added or changed in `CreatePage.jsx`, `EditPage.jsx` or `InvoicePage.jsx` accepts and rejects the same input as `validators.js`.
 
 ### Tax and totals (ADR-004)
-- The frontend computes no tax rate or final price; it reads them from `/api/v1/tax/rate` and `/api/v1/tax/calculate`. A displayed subtotal or tax line derived from them is allowed.
+- The frontend computes no tax rate or final price; it reads them from `/api/v2/tax/rate` and `/api/v2/tax/calculate`. A displayed subtotal or tax line derived from them is allowed.
 - A tax rate exists only in `STATE_TAX_RATES` in `NODEAPI/utils/constants.js`.
 
 ### Naming (ADR-006)

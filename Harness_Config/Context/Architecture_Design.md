@@ -72,7 +72,7 @@ Express API (CommonJS) over MongoDB with Mongoose.
 - tests/: the Jest + Supertest suite (`npm test`), run against an in-memory MongoDB; its setup is in `tests/setup/`
 
 ### NODEAPI/routes/
-One router per resource under `/api/v1/`: customerRoute.js, invoiceRoute.js, taxRoute.js.
+One router per resource under `/api/v2/`: customerRoute.js, invoiceRoute.js, taxRoute.js.
 
 ### NODEAPI/controllers/
 One controller per router: customerController.js, invoiceController.js, taxController.js.
@@ -95,7 +95,7 @@ One controller per router: customerController.js, invoiceController.js, taxContr
 
 ```mermaid
 flowchart LR
-    A["FRONTEND<br/>React SPA (Vite)"] -- "axios, JSON over HTTP" --> B["NODEAPI<br/>Express API /api/v1"]
+    A["FRONTEND<br/>React SPA (Vite)"] -- "axios, JSON over HTTP" --> B["NODEAPI<br/>Express API /api/v2"]
     B -- "Mongoose" --> C[("MongoDB<br/>Customer, Invoice")]
     A -- "@react-pdf/renderer" --> D["PDF file<br/>in the browser"]
 ```
