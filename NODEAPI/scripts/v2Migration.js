@@ -389,6 +389,9 @@ const describeTarget = (url) => {
   return `host ${match[1]}, database ${match[2] || "(none: the driver's default)"}`;
 };
 
+// An error's name, plus its code when it has one; never its message, which can quote a stored value or the URL
+const errorLabel = (error) => (error.code === undefined ? error.name : `${error.name}, error ${error.code}`);
+
 const main = async (argv) => {
   const args = argv.slice(2);
   const unknown = args.filter((arg) => arg !== "--dry-run");
@@ -396,7 +399,8 @@ const main = async (argv) => {
     console.error("Usage: npm run migrate:v2 [-- --dry-run]");
     return 1;
   }
-  const dryRun = args.includes("--dry-run");
+  // `npm run migrate:v2 --dry-run` (no `--`) is eaten by npm: it passes no argument and sets this variable instead
+  const dryRun = args.includes("--dry-run") || process.env.npm_config_dry_run === "true";
 
   require("dotenv").config({ path: path.join(__dirname, "..", ".env"), quiet: true });
   const url = process.env.MONGO_URL;
@@ -407,10 +411,11 @@ const main = async (argv) => {
 
   console.log(`Target: ${describeTarget(url)}`);
   try {
-    // autoIndex off: Mongoose would otherwise build the indexes itself on connect, even in a dry run
-    await mongoose.connect(url, { autoIndex: false });
+    // autoIndex and autoCreate off: Mongoose would otherwise build the indexes, and create any missing
+    // collection, itself on connect, even in a dry run
+    await mongoose.connect(url, { autoIndex: false, autoCreate: false });
   } catch (error) {
-    console.error(`Could not connect to the database (${error.name}). Check MONGO_URL.`);
+    console.error(`Could not connect to the database (${errorLabel(error)}). Check MONGO_URL.`);
     return 1;
   }
 
@@ -418,7 +423,7 @@ const main = async (argv) => {
     const result = await migrate({ dryRun, log: console.log });
     return exitCodeFor(result);
   } catch (error) {
-    console.error(`The migration stopped (${error.name}). The database may be partly converted: run it again.`);
+    console.error(`The migration stopped (${errorLabel(error)}). The database may be partly converted: run it again.`);
     return 1;
   } finally {
     await mongoose.disconnect();

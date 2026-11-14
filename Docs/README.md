@@ -343,10 +343,10 @@ Use your own connection string in place of the placeholders below, and keep it o
 
    It prints the same report and then writes. A record that was reported stays untouched, and a unique index that duplicates block is not built; fix the data and run it again, which builds it.
 5. **Check.** A second dry run lists no changes and exits 0. Then start the API with `npm start`: it builds the unique indexes before it listens. Open an old invoice in the app and check its date and amounts.
-6. **Restore, if it went wrong.** Stop the API and restore the backup over the database (`--drop` replaces what is there). The backup folder holds one subfolder per database, so the address has no database name:
+6. **Restore, if it went wrong.** Stop the API and restore the backup over the database (`--drop` replaces what is there). The backup folder holds one subfolder per database, so the address has no database name. Keep the query options in your `MONGO_URL`, such as `?authSource=<database>`:
 
    ```bash
-   mongorestore --uri "<your MONGO_URL without the database name>" --drop <backup-folder>
+   mongorestore --uri "<your MONGO_URL with the database name removed and its query options kept>" --drop <backup-folder>
    ```
 
 ---
