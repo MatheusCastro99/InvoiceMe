@@ -33,7 +33,7 @@ This lens works from the source. Base findings on it and say what the owner shou
 - Interactive elements carry an accessible name or description where the visual isn't self-explanatory.
 - State is never shown by color alone.
 
-**Flow.** One clear primary action per screen, and no hidden actions or deep navigation. The tax rate and the final price shown on screen come from the API; a component may only derive the subtotal and the tax line from them (ADR-004). Field state and styling live in React state, not in the DOM (ADR-009). New components come from MUI (ADR-011).
+**Flow.** One clear primary action per screen, and no hidden actions or deep navigation. The tax rate and the final price shown on screen come from the API; a component may only derive the displayed line totals and subtotal; the tax and the final price come from the server (ADR-004). Field state and styling live in React state, not in the DOM (ADR-009). New components come from MUI (ADR-011).
 
 **Copy.** Short and specific, in the voice the guidelines set.
 

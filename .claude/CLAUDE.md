@@ -58,7 +58,7 @@ The full rules and their status are in `Decisions_Consistency.md`. A pending rul
 - Every `/api/v2/` request takes one path: router, validation middleware where the route has one, a controller wrapped in `express-async-handler`, the Mongoose model. Controllers, middlewares and validators throw the error classes in `NODEAPI/utils/errors.js` and never call `res.status(4xx|5xx)`; `errorMiddleware` builds every error answer. Success answers `{ success: true, data, message? }` (ADR-001).
 - A new endpoint adds its route in `NODEAPI/routes/` and its entry in `API_ENDPOINTS` in the same change (ADR-002).
 - The server's validators in `NODEAPI/utils/validators.js` are the source of truth; a validation change is made there first, and the client never accepts what the server rejects, or rejects what it accepts (ADR-003).
-- The server computes the tax rate and the final price, from `STATE_TAX_RATES` only; the frontend may derive only the displayed subtotal and tax line (ADR-004).
+- The server computes the tax rate and the final price, from `STATE_TAX_RATES` only; the frontend may derive only the displayed line totals and subtotal; the tax and the final price come from the server (ADR-004).
 - User-facing API messages come from `RESPONSE_MESSAGES` in `NODEAPI/utils/constants.js` (ADR-005).
 - API files are camelCase with their role as suffix; stored-resource handlers are `getX`/`postX`/`updateX`/`delX`; models export `XModel`; new files open with a JSDoc banner and routes carry `@route` (ADR-006).
 - Configuration comes from environment variables; a new one is added to its project's `.env.example` in the same change, with no real value; frontend variables start with `VITE_` (ADR-007).

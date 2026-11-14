@@ -3,7 +3,7 @@
  * The client's phone check follows the server's (ADR-003); the server stores the 10 digits.
  */
 
-// The server's pattern in NODEAPI/utils/validators.js (VALIDATION_PATTERNS.phoneNumber, line 8);
+// The server's pattern in NODEAPI/utils/validators.js (VALIDATION_PATTERNS.phoneNumber);
 // keep the two in step. The server strips whitespace before it tests the value.
 const PHONE_PATTERN = /^(\d{10}|\(?(\d{3})\)?[\s.-]?(\d{3})[\s.-]?(\d{4}))$/;
 

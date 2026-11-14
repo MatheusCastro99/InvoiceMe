@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-10-26
+Last updated: 2026-11-14
 
 The standing rules every change to InvoiceMe must follow. A one-off choice is not a rule: it goes in its issue or pull request.
 
@@ -56,7 +56,7 @@ Reason:
 
 Rules:
 - The frontend gets the rate and the final price from `/api/v2/tax/rate` and `/api/v2/tax/calculate`, and never computes either itself.
-- The frontend may derive what it only displays from those figures: the subtotal of the line items, and the tax line (subtotal × rate).
+- The frontend may derive what it only displays: the line totals and the subtotal; the tax and the final price come from the server.
 
 Status: Accepted, current
 
@@ -66,7 +66,7 @@ User-facing messages from the API come from `RESPONSE_MESSAGES` in `NODEAPI/util
 Reason:
 - One place to read and change what the user is told.
 
-Status: Accepted, pending (the literal messages in `controllers/taxController.js` and `utils/validators.js` moved to `RESPONSE_MESSAGES`)
+Status: Accepted, pending (the literal messages in `utils/validators.js` and the fallback message in `middlewares/errorMiddleware.js` moved to `RESPONSE_MESSAGES`)
 
 ### ADR-006
 API files follow one naming pattern.
@@ -149,7 +149,7 @@ Every money amount (line-item price, subtotal, tax, final price) is an integer n
 Reason:
 - Floating-point dollars round inconsistently, and tax math compounds the error.
 
-Status: Accepted, pending (new invoices in cents since v1.26; old rows convert in #141)
+Status: Accepted, current
 
 ### ADR-013
 A date of service is a calendar date: stored as a Date at UTC midnight, sent and accepted as ISO `YYYY-MM-DD`.
@@ -157,4 +157,4 @@ A date of service is a calendar date: stored as a Date at UTC midnight, sent and
 Reason:
 - A string date can't be sorted, compared or validated, and a local-time Date shifts the day across time zones.
 
-Status: Accepted, pending (the Schema epic; today `dateOfService` is a String and only its presence is checked, see #70)
+Status: Accepted, current
