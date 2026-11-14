@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -59,6 +59,8 @@ const InvoicePage = () => {
     } else {
         subtotalCents = parseDollarsToCents(manualSubtotal);
     }
+    // No amount at all (an empty field, or a table with no valid line) is refused; an explicit $0 is accepted.
+    const subtotalMissing = openTable ? lineItems.length === 0 : manualSubtotal.trim() === "";
     const subtotalInvalid = !openTable && manualSubtotal.trim() !== "" && subtotalCents === null;
 
     const totalsCurrent = totals !== null && totals.subtotalCents === subtotalCents && totals.taxRate === correspondingTax;
@@ -66,14 +68,21 @@ const InvoicePage = () => {
     const taxCents = subtotalCents === 0 ? 0 : totals?.taxCents;
     const finalPriceCents = subtotalCents === 0 ? 0 : totals?.finalPriceCents;
 
+    // Numbers each customer pick; a reply for an older pick is dropped, so the latest pick wins.
+    const pickCounter = useRef(0);
+
     // Asks the server for the state's rate; the total follows from the effect below.
     const selectCustomer = async (id) => {
+        const pick = ++pickCounter.current;
+        const isLatest = () => pick === pickCounter.current;
         try {
             const info = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
+            if (!isLatest()) return;
             const payload = info?.data?.data ?? info?.data ?? {};
             setTempCustomer(payload);
-            await handleTax(payload.stateAddress);
+            await handleTax(payload.stateAddress, isLatest);
         } catch (error) {
+            if (!isLatest()) return;
             // A refused rate (a customer with no state or one the tax table lacks, say) is shown, not swallowed
             setTempCustomer([]);
             setCorrespondingTax();
@@ -102,6 +111,7 @@ const InvoicePage = () => {
 
     const requestInfo = (e) => {
         if(e.target.value == "Select Company") {
+          pickCounter.current++;
           setTempCustomer([]);
           setCorrespondingTax();
           return;
@@ -124,17 +134,23 @@ const InvoicePage = () => {
         }
   }
 
-    const handleTax = async(state) => {
+    // A rate that isn't a finite number is an error, never 0%; a real 0 rate (OR, DE...) is valid.
+    const handleTax = async(state, isLatest = () => true) => {
       const getTaxRate = await axios.post(API_ENDPOINTS.TAX.GET_RATE, {state:state});
+      if (!isLatest()) return;
       const fetchedRate = getTaxRate?.data?.data ?? getTaxRate?.data;
       const parsedRate = typeof fetchedRate === "object" ? fetchedRate?.taxRate : fetchedRate;
-      const rate = Number(parsedRate) || 0;
+      const readable = typeof parsedRate === "number" || (typeof parsedRate === "string" && parsedRate.trim() !== "");
+      const rate = readable ? Number(parsedRate) : NaN;
+      if (!Number.isFinite(rate)) throw new Error("Couldn't read the tax rate");
       setCorrespondingTax(rate);
       return rate;
     }
 
     // Same rule as the server (ADR-003): blank and an exact match (after trimming) of a stored number are blocked.
     // A gap or a lower number compared with the newest invoice only warns.
+    // The one exception is the number the form was opened with ("Edit Invoice"): it is the invoice being edited, so it is not flagged.
+    // Saving that copy is still refused by the server as a duplicate.
     const validateInvoiceNum = (value, invoices = invoicesArr) => {
       const num = value.trim();
       const newest = invoices[0];
@@ -144,6 +160,11 @@ const InvoicePage = () => {
       if (num === "") {
         toast.error("Invoice number is required");
         setInvoiceNumValidity(false);
+        return;
+      }
+
+      if (typeof carried?.invoiceNumber === "string" && carried.invoiceNumber.trim() === num) {
+        setInvoiceNumValidity(true);
         return;
       }
 
@@ -189,15 +210,15 @@ const InvoicePage = () => {
     const dateHasError = dateTouched && !dateIsValid;
 
     const checkValidity = (e) => {
-      if(!(dateIsValid&&invoiceNumValidity) || !subtotalCents) {
+      if(!(dateIsValid&&invoiceNumValidity) || subtotalCents === null || subtotalMissing) {
         e.preventDefault();
         toast.error(
           <div>
               <p>Check Date, Invoice Number, and Subtotal</p> <br/>
           </div>
         )
-      } else if (!totalReady) {
-        // The fields are fine; the server's tax and total are what's missing
+      } else if (correspondingTax === undefined || !totalReady) {
+        // The fields are fine; the rate (a company is picked) or the server's total is what's missing
         e.preventDefault();
         toast.error(correspondingTax === undefined
           ? "Pick a company to get the tax and total"
@@ -323,7 +344,7 @@ const InvoicePage = () => {
                         <input
                           readOnly={openTable}
                           type="text"
-                          value={openTable ? (subtotalCents === null ? "—" : subtotalCents === 0 ? "" : centsToDollarString(subtotalCents)) : manualSubtotal}
+                          value={openTable ? (subtotalCents === null ? "—" : subtotalMissing ? "" : centsToDollarString(subtotalCents)) : manualSubtotal}
                           onChange={(e) => setManualSubtotal(e.target.value)}
                           aria-invalid={subtotalInvalid}
                           aria-describedby={subtotalInvalid ? "subtotalError" : undefined}

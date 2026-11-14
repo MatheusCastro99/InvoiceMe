@@ -19,6 +19,11 @@ Sub-issues, done in order:
 
 Sub-issues 2–4 split the integrity gaps in [#70](https://github.com/MatheusCastro99/InvoiceMe/issues/70), which closes when the last of them merges.
 
+## Deferred from the bug backlog ([#153](https://github.com/MatheusCastro99/InvoiceMe/issues/153))
+
+- A renamed customer's older invoices drop off their profile, because invoices store only a copied customer name. Fix with a customer id on invoices in the next phase that touches the schema (ADR-008 keeps the copy of the customer's fields).
+- A saved invoice can't be updated in place: there is no update endpoint, so "Edit Invoice" makes a copy that must take a new invoice number. Add an update endpoint and use it from the edit flow.
+
 ## Epic 2: Authentication Overhaul
 
 - Auth is still undecided
