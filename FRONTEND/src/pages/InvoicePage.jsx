@@ -14,6 +14,7 @@ const Collapsible = CollapsibleImport && (CollapsibleImport.default || Collapsib
 import CustomerInfo from "../components/CustomerInfo";
 import TableDescription from "../components/TableDescription";
 import API_ENDPOINTS from "../config/apiConfig";
+import { fetchAllCustomers } from "../utils/customers";
 import { isValidDateOfService } from "../utils/date";
 import { parseDollarsToCents, formatCents, centsToDollarString } from "../utils/money";
 
@@ -232,8 +233,7 @@ const InvoicePage = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(API_ENDPOINTS.CUSTOMERS.LIST);
-            const payload = response?.data?.data ?? response?.data ?? [];
+            const payload = await fetchAllCustomers();
             setCustomers(payload)
             // The carried customer is selected by id, or else by the one customer whose phone digits match (a stored invoice has no id).
             const carriedPhone = digitsOnly(carried?.customerInfo?.phoneNumber ?? carried?.phoneNumber);

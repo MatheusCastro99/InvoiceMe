@@ -37,6 +37,7 @@ InvoiceMe/
 - workflows/node.js.yml: CI on pushes and pull requests to `master`; lints and builds the frontend, syntax-checks the API, loads `app.js` without a database, and runs the API tests (`npm test`) on an in-memory MongoDB
 - workflows/codeql.yml: CodeQL code scanning
 - dependabot.yml: weekly npm updates for `FRONTEND` and `NODEAPI`, monthly for GitHub Actions
+  - Accepted dev-only findings in `NODEAPI/` (`npm audit`, checked 2026-11-14): `glob` and `minimatch` (under `jest` and `nodemon`; fixed only in new majors that those tools don't declare yet, and `jest` and `nodemon` are on their latest releases) and `deepmerge` (under `jest-config`; no fixed release exists). All three are development tooling that is never shipped or run in production. Revisit when `jest` or `nodemon` release an update. `npm audit fix --force` is not used: it would downgrade `jest` to 25 and break the suite
 
 ### FRONTEND/
 React single-page app built with Vite (ES modules), styled with Tailwind.
@@ -46,12 +47,13 @@ React single-page app built with Vite (ES modules), styled with Tailwind.
 - src/utils/phone.js: the phone check (the server's pattern, ADR-003) and the `(555) 123-4567` display format
 - src/utils/date.js: the date-of-service check (the server's rule, ADR-003), the `MM/DD/YYYY` display format and the month, all read from the `YYYY-MM-DD` string without parsing it into a `Date` (ADR-013)
 - src/utils/money.js: the dollars-to-cents parsers (the server's rules, ADR-003), the display-only line total and the `$1,234.56` display format; amounts are integer cents everywhere else (ADR-012)
+- src/utils/customers.js: `fetchAllCustomers`, which walks every page of `GET /api/v2/customers` (100 a page, the server's cap) and returns one array; the home page and the invoice picker use it
 - src/pdfStyle.jsx: styles for the PDF invoice
 - eslint.config.js: ESLint flat config
 
 ### FRONTEND/src/pages/
 One file per route.
-- HomePage.jsx: `/`, the customer list
+- HomePage.jsx: `/`, the customer cards (20 to a page, with a page control) and the invoice table
 - CreatePage.jsx: `/create`, a new customer
 - EditPage.jsx: `/edit/:id`, an existing customer
 - InvoicePage.jsx: `/invoice`, the invoice form: customer, line items, tax
