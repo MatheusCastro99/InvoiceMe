@@ -59,6 +59,8 @@ const InvoicePage = () => {
     } else {
         subtotalCents = parseDollarsToCents(manualSubtotal);
     }
+    // No amount at all (an empty field, or a table with no valid line) is refused; an explicit $0 is accepted.
+    const subtotalMissing = openTable ? lineItems.length === 0 : manualSubtotal.trim() === "";
     const subtotalInvalid = !openTable && manualSubtotal.trim() !== "" && subtotalCents === null;
 
     const totalsCurrent = totals !== null && totals.subtotalCents === subtotalCents && totals.taxRate === correspondingTax;
@@ -196,15 +198,15 @@ const InvoicePage = () => {
     const dateHasError = dateTouched && !dateIsValid;
 
     const checkValidity = (e) => {
-      if(!(dateIsValid&&invoiceNumValidity) || !subtotalCents) {
+      if(!(dateIsValid&&invoiceNumValidity) || subtotalCents === null || subtotalMissing) {
         e.preventDefault();
         toast.error(
           <div>
               <p>Check Date, Invoice Number, and Subtotal</p> <br/>
           </div>
         )
-      } else if (!totalReady) {
-        // The fields are fine; the server's tax and total are what's missing
+      } else if (correspondingTax === undefined || !totalReady) {
+        // The fields are fine; the rate (a company is picked) or the server's total is what's missing
         e.preventDefault();
         toast.error(correspondingTax === undefined
           ? "Pick a company to get the tax and total"
@@ -330,7 +332,7 @@ const InvoicePage = () => {
                         <input
                           readOnly={openTable}
                           type="text"
-                          value={openTable ? (subtotalCents === null ? "—" : subtotalCents === 0 ? "" : centsToDollarString(subtotalCents)) : manualSubtotal}
+                          value={openTable ? (subtotalCents === null ? "—" : subtotalMissing ? "" : centsToDollarString(subtotalCents)) : manualSubtotal}
                           onChange={(e) => setManualSubtotal(e.target.value)}
                           aria-invalid={subtotalInvalid}
                           aria-describedby={subtotalInvalid ? "subtotalError" : undefined}
