@@ -22,7 +22,6 @@ const MyDocument = (info) => {
     const {dateOfService} = info;
     const {invoiceNumber} = info;
     const handlaTableData = info.handleTableData;
-    console.log(customerInfo, info)
 
     return (
             <Document title={`#${invoiceNumber} / ${customerInfo?.companyName||companyName}`}>
@@ -67,7 +66,10 @@ const MyDocument = (info) => {
             <View style={jobInfoBox.jobInfoFields}>
                 <Text style={jobInfoBox.title}>Job Breakdown:</Text>
                 <View>
-                    {jobDescription===undefined?handlaTableData:<Text style={jobInfoBox.jobDescription}>{jobDescription}</Text>}
+                    {typeof jobDescription === "string" && jobDescription.trim() !== "" && (
+                        <Text style={jobInfoBox.jobDescription}>{jobDescription}</Text>
+                    )}
+                    {handlaTableData}
                 </View>
             </View>
             <View style={priceInfoBox.fields}>
