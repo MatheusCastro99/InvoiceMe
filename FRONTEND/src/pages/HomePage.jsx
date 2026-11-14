@@ -4,10 +4,15 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Customer from "../components/Customer";
 import Divider from '@mui/material/Divider';
+import Pagination from '@mui/material/Pagination';
 import CollapsibleImport from 'react-collapsible';
 const Collapsible = CollapsibleImport && (CollapsibleImport.default || CollapsibleImport);
 import TableInvoice from "../components/TableInvoice";
 import API_ENDPOINTS from "../config/apiConfig";
+import { fetchAllCustomers } from "../utils/customers";
+
+// How many customer cards one page of the grid shows
+const CARDS_PER_PAGE = 20;
 
 //EVERYWHERE: NON-OPERATIONAL NUMBERS (PHONE NUMBERS, DATES, INVOICE NUMBERS) ARE TO BE TREATED AS STRINGS
 //EVERYWHERE: OPERATIONAL NUMBERS (PRICES, TAXES) ARE TO BE TREATED AS INT/FLOATS
@@ -25,13 +30,12 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [invoices, setInvoices] = useState([]);
+  const [cardPage, setCardPage] = useState(1);
 
   const getCustomers = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(API_ENDPOINTS.CUSTOMERS.LIST);
-      //console.log(response.data)
-      setCustomers(response.data.data || response.data);
+      setCustomers(await fetchAllCustomers());
       setIsLoading(false);
     } catch (error) {
       toast.error(error.message);
@@ -50,6 +54,11 @@ const HomePage = () => {
           setIsLoading(false);
         }
   }
+
+  // The page shown is clamped to the last page that exists, so a delete on the last page lands on the one before it
+  const pageCount = Math.max(1, Math.ceil(customers.length / CARDS_PER_PAGE));
+  const currentPage = Math.min(cardPage, pageCount);
+  const pageCustomers = customers.slice((currentPage - 1) * CARDS_PER_PAGE, currentPage * CARDS_PER_PAGE);
 
   useEffect(() => {
     getCustomers();
@@ -93,10 +102,10 @@ const HomePage = () => {
             <>
               {customers.length > 0 ? (
                 <>
-                  {customers.map((customer, index) => {
+                  {pageCustomers.map((customer) => {
                     return (
                       <Customer
-                        key={index}
+                        key={customer._id}
                         customer={customer}
                         getCustomers={getCustomers}
                       />
@@ -111,6 +120,23 @@ const HomePage = () => {
             </>
           )}
         </div>
+        {!isLoading && customers.length > CARDS_PER_PAGE && (
+          <div className="flex justify-center mt-5">
+            <Pagination
+              count={pageCount}
+              page={currentPage}
+              onChange={(_event, value) => setCardPage(value)}
+              shape="rounded"
+              aria-label="Company cards pages"
+              sx={{
+                "& .MuiPaginationItem-root": { color: "#0f172a", fontWeight: "bold", minWidth: 32, height: 32 },
+                "& .MuiPaginationItem-root.Mui-selected": { backgroundColor: "#1d4ed8", color: "#ffffff", border: "2px solid #0f172a" },
+                "& .MuiPaginationItem-root.Mui-selected:hover": { backgroundColor: "#2563eb" },
+                "& .MuiPaginationItem-root.Mui-focusVisible": { outline: "2px solid #0f172a", outlineOffset: 2 },
+              }}
+            />
+          </div>
+        )}
       </div>
       <div id="companyTable" className="companyTable">
         <Collapsible 

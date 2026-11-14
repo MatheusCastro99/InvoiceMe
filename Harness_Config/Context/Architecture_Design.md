@@ -53,7 +53,7 @@ React single-page app built with Vite (ES modules), styled with Tailwind.
 
 ### FRONTEND/src/pages/
 One file per route.
-- HomePage.jsx: `/`, the customer list
+- HomePage.jsx: `/`, the customer cards (20 to a page, with a page control) and the invoice table
 - CreatePage.jsx: `/create`, a new customer
 - EditPage.jsx: `/edit/:id`, an existing customer
 - InvoicePage.jsx: `/invoice`, the invoice form: customer, line items, tax
