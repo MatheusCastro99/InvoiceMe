@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-28
 
-Every request to `/api/v1/` takes the same path: a page calls the API with axios, using a URL from `API_ENDPOINTS` (`FRONTEND/src/config/apiConfig.js`); an Express router under `/api/v1/` runs the validation middleware, where the route has one, then a controller wrapped in `express-async-handler`; the controller reads or writes through a Mongoose model, for customers and invoices, and answers with `{ success, data, message? }`. Any error a controller throws or passes on reaches `errorMiddleware`, which answers with `{ success: false, message, statusCode, errors? }`. It turns a Mongoose cast or validation error into 400 and a duplicate-key error into 409; any other unexpected error answers 500 with a generic message, and the real message is only logged.
+Every request to `/api/v2/` takes the same path: a page calls the API with axios, using a URL from `API_ENDPOINTS` (`FRONTEND/src/config/apiConfig.js`); an Express router under `/api/v2/` runs the validation middleware, where the route has one, then a controller wrapped in `express-async-handler`; the controller reads or writes through a Mongoose model, for customers and invoices, and answers with `{ success, data, message? }`. Any error a controller throws or passes on reaches `errorMiddleware`, which answers with `{ success: false, message, statusCode, errors? }`. It turns a Mongoose cast or validation error into 400 and a duplicate-key error into 409; any other unexpected error answers 500 with a generic message, and the real message is only logged.
 
 ## Save a new customer
 
@@ -11,7 +11,7 @@ flowchart TD
     A["CreatePage.jsx<br/>the user fills the form and clicks Save"] --> B{"checkValidity<br/>did name, phone, email and ZIP<br/>pass their on-blur checks?"}
     B -- "no" --> B1["CreatePage.jsx<br/>shows a toast and a red border on each invalid field"]
     B -- "yes" --> C["saveCustomer, axios.post<br/>API_ENDPOINTS.CUSTOMERS.CREATE"]
-    C --> D["customerRoute.js<br/>POST /api/v1/customers"]
+    C --> D["customerRoute.js<br/>POST /api/v2/customers"]
     C -- "no answer" --> C1["CreatePage.jsx<br/>toast with the axios error message;<br/>the form keeps what was entered"]
     D --> E{"validateCustomerInput<br/>utils/validators.js"}
     E -- "no" --> E1["errorMiddleware<br/>400 with the list of errors"]
@@ -29,7 +29,7 @@ flowchart TD
 Notes:
 - The client and the server validate separately, with their own rules. The client requires email and ZIP, which the server accepts empty. The server rejects company names with characters such as `'` or accented letters, or longer than 100 characters, and states not given as two capital letters, all of which the client lets through: those saves end in a 400.
 - The page shows `error.message` from axios, such as "Request failed with status code 409", not the `message` the API returns.
-- Editing a customer (`EditPage.jsx`, `PUT /api/v1/customers/:id`) takes the same path through `validateCustomerInput` and `updateCustomer`, which also returns 404 when the customer does not exist.
+- Editing a customer (`EditPage.jsx`, `PUT /api/v2/customers/:id`) takes the same path through `validateCustomerInput` and `updateCustomer`, which also returns 404 when the customer does not exist.
 
 ## Save an invoice
 
@@ -41,7 +41,7 @@ flowchart TD
     A2 --> B{"PdfPage.jsx, saveInvoice<br/>are company, date and final price set?"}
     B -- "no" --> B1["PdfPage.jsx<br/>toast: fill out all input"]
     B -- "yes" --> C["axios.post<br/>API_ENDPOINTS.INVOICES.CREATE"]
-    C --> D["invoiceRoute.js<br/>POST /api/v1/invoices"]
+    C --> D["invoiceRoute.js<br/>POST /api/v2/invoices"]
     C -- "no answer" --> C1["PdfPage.jsx<br/>toast with the axios error message"]
     D --> E{"validateInvoiceInput<br/>utils/validators.js"}
     E -- "no" --> E1["errorMiddleware<br/>400 with the list of errors"]

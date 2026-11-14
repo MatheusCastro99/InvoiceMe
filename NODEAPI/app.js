@@ -56,7 +56,7 @@ app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "InvoiceMe Business Maintenance API",
-    version: "v1.0",
+    version: "v2.0",
     status: "running",
   });
 });
@@ -78,10 +78,10 @@ app.get('/debug/db', (req, res) => {
   });
 });
 
-// API Routes - v1.0
-app.use("/api/v1/customers", customerRoute);
-app.use("/api/v1/tax", taxRoute);
-app.use("/api/v1/invoices", invoiceRoute);
+// API Routes - v2.0
+app.use("/api/v2/customers", customerRoute);
+app.use("/api/v2/tax", taxRoute);
+app.use("/api/v2/invoices", invoiceRoute);
 
 // 404 Handler
 app.use((req, res) => {

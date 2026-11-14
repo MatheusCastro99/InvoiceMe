@@ -1,5 +1,5 @@
 /**
- * Characterization tests: /api/v1/customers (list, get, create, update, delete).
+ * Characterization tests: /api/v2/customers (list, get, create, update, delete).
  */
 
 const mongoose = require("mongoose");
@@ -25,7 +25,7 @@ const unusedId = () => new mongoose.Types.ObjectId().toString();
 // The unique phoneNumber index is built by server.js in production; build it once for this file
 beforeAll(() => CustomerModel.init());
 
-describe("GET /api/v1/customers", () => {
+describe("GET /api/v2/customers", () => {
   describe("with 25 customers", () => {
     beforeEach(async () => {
       const base = Date.parse("2026-01-01T00:00:00Z");
@@ -39,7 +39,7 @@ describe("GET /api/v1/customers", () => {
     });
 
     it("answers page 1 with 20 items by default", async () => {
-      const res = await request(app).get("/api/v1/customers");
+      const res = await request(app).get("/api/v2/customers");
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -48,7 +48,7 @@ describe("GET /api/v1/customers", () => {
     });
 
     it("honours the page and limit parameters", async () => {
-      const res = await request(app).get("/api/v1/customers?page=2&limit=10");
+      const res = await request(app).get("/api/v2/customers?page=2&limit=10");
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(10);
@@ -56,13 +56,13 @@ describe("GET /api/v1/customers", () => {
     });
 
     it("answers the remaining items on the last page", async () => {
-      const res = await request(app).get("/api/v1/customers?page=2");
+      const res = await request(app).get("/api/v2/customers?page=2");
 
       expect(res.body.data).toHaveLength(5);
     });
 
     it("caps limit=1000 at 100", async () => {
-      const res = await request(app).get("/api/v1/customers?limit=1000");
+      const res = await request(app).get("/api/v2/customers?limit=1000");
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(25);
@@ -70,7 +70,7 @@ describe("GET /api/v1/customers", () => {
     });
 
     it("accepts limit=100 as it is", async () => {
-      const res = await request(app).get("/api/v1/customers?limit=100");
+      const res = await request(app).get("/api/v2/customers?limit=100");
 
       expect(res.body.pagination.limit).toBe(100);
     });
@@ -78,7 +78,7 @@ describe("GET /api/v1/customers", () => {
     it.each(["0", "-5", "abc", "2.5", "12abc", ""])(
       "falls back to the default limit of 20 for limit=%s",
       async (limit) => {
-        const res = await request(app).get(`/api/v1/customers?limit=${limit}`);
+        const res = await request(app).get(`/api/v2/customers?limit=${limit}`);
 
         expect(res.status).toBe(200);
         expect(res.body.data).toHaveLength(20);
@@ -89,7 +89,7 @@ describe("GET /api/v1/customers", () => {
     it.each(["0", "-1", "abc", "1.5", "2abc", "", "9007199254740993"])(
       "falls back to page 1 for page=%s",
       async (page) => {
-        const res = await request(app).get(`/api/v1/customers?page=${page}`);
+        const res = await request(app).get(`/api/v2/customers?page=${page}`);
 
         expect(res.status).toBe(200);
         expect(res.body.data).toHaveLength(20);
@@ -98,7 +98,7 @@ describe("GET /api/v1/customers", () => {
     );
 
     it("falls back to the defaults for a repeated parameter", async () => {
-      const res = await request(app).get("/api/v1/customers?page=1&page=2&limit=5&limit=6");
+      const res = await request(app).get("/api/v2/customers?page=1&page=2&limit=5&limit=6");
 
       expect(res.status).toBe(200);
       expect(res.body.pagination).toEqual({ page: 1, limit: 20, total: 25, pages: 2 });
@@ -115,14 +115,14 @@ describe("GET /api/v1/customers", () => {
     });
 
     it("lists the newest customer first", async () => {
-      const res = await request(app).get("/api/v1/customers");
+      const res = await request(app).get("/api/v2/customers");
 
       expect(res.body.data.map((c) => c.companyName)).toEqual(["Newest", "Middle", "Oldest"]);
     });
   });
 
   it("answers an empty list when there are no customers", async () => {
-    const res = await request(app).get("/api/v1/customers");
+    const res = await request(app).get("/api/v2/customers");
 
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual([]);
@@ -130,7 +130,7 @@ describe("GET /api/v1/customers", () => {
   });
 });
 
-describe("GET /api/v1/customers/:id", () => {
+describe("GET /api/v2/customers/:id", () => {
   let customer;
 
   beforeEach(async () => {
@@ -138,7 +138,7 @@ describe("GET /api/v1/customers/:id", () => {
   });
 
   it("answers the customer", async () => {
-    const res = await request(app).get(`/api/v1/customers/${customer._id}`);
+    const res = await request(app).get(`/api/v2/customers/${customer._id}`);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -150,7 +150,7 @@ describe("GET /api/v1/customers/:id", () => {
   });
 
   it("answers 404 for an id that is not stored", async () => {
-    const res = await request(app).get(`/api/v1/customers/${unusedId()}`);
+    const res = await request(app).get(`/api/v2/customers/${unusedId()}`);
 
     expect(res.status).toBe(404);
     expect(res.body).toMatchObject({
@@ -161,16 +161,16 @@ describe("GET /api/v1/customers/:id", () => {
   });
 
   it("a malformed id answers 400", async () => {
-    const res = await request(app).get("/api/v1/customers/not-an-id");
+    const res = await request(app).get("/api/v2/customers/not-an-id");
 
     expect(res.status).toBe(400);
     expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);
   });
 });
 
-describe("POST /api/v1/customers", () => {
+describe("POST /api/v2/customers", () => {
   it("creates a customer", async () => {
-    const res = await request(app).post("/api/v1/customers").send(validCustomer());
+    const res = await request(app).post("/api/v2/customers").send(validCustomer());
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
@@ -182,7 +182,7 @@ describe("POST /api/v1/customers", () => {
 
   it("creates a customer with only the required fields", async () => {
     const res = await request(app)
-      .post("/api/v1/customers")
+      .post("/api/v2/customers")
       .send({ companyName: "Bare Minimum", phoneNumber: "(555) 123-4567" });
 
     expect(res.status).toBe(201);
@@ -201,7 +201,7 @@ describe("POST /api/v1/customers", () => {
       ["a 3-letter stateAddress", { stateAddress: "CAL" }, "Invalid state abbreviation (use 2-letter code)"],
     ])("answers 400 for %s", async (_name, overrides, message) => {
       const res = await request(app)
-        .post("/api/v1/customers")
+        .post("/api/v2/customers")
         .send(validCustomer(overrides));
 
       expect(res.status).toBe(400);
@@ -212,7 +212,7 @@ describe("POST /api/v1/customers", () => {
     });
 
     it("lists every failing rule", async () => {
-      const res = await request(app).post("/api/v1/customers").send({});
+      const res = await request(app).post("/api/v2/customers").send({});
 
       expect(res.status).toBe(400);
       expect(res.body.errors).toEqual(["Company name is required", "Phone number is required"]);
@@ -227,7 +227,7 @@ describe("POST /api/v1/customers", () => {
 
     it("answers 409 for a duplicate phone number", async () => {
       const res = await request(app)
-        .post("/api/v1/customers")
+        .post("/api/v2/customers")
         .send(validCustomer({ companyName: "Another Co" }));
 
       expect(res.status).toBe(409);
@@ -242,7 +242,7 @@ describe("POST /api/v1/customers", () => {
       "answers 409 for a duplicate phone number written as %s",
       async (phoneNumber) => {
         const res = await request(app)
-          .post("/api/v1/customers")
+          .post("/api/v2/customers")
           .send(validCustomer({ companyName: "Another Co", phoneNumber }));
 
         expect(res.status).toBe(409);
@@ -261,7 +261,7 @@ describe("POST /api/v1/customers", () => {
       const findOne = jest.spyOn(CustomerModel, "findOne").mockResolvedValueOnce(null);
 
       const res = await request(app)
-        .post("/api/v1/customers")
+        .post("/api/v2/customers")
         .send(validCustomer({ companyName: "Another Co" }));
 
       findOne.mockRestore();
@@ -279,7 +279,7 @@ describe("POST /api/v1/customers", () => {
     ["555 123 4567", "with spaces"],
   ])("stores and answers %s as its 10 digits (%s)", async (phoneNumber) => {
     const res = await request(app)
-      .post("/api/v1/customers")
+      .post("/api/v2/customers")
       .send(validCustomer({ phoneNumber }));
 
     expect(res.status).toBe(201);
@@ -291,7 +291,7 @@ describe("POST /api/v1/customers", () => {
 
   it("a companyEmail over 150 characters answers 400", async () => {
     const res = await request(app)
-      .post("/api/v1/customers")
+      .post("/api/v2/customers")
       .send(validCustomer({ companyEmail: `${"a".repeat(145)}@x.com` }));
 
     expect(res.status).toBe(400);
@@ -300,7 +300,7 @@ describe("POST /api/v1/customers", () => {
 
   it("a numeric companyName answers 400", async () => {
     const res = await request(app)
-      .post("/api/v1/customers")
+      .post("/api/v2/customers")
       .send(validCustomer({ companyName: 123 }));
 
     expect(res.status).toBe(400);
@@ -309,7 +309,7 @@ describe("POST /api/v1/customers", () => {
 
   it("a numeric phoneNumber answers 400", async () => {
     const res = await request(app)
-      .post("/api/v1/customers")
+      .post("/api/v2/customers")
       .send(validCustomer({ phoneNumber: 5551234567 }));
 
     expect(res.status).toBe(400);
@@ -317,7 +317,7 @@ describe("POST /api/v1/customers", () => {
   });
 });
 
-describe("PUT /api/v1/customers/:id", () => {
+describe("PUT /api/v2/customers/:id", () => {
   let customer;
   let other;
 
@@ -330,7 +330,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("updates the customer and answers the new document", async () => {
     const res = await request(app)
-      .put(`/api/v1/customers/${customer._id}`)
+      .put(`/api/v2/customers/${customer._id}`)
       .send(validCustomer({ companyName: "Acme Renamed", phoneNumber: "5550001111" }));
 
     expect(res.status).toBe(200);
@@ -348,7 +348,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("accepts the customer's own phone number unchanged", async () => {
     const res = await request(app)
-      .put(`/api/v1/customers/${customer._id}`)
+      .put(`/api/v2/customers/${customer._id}`)
       .send(validCustomer({ companyName: "Acme Renamed" }));
 
     expect(res.status).toBe(200);
@@ -357,7 +357,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("answers 404 for an id that is not stored", async () => {
     const res = await request(app)
-      .put(`/api/v1/customers/${unusedId()}`)
+      .put(`/api/v2/customers/${unusedId()}`)
       .send(validCustomer());
 
     expect(res.status).toBe(404);
@@ -366,7 +366,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("answers 400 when the body fails validation", async () => {
     const res = await request(app)
-      .put(`/api/v1/customers/${customer._id}`)
+      .put(`/api/v2/customers/${customer._id}`)
       .send({ companyName: "Acme Renamed" });
 
     expect(res.status).toBe(400);
@@ -375,7 +375,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("answers 409 when the phone number belongs to another customer", async () => {
     const res = await request(app)
-      .put(`/api/v1/customers/${customer._id}`)
+      .put(`/api/v2/customers/${customer._id}`)
       .send(validCustomer({ phoneNumber: other.phoneNumber }));
 
     expect(res.status).toBe(409);
@@ -384,7 +384,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("answers 409 when the phone number of another customer is written in another format", async () => {
     const res = await request(app)
-      .put(`/api/v1/customers/${other._id}`)
+      .put(`/api/v2/customers/${other._id}`)
       .send(validCustomer({ companyName: "Other Co", phoneNumber: "(555) 123-4567" }));
 
     expect(res.status).toBe(409);
@@ -396,7 +396,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("stores a phone number sent in another format as its 10 digits", async () => {
     const res = await request(app)
-      .put(`/api/v1/customers/${customer._id}`)
+      .put(`/api/v2/customers/${customer._id}`)
       .send(validCustomer({ phoneNumber: "(555) 000-1111" }));
 
     expect(res.status).toBe(200);
@@ -408,7 +408,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("accepts the customer's own phone number written in another format", async () => {
     const res = await request(app)
-      .put(`/api/v1/customers/${customer._id}`)
+      .put(`/api/v2/customers/${customer._id}`)
       .send(validCustomer({ companyName: "Acme Renamed", phoneNumber: "(555) 123-4567" }));
 
     expect(res.status).toBe(200);
@@ -417,7 +417,7 @@ describe("PUT /api/v1/customers/:id", () => {
 
   it("a malformed id answers 400", async () => {
     const res = await request(app)
-      .put("/api/v1/customers/not-an-id")
+      .put("/api/v2/customers/not-an-id")
       .send(validCustomer());
 
     expect(res.status).toBe(400);
@@ -425,7 +425,7 @@ describe("PUT /api/v1/customers/:id", () => {
   });
 });
 
-describe("DELETE /api/v1/customers/:id", () => {
+describe("DELETE /api/v2/customers/:id", () => {
   let customer;
 
   beforeEach(async () => {
@@ -433,7 +433,7 @@ describe("DELETE /api/v1/customers/:id", () => {
   });
 
   it("deletes the customer and answers it", async () => {
-    const res = await request(app).delete(`/api/v1/customers/${customer._id}`);
+    const res = await request(app).delete(`/api/v2/customers/${customer._id}`);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -443,14 +443,14 @@ describe("DELETE /api/v1/customers/:id", () => {
   });
 
   it("answers 404 for an id that is not stored", async () => {
-    const res = await request(app).delete(`/api/v1/customers/${unusedId()}`);
+    const res = await request(app).delete(`/api/v2/customers/${unusedId()}`);
 
     expect(res.status).toBe(404);
     expect(res.body.message).toBe(RESPONSE_MESSAGES.CUSTOMER_NOT_FOUND);
   });
 
   it("a malformed id answers 400", async () => {
-    const res = await request(app).delete("/api/v1/customers/not-an-id");
+    const res = await request(app).delete("/api/v2/customers/not-an-id");
 
     expect(res.status).toBe(400);
     expect(res.body.message).toBe(RESPONSE_MESSAGES.INVALID_ID);

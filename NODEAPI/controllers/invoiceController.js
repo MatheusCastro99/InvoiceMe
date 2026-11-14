@@ -12,7 +12,7 @@ const { computeInvoiceTotals } = require("../utils/money");
 
 /**
  * Get all invoices
- * @route GET /api/v1/invoices
+ * @route GET /api/v2/invoices
  * @returns {Array} List of all invoices
  */
 const getInvoice = asyncHandler(async (req, res) => {
@@ -27,7 +27,7 @@ const getInvoice = asyncHandler(async (req, res) => {
 
 /**
  * Create new invoice
- * @route POST /api/v1/invoices
+ * @route POST /api/v2/invoices
  * @body {string} companyName - Required
  * @body {string} phoneNumber - Required
  * @body {string} dateOfService - Required, a real date as YYYY-MM-DD
@@ -57,7 +57,7 @@ const postInvoice = asyncHandler(async (req, res) => {
 
 /**
  * Delete invoice
- * @route DELETE /api/v1/invoices/:id
+ * @route DELETE /api/v2/invoices/:id
  * @param {string} id - Invoice ID
  * @returns {Object} Deleted invoice
  */

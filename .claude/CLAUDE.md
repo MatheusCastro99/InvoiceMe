@@ -16,7 +16,7 @@ Docs are read when the work needs them, never all up front.
 - `FRONTEND/src/pages/` — one file per route; `FRONTEND/src/components/` — tables, cards, the PDF document
 - `FRONTEND/src/config/apiConfig.js` — every API URL, as `API_ENDPOINTS`
 - `NODEAPI/app.js` — the Express app, with no side effects (loads without a database); `server.js` connects and listens
-- `NODEAPI/{routes,controllers,models,middlewares,utils}/` — one router and controller per resource under `/api/v1/`; validators, error classes, the tax table and the response messages in `utils/`
+- `NODEAPI/{routes,controllers,models,middlewares,utils}/` — one router and controller per resource under `/api/v2/`; validators, error classes, the tax table and the response messages in `utils/`
 - `Harness_Config/Context/Decisions_Consistency.md` — the standing rules (ADRs) and their status; read the ADRs a change touches
 - `Harness_Config/Context/Architecture_Design.md` — structure and key files; `DataFlow.md` — how a request moves and fails
 - `Harness_Config/Context/UI_Guidelines.md` — the UI authority (essentials in `.claude/rules/ui.md`)
@@ -55,7 +55,7 @@ Project skills: `guardrails-review` checks a change against the ADRs (the red-te
 
 The full rules and their status are in `Decisions_Consistency.md`. A pending rule is a target: new code follows it; existing code is brought in line only by an issue that says so. Frontend rules are in `.claude/rules/ui.md`.
 
-- Every `/api/v1/` request takes one path: router, validation middleware where the route has one, a controller wrapped in `express-async-handler`, the Mongoose model. Controllers, middlewares and validators throw the error classes in `NODEAPI/utils/errors.js` and never call `res.status(4xx|5xx)`; `errorMiddleware` builds every error answer. Success answers `{ success: true, data, message? }` (ADR-001).
+- Every `/api/v2/` request takes one path: router, validation middleware where the route has one, a controller wrapped in `express-async-handler`, the Mongoose model. Controllers, middlewares and validators throw the error classes in `NODEAPI/utils/errors.js` and never call `res.status(4xx|5xx)`; `errorMiddleware` builds every error answer. Success answers `{ success: true, data, message? }` (ADR-001).
 - A new endpoint adds its route in `NODEAPI/routes/` and its entry in `API_ENDPOINTS` in the same change (ADR-002).
 - The server's validators in `NODEAPI/utils/validators.js` are the source of truth; a validation change is made there first, and the client never accepts what the server rejects, or rejects what it accepts (ADR-003).
 - The server computes the tax rate and the final price, from `STATE_TAX_RATES` only; the frontend may derive only the displayed subtotal and tax line (ADR-004).

@@ -23,7 +23,7 @@ InvoiceMe is a full-stack business management app for small businesses that need
 
 Current delivery includes:
 
-- **API versioning** with `/api/v1/` routes
+- **API versioning** with `/api/v2/` routes
 - **Customer CRUD** with validation and duplicate protection
 - **Invoice creation and lookup** with tax-aware business logic
 - **PDF-ready invoice flow** and frontend invoice views
@@ -83,10 +83,10 @@ The project is currently in an active MVP / production-ready iteration for small
 
 ```bash
 # Get all customers
-curl http://localhost:3000/api/v1/customers
+curl http://localhost:3000/api/v2/customers
 
 # Create customer
-curl -X POST http://localhost:3000/api/v1/customers \
+curl -X POST http://localhost:3000/api/v2/customers \
   -H "Content-Type: application/json" \
   -d '{
     "companyName": "Tech Corp",
@@ -120,13 +120,13 @@ curl -X POST http://localhost:3000/api/v1/customers \
 
 ## Version History
 
-### v1.26 (current)
+### v2.0 (current)
 
 The full history is in [`NODEAPI/VersionLog.md`](../NODEAPI/VersionLog.md).
 
 **Released Features:**
 
-- API versioning via `/api/v1/`
+- API versioning via `/api/v2/`
 - Centralized error handling and validation middleware
 - Environment-based backend configuration
 - Customer CRUD with duplicate prevention
@@ -221,31 +221,31 @@ InvoiceMe/
 
 ## API Versioning
 
-All endpoints use versioning: `/api/v1/{resource}`
+All endpoints use versioning: `/api/v2/{resource}`
 
 **Customer Endpoints:**
 
 ```
-GET    /api/v1/customers              # List
-GET    /api/v1/customers/:id          # Get one
-POST   /api/v1/customers              # Create
-PUT    /api/v1/customers/:id          # Update
-DELETE /api/v1/customers/:id          # Delete
+GET    /api/v2/customers              # List
+GET    /api/v2/customers/:id          # Get one
+POST   /api/v2/customers              # Create
+PUT    /api/v2/customers/:id          # Update
+DELETE /api/v2/customers/:id          # Delete
 ```
 
 **Invoice Endpoints:**
 
 ```
-GET    /api/v1/invoices               # List
-POST   /api/v1/invoices               # Create
-DELETE /api/v1/invoices/:id           # Delete
+GET    /api/v2/invoices               # List
+POST   /api/v2/invoices               # Create
+DELETE /api/v2/invoices/:id           # Delete
 ```
 
 **Tax Endpoints:**
 
 ```
-POST   /api/v1/tax/rate               # Get state rate
-POST   /api/v1/tax/calculate          # Calculate
+POST   /api/v2/tax/rate               # Get state rate
+POST   /api/v2/tax/calculate          # Calculate
 ```
 
 ---
@@ -305,7 +305,7 @@ MONGO_URL=mongodb+srv://...
 PORT=3000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
-API_VERSION=v1          # in .env.example, not read by the code yet; routes are fixed at /api/v1/
+API_VERSION=v2          # in .env.example, not read by the code yet; routes are fixed at /api/v2/
 ```
 
 ### Frontend (.env.local)
@@ -313,6 +313,41 @@ API_VERSION=v1          # in .env.example, not read by the code yet; routes are 
 ```bash
 VITE_API_BASE_URL=http://localhost:3000
 ```
+
+## Migrating a database from before v2.0
+
+API v2.0 stores phone numbers as 10 digits, dates at UTC midnight and money as integer cents, and every path is under `/api/v2/`. A database written before v2.0 is converted once, by hand, with `NODEAPI/scripts/v2Migration.js`. The script deletes and merges nothing: a record it cannot convert is left as it is and listed with its `_id` and the reason, and you fix it by hand. It never prints a stored value, so look a record up by its `_id` in `mongosh` or Compass.
+
+Use your own connection string in place of the placeholders below, and keep it out of commits and chats.
+
+1. **Stop the API.** Nothing should write to the database during the migration.
+2. **Back up.** The backup is the only way back, because the migration removes the old money fields. This needs the [MongoDB Database Tools](https://www.mongodb.com/docs/database-tools/):
+
+   ```bash
+   mongodump --uri "<your MONGO_URL>" --out <backup-folder>
+   ```
+
+3. **Dry run.** It writes nothing, not even the indexes, and lists every change, every record it cannot convert, and every invoice whose final price changes because the money is recomputed by today's rules:
+
+   ```bash
+   cd NODEAPI
+   npm run migrate:v2 -- --dry-run
+   ```
+
+   `MONGO_URL` comes from `NODEAPI/.env` or the environment; without it the script refuses to run. It prints the host and database it will use, never the credentials. Fix each problem by hand, for example two customers with the same phone number or two invoices with the same number, and run the dry run again. It exits 0 only when nothing is reported and the unique indexes can be built.
+4. **Run.**
+
+   ```bash
+   npm run migrate:v2
+   ```
+
+   It prints the same report and then writes. A record that was reported stays untouched, and a unique index that duplicates block is not built; fix the data and run it again, which builds it.
+5. **Check.** A second dry run lists no changes and exits 0. Then start the API with `npm start`: it builds the unique indexes before it listens. Open an old invoice in the app and check its date and amounts.
+6. **Restore, if it went wrong.** Stop the API and restore the backup over the database (`--drop` replaces what is there). The backup folder holds one subfolder per database, so the address has no database name. Keep the query options in your `MONGO_URL`, such as `?authSource=<database>`:
+
+   ```bash
+   mongorestore --uri "<your MONGO_URL with the database name removed and its query options kept>" --drop <backup-folder>
+   ```
 
 ---
 

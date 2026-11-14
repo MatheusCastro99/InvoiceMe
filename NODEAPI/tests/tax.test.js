@@ -1,31 +1,31 @@
 /**
- * Characterization tests: /api/v1/tax (rate by state, tax calculation in integer cents, #140).
+ * Characterization tests: /api/v2/tax (rate by state, tax calculation in integer cents, #140).
  */
 
 const request = require("supertest");
 const app = require("../app");
 const { RESPONSE_MESSAGES } = require("../utils/constants");
 
-describe("POST /api/v1/tax/rate", () => {
+describe("POST /api/v2/tax/rate", () => {
   it.each([
     ["CA", "CA"],
     ["ca", "CA"],
   ])("answers the rate for state %s", async (state, code) => {
-    const res = await request(app).post("/api/v1/tax/rate").send({ state });
+    const res = await request(app).post("/api/v2/tax/rate").send({ state });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ success: true, data: { state: code, taxRate: 7.25 } });
   });
 
   it("answers a rate of 0 for a state without sales tax", async () => {
-    const res = await request(app).post("/api/v1/tax/rate").send({ state: "OR" });
+    const res = await request(app).post("/api/v2/tax/rate").send({ state: "OR" });
 
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({ state: "OR", taxRate: 0 });
   });
 
   it("answers 400 when the state is missing", async () => {
-    const res = await request(app).post("/api/v1/tax/rate").send({});
+    const res = await request(app).post("/api/v2/tax/rate").send({});
 
     expect(res.status).toBe(400);
     expect(res.body).toMatchObject({
@@ -36,22 +36,22 @@ describe("POST /api/v1/tax/rate", () => {
   });
 
   it("answers 400 for an unknown state code", async () => {
-    const res = await request(app).post("/api/v1/tax/rate").send({ state: "XX" });
+    const res = await request(app).post("/api/v2/tax/rate").send({ state: "XX" });
 
     expect(res.status).toBe(400);
     expect(res.body.message).toBe("Invalid state code: XX");
   });
 
   it("a numeric state answers 400", async () => {
-    const res = await request(app).post("/api/v1/tax/rate").send({ state: 123 });
+    const res = await request(app).post("/api/v2/tax/rate").send({ state: 123 });
 
     expect(res.status).toBe(400);
     expect(res.body.message).toBe("Invalid state code: 123");
   });
 });
 
-describe("POST /api/v1/tax/calculate", () => {
-  const calculate = (body) => request(app).post("/api/v1/tax/calculate").send(body);
+describe("POST /api/v2/tax/calculate", () => {
+  const calculate = (body) => request(app).post("/api/v2/tax/calculate").send(body);
 
   it.each([
     ["3 x $19.99 in CA", 5997, 7.25, 435, 6432],
@@ -73,7 +73,7 @@ describe("POST /api/v1/tax/calculate", () => {
 
   it("gives the same figures as POST /invoices for the same lines", async () => {
     const invoice = await request(app)
-      .post("/api/v1/invoices")
+      .post("/api/v2/invoices")
       .send({
         companyName: "Acme Plumbing",
         phoneNumber: "5551234567",

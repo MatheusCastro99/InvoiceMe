@@ -11,7 +11,7 @@ The full guidelines, screen by screen, are in `Harness_Config/Context/UI_Guideli
 - **Components:** new screens and components take their components from MUI; no new `flowbite-react` imports (ADR-011, pending).
 - **State:** components change what the page shows through React state, never by reading or changing the DOM (`document.getElementById`, `querySelector`, `classList`). Field validity and its styling are state, rendered through `className`. Mounting on `#root` in `main.jsx` is the one exception (ADR-009, pending).
 - **API calls:** every URL comes from `API_ENDPOINTS` in `src/config/apiConfig.js`; pages and components never write an API URL as a string (ADR-002).
-- **Money:** the tax rate and the final price come from `/api/v1/tax/rate` and `/api/v1/tax/calculate`; only the displayed subtotal and tax line are derived here (ADR-004).
+- **Money:** the tax rate and the final price come from `/api/v2/tax/rate` and `/api/v2/tax/calculate`; only the displayed subtotal and tax line are derived here (ADR-004).
 - **Validation:** client checks accept and reject exactly what `NODEAPI/utils/validators.js` does (ADR-003, pending).
 - **Styles:** Tailwind default classes in the JSX, with the few custom classes in `src/index.css`; there is no token file. A color or size Tailwind's defaults don't provide is raised with the owner first. The PDF has its own styles in `src/pdfStyle.jsx`.
 - **Patterns:** a sweetalert2 dialog confirms before a customer or invoice is deleted; react-toastify toasts report success and failure.

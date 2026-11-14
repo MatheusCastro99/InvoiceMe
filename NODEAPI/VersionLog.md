@@ -196,3 +196,19 @@ Currently, 5 states are available for auto tax calculation. They are:
 - `POST /api/v1/tax/calculate` takes `{ subtotalCents, taxRate }` (was `jobPrice` and `taxRate`) and answers `{ subtotalCents, taxRate, taxCents, finalPriceCents }` (was `jobPrice`, `taxAmount`, `finalPrice`), through the same functions as invoices.
 - Parsing is strict (#145): a numeric string or a partly numeric value such as `"12abc"` in either input answers 400. A rate has at most 3 decimals.
 - Every tax message, `/tax/rate`'s included, now comes from `RESPONSE_MESSAGES` (ADR-005). `/tax/rate` answers as before.
+
+
+## v2.0
+
+### Every path moves to /api/v2:
+
+- Breaking: every endpoint is now under `/api/v2/` (`/api/v2/customers`, `/api/v2/invoices`, `/api/v2/tax`). `/api/v1/` is gone and has no alias: a request to it answers 404 `Route not found`. `/` now answers `version: "v2.0"`. The frontend's `API_ENDPOINTS` uses the new paths.
+- The request and answer shapes are those of v1.26; nothing else changes in the API.
+
+### Migration of data stored before v2.0:
+
+- `npm run migrate:v2` (`NODEAPI/scripts/v2Migration.js`) converts an existing database once; `-- --dry-run` lists everything and writes nothing. The procedure (stop the API, `mongodump`, dry run, run, check, restore) is in "Migrating a database from before v2.0" in `Docs/README.md`.
+- Customers: phone numbers become their 10 digits.
+- Invoices: `dateOfService` (`MM/DD/YYYY` or `MMDDYYYY`) becomes a Date at UTC midnight; `invoiceNumber` is trimmed; the money is recomputed by today's rules into `lineItems`, `subtotalCents`, `taxCents`, `finalPriceCents` and `taxRate` (the stored rate, or the state's when it has none), and `finalPrice`, `subtotal` and `tableData` are removed. An invoice with no line rows keeps its stored subtotal and has `lineItems: []`.
+- A final price can change by a cent or more, because the old rows were computed in floating point; each invoice whose final price changes is listed as a notice.
+- A record it cannot convert (an unreadable date, a bad line row, no state, a phone number that is not 10 digits) is left as it is and listed with its `_id` and the reason. Phone numbers that collide once normalized, and equal invoice numbers, are listed and left as they are, and the unique index that they block is not built; fix them by hand and run it again. Nothing is deleted or merged, and a second run changes nothing.

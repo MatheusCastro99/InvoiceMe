@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 // Money is stored as integer cents (ADR-012). Rows from before v1.26 keep finalPrice, subtotal and tableData
-// (dollars) as raw fields until #141 converts them; they are not part of this schema.
+// (dollars) as raw fields until `npm run migrate:v2` converts them (Docs/README.md); they are not part of this schema.
 const isCents = {
   validator: Number.isSafeInteger,
   message: "{PATH} must be a whole number of cents",

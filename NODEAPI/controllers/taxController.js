@@ -12,7 +12,7 @@ const { computeTax } = require("../utils/money");
 
 /**
  * Get tax rate by state
- * @route POST /api/v1/tax/rate
+ * @route POST /api/v2/tax/rate
  * @body {string} state - State abbreviation (e.g., 'CA')
  * @returns {number} Tax rate as percentage
  */
@@ -45,7 +45,7 @@ const defineTaxRate = asyncHandler((req, res) => {
 
 /**
  * Calculate tax and final price, in integer cents (ADR-012)
- * @route POST /api/v1/tax/calculate
+ * @route POST /api/v2/tax/calculate
  * @body {number} subtotalCents - Integer cents, 0 or more
  * @body {number} taxRate - Tax rate as a percentage, 0 to 100 with at most 3 decimals
  * @returns {Object} subtotalCents, taxRate, taxCents and finalPriceCents
