@@ -37,7 +37,7 @@ Confirm each check with evidence from the code (`file:line`), not from memory.
 - A client check added or changed in `CreatePage.jsx`, `EditPage.jsx`, `InvoicePage.jsx`, `components/TableDescription.jsx` or `src/utils/` (`phone.js`, `date.js`, `money.js`) accepts and rejects the same input as `validators.js`.
 
 ### Tax and totals (ADR-004)
-- The frontend computes no tax rate or final price; it reads them from `/api/v2/tax/rate` and `/api/v2/tax/calculate`. Displayed line totals and a subtotal derived from the line items are allowed; the tax and the final price shown come from the server's answer.
+- The frontend computes no tax rate or final price; it reads them from `/api/v2/tax/rate` and `/api/v2/tax/calculate`. Displayed line totals and a subtotal derived from the line items are allowed; the tax and the final price shown come from the server's answer. A $0 subtotal shown as a $0 tax and total without a call is the #153 fix, not a violation.
 - A tax rate exists only in `STATE_TAX_RATES` in `NODEAPI/utils/constants.js`.
 
 ### Naming (ADR-006)

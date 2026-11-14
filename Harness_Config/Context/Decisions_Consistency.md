@@ -56,7 +56,7 @@ Reason:
 
 Rules:
 - The frontend gets the rate and the final price from `/api/v2/tax/rate` and `/api/v2/tax/calculate`, and never computes either itself.
-- The frontend may derive what it only displays: the line totals and the subtotal; the tax and the final price come from the server.
+- The frontend may derive what it only displays: the line totals and the subtotal; the tax and the final price come from the server, except a $0 subtotal, which shows a $0 tax and total without a call (#153).
 
 Status: Accepted, current
 
@@ -66,7 +66,7 @@ User-facing messages from the API come from `RESPONSE_MESSAGES` in `NODEAPI/util
 Reason:
 - One place to read and change what the user is told.
 
-Status: Accepted, pending (the literal messages in `utils/validators.js` and the fallback message in `middlewares/errorMiddleware.js` moved to `RESPONSE_MESSAGES`)
+Status: Accepted, pending (the literal messages in `utils/validators.js`, the `Invalid value for` path messages and the fallback message in `middlewares/errorMiddleware.js`, and the 404 message in `app.js` moved to `RESPONSE_MESSAGES`)
 
 ### ADR-006
 API files follow one naming pattern.
