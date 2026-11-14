@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -68,14 +68,21 @@ const InvoicePage = () => {
     const taxCents = subtotalCents === 0 ? 0 : totals?.taxCents;
     const finalPriceCents = subtotalCents === 0 ? 0 : totals?.finalPriceCents;
 
+    // Numbers each customer pick; a reply for an older pick is dropped, so the latest pick wins.
+    const pickCounter = useRef(0);
+
     // Asks the server for the state's rate; the total follows from the effect below.
     const selectCustomer = async (id) => {
+        const pick = ++pickCounter.current;
+        const isLatest = () => pick === pickCounter.current;
         try {
             const info = await axios.get(API_ENDPOINTS.CUSTOMERS.GET_BY_ID(id));
+            if (!isLatest()) return;
             const payload = info?.data?.data ?? info?.data ?? {};
             setTempCustomer(payload);
-            await handleTax(payload.stateAddress);
+            await handleTax(payload.stateAddress, isLatest);
         } catch (error) {
+            if (!isLatest()) return;
             // A refused rate (a customer with no state or one the tax table lacks, say) is shown, not swallowed
             setTempCustomer([]);
             setCorrespondingTax();
@@ -104,6 +111,7 @@ const InvoicePage = () => {
 
     const requestInfo = (e) => {
         if(e.target.value == "Select Company") {
+          pickCounter.current++;
           setTempCustomer([]);
           setCorrespondingTax();
           return;
@@ -126,11 +134,15 @@ const InvoicePage = () => {
         }
   }
 
-    const handleTax = async(state) => {
+    // A rate that isn't a finite number is an error, never 0%; a real 0 rate (OR, DE...) is valid.
+    const handleTax = async(state, isLatest = () => true) => {
       const getTaxRate = await axios.post(API_ENDPOINTS.TAX.GET_RATE, {state:state});
+      if (!isLatest()) return;
       const fetchedRate = getTaxRate?.data?.data ?? getTaxRate?.data;
       const parsedRate = typeof fetchedRate === "object" ? fetchedRate?.taxRate : fetchedRate;
-      const rate = Number(parsedRate) || 0;
+      const readable = typeof parsedRate === "number" || (typeof parsedRate === "string" && parsedRate.trim() !== "");
+      const rate = readable ? Number(parsedRate) : NaN;
+      if (!Number.isFinite(rate)) throw new Error("Couldn't read the tax rate");
       setCorrespondingTax(rate);
       return rate;
     }
