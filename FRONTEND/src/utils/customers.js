@@ -17,9 +17,11 @@ export const fetchAllCustomers = async () => {
     do {
         const response = await axios.get(API_ENDPOINTS.CUSTOMERS.LIST, { params: { page, limit: PAGE_SIZE } });
         const body = response?.data;
-        const batch = body?.data ?? body ?? [];
+        const batch = body?.data ?? body;
+        // A malformed answer fails loudly: the callers show it as a toast, not an empty list that looks like no customers.
+        if (!Array.isArray(batch)) throw new Error("The customer list could not be read");
         // A customer created while the pages are fetched shifts the later pages, so one can arrive twice.
-        (Array.isArray(batch) ? batch : []).forEach((customer) => {
+        batch.forEach((customer) => {
             if (!byId.has(customer._id)) byId.set(customer._id, customer);
         });
         // An answer with no pagination block counts as the only page.

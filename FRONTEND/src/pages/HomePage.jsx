@@ -132,6 +132,7 @@ const HomePage = () => {
                 "& .MuiPaginationItem-root": { color: "#0f172a", fontWeight: "bold", minWidth: 32, height: 32 },
                 "& .MuiPaginationItem-root.Mui-selected": { backgroundColor: "#1d4ed8", color: "#ffffff", border: "2px solid #0f172a" },
                 "& .MuiPaginationItem-root.Mui-selected:hover": { backgroundColor: "#2563eb" },
+                "& .MuiPaginationItem-root.Mui-selected.Mui-focusVisible": { backgroundColor: "#1d4ed8", color: "#ffffff" },
                 "& .MuiPaginationItem-root.Mui-focusVisible": { outline: "2px solid #0f172a", outlineOffset: 2 },
               }}
             />
