@@ -135,6 +135,8 @@ const InvoicePage = () => {
 
     // Same rule as the server (ADR-003): blank and an exact match (after trimming) of a stored number are blocked.
     // A gap or a lower number compared with the newest invoice only warns.
+    // The one exception is the number the form was opened with ("Edit Invoice"): it is the invoice being edited, so it is not flagged.
+    // Saving that copy is still refused by the server as a duplicate.
     const validateInvoiceNum = (value, invoices = invoicesArr) => {
       const num = value.trim();
       const newest = invoices[0];
@@ -144,6 +146,11 @@ const InvoicePage = () => {
       if (num === "") {
         toast.error("Invoice number is required");
         setInvoiceNumValidity(false);
+        return;
+      }
+
+      if (typeof carried?.invoiceNumber === "string" && carried.invoiceNumber.trim() === num) {
+        setInvoiceNumValidity(true);
         return;
       }
 
