@@ -198,6 +198,8 @@ The phone number is compared as its 10 digits, so `"(555) 123-4567"` and `"55512
 }
 ```
 
+The body is validated like Create Customer: `companyName` and `phoneNumber` are required on every update.
+
 `phoneNumber` follows the same rules as on create: it is stored as its 10 digits, and a number that another customer already has, in any format, answers 409.
 
 **Response (200):**
@@ -311,7 +313,7 @@ The server computes every figure. With the lines above in IL (6.25%), the answer
 
 - `companyName` (required): String
 - `phoneNumber` (required): String, valid US phone format
-- `dateOfService` (required): a real calendar date written `YYYY-MM-DD` (a string; `10/27/2026`, `2026-02-30` and a number are refused with 400 `Date of service must be a real date in YYYY-MM-DD format`). It is stored as a date at UTC midnight and every answer that returns an invoice (list, create, delete) sends it back as `YYYY-MM-DD`, whatever the server's time zone. An invoice stored before v1.24 with a non-date value in this field still lists, but its answer leaves out `dateOfService`, until `npm run migrate:v2` converts it (see "Migrating a database from before v2.0" in `Docs/README.md`)
+- `dateOfService` (required): a real calendar date written `YYYY-MM-DD` (a string; `10/27/2026`, `2026-02-30` and a number are refused with 400 `Date of service must be a real date in YYYY-MM-DD format`). It is stored as a date at UTC midnight and every answer that returns an invoice (list, create, delete) sends it back as `YYYY-MM-DD`, whatever the server's time zone. An invoice stored before v1.24 with a non-date value in this field still lists, but its answer leaves out `dateOfService`, until `npm run migrate:v2` converts it (see "Migrating a database from before v2.0" in `Docs/README.md`). A value stored as `MM/DD/YYYY` before v1.24 is read in the server's local time and can come back a day off, until `npm run migrate:v2` converts it
 - `invoiceNumber` (required): a non-blank string (a missing, blank or non-string value is refused with 400 `Invoice number is required`). It is stored trimmed and must be unique: the comparison is an exact match on the trimmed value, so `"INV-001"` and `" INV-001 "` are the same number, and `"042"` and `"42"` are different. A number that another invoice already has answers 409 `A record with this value already exists`. Invoices stored before v1.25 without a number are kept as they are and do not collide with each other
 - `stateAddress` (required): a state code in the tax table (`CA`, `NY`, ...), exactly as written: a missing value answers 400 `State is required`, an unknown one (including `DC` and lowercase) 400 `State must be a valid state code`. The server takes the tax rate from it
 - `lineItems` (optional list): each line is `{ description, quantity, unitPriceCents }`. `description` is a non-blank string (stored trimmed); `quantity` is a JSON number above 0 with at most 2 decimals; `unitPriceCents` is an integer of 0 or more. A line that fails answers 400 with `Each line item needs a description`, `Each line item quantity must be more than 0, with at most 2 decimals` or `Each line item price must be a whole number of cents, 0 or more`

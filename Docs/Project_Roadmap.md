@@ -6,7 +6,7 @@
 - Every NODEAPI endpoint has automated HTTP-level tests that run locally and in CI
 - Harnesses: Jest + Supertest
 
-## Epic 1: Schema Types Correction ([#136](https://github.com/MatheusCastro99/InvoiceMe/issues/136))
+## Epic 1: Schema Types Correction ([#136](https://github.com/MatheusCastro99/InvoiceMe/issues/136)) [CONCLUDED]
 
 Sub-issues, done in order:
 
@@ -17,7 +17,7 @@ Sub-issues, done in order:
 5. Money in integer cents, ADR-012 ([#140](https://github.com/MatheusCastro99/InvoiceMe/issues/140))
 6. Migrate existing data and cut over to `/api/v2` ([#141](https://github.com/MatheusCastro99/InvoiceMe/issues/141))
 
-Sub-issues 2–4 split the integrity gaps in [#70](https://github.com/MatheusCastro99/InvoiceMe/issues/70), which closes when the last of them merges.
+Sub-issues 2–4 split the integrity gaps in [#70](https://github.com/MatheusCastro99/InvoiceMe/issues/70), which closed when the last of them merged.
 
 ## Deferred from the bug backlog ([#153](https://github.com/MatheusCastro99/InvoiceMe/issues/153))
 

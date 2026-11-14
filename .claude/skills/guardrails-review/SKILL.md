@@ -34,10 +34,10 @@ Confirm each check with evidence from the code (`file:line`), not from memory.
 
 ### Validation (ADR-003)
 - A changed validation rule is changed in `NODEAPI/utils/validators.js`, and the route applies it through `NODEAPI/middlewares/validationMiddleware.js` or the controller's own checks.
-- A client check added or changed in `CreatePage.jsx`, `EditPage.jsx` or `InvoicePage.jsx` accepts and rejects the same input as `validators.js`.
+- A client check added or changed in `CreatePage.jsx`, `EditPage.jsx`, `InvoicePage.jsx`, `components/TableDescription.jsx` or `src/utils/` (`phone.js`, `date.js`, `money.js`) accepts and rejects the same input as `validators.js`.
 
 ### Tax and totals (ADR-004)
-- The frontend computes no tax rate or final price; it reads them from `/api/v2/tax/rate` and `/api/v2/tax/calculate`. A displayed subtotal or tax line derived from them is allowed.
+- The frontend computes no tax rate or final price; it reads them from `/api/v2/tax/rate` and `/api/v2/tax/calculate`. Displayed line totals and a subtotal derived from the line items are allowed; the tax and the final price shown come from the server's answer. A $0 subtotal shown as a $0 tax and total without a call is the #153 fix, not a violation.
 - A tax rate exists only in `STATE_TAX_RATES` in `NODEAPI/utils/constants.js`.
 
 ### Naming (ADR-006)
@@ -66,7 +66,13 @@ Confirm each check with evidence from the code (`file:line`), not from memory.
 
 These have already happened in this project. Check the change against each one.
 
-- None recorded yet.
+- A $0 subtotal is a value, not a missing one: test for null or empty, not falsiness (#153).
+- Edit Invoice opens with its own number, and the duplicate check must not flag it (#153).
+- A failed tax-rate call reaches the user as an error, and only the latest customer pick's answer is applied (#153).
+- A `YYYY-MM-DD` string parsed with `new Date()` and shown in local time is the day before west of UTC: format the string, don't parse it (#138).
+- Mongoose casts a number to a Date, so the validator checks that `dateOfService` is a string first (#138).
+- A state is an own key of `STATE_TAX_RATES` (`Object.hasOwn`), so `"constructor"` isn't one (#140).
+- `parseFloat("12abc")` is 12: a number input is checked whole (#145).
 
 ## 4. Verification you can do
 
@@ -83,7 +89,7 @@ Sections 5 and 6 apply when this skill is used inline. The red-team agent uses i
 | **Critical** | Wrong or lost data, a crash, exposed secrets, or a broken standing rule | A connection string committed (ADR-007); a customer update that rewrites saved invoices (ADR-008); a final price computed in the frontend instead of by the server (ADR-004) | Fix before merge |
 | **Major** | A real reliability or maintainability risk | An API URL written in a page (ADR-002); a new client check that disagrees with `validators.js` (ADR-003); a controller that answers an error itself (ADR-001) | Fix before the next issue |
 | **Minor** | Friction, clarity, naming | A handler named outside the pattern (ADR-006); a leftover `console.log` | Mention; fix if cheap |
-| **Accepted trade-off** | Intentional, per the documents | The existing code that a pending rule (ADR-003, ADR-005, ADR-007, ADR-009, ADR-011, ADR-012, ADR-013) has not brought in line yet; the project runs locally only | Don't raise it again |
+| **Accepted trade-off** | Intentional, per the documents | The existing code that a pending rule (ADR-003, ADR-005, ADR-007, ADR-009, ADR-011) has not brought in line yet; the project runs locally only | Don't raise it again |
 
 ## 6. Output
 

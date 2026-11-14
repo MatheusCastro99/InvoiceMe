@@ -2,7 +2,7 @@
 
 A comprehensive, production-ready CRUD application for managing customers and generating invoices for a small businesses.
 
-**Version:** 1.26
+**Version:** 2.0
 **Status:** Production-ready MVP
 **Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
@@ -25,7 +25,7 @@ Current delivery includes:
 
 - **API versioning** with `/api/v2/` routes
 - **Customer CRUD** with validation and duplicate protection
-- **Invoice creation and lookup** with tax-aware business logic
+- **Invoice creation and history** with tax-aware business logic
 - **PDF-ready invoice flow** and frontend invoice views
 - **MongoDB-backed persistence** and health checks for runtime validation
 - **Responsive React UI** built with Vite + Tailwind
@@ -53,7 +53,7 @@ The project is currently in an active MVP / production-ready iteration for small
 
 - Create invoices from customer and service data
 - Calculate tax by state
-- Maintain invoice history and lookup endpoints
+- Keep an invoice history (list and delete)
 - Generate invoice data ready for export and PDF rendering
 - Track invoice numbers to avoid duplicates
 
@@ -68,6 +68,7 @@ The project is currently in an active MVP / production-ready iteration for small
 
 **Customer:**
 
+- Company name: required
 - Phone: Valid US format
 - Email: Valid email (optional)
 - Zip: 5 or 9 digits (optional)
@@ -75,9 +76,12 @@ The project is currently in an active MVP / production-ready iteration for small
 
 **Invoice:**
 
+- Company name: required
 - Phone: Valid US format
 - Date of service: required, a real date written YYYY-MM-DD
-- Price: a number, 0 or more
+- Invoice number: required and unique
+- State: a code in the tax table
+- Line items: each with a description, a quantity above 0 and a price in whole cents; without line items, a subtotal in whole cents, 0 or more
 
 ## API Testing Example
 
@@ -195,7 +199,7 @@ InvoiceMe/
 │   │   ├── components/ # UI blocks and reusable views
 │   │   ├── pages/      # Page-level screens
 │   │   ├── config/     # API configuration
-│   │   ├── utils/      # Phone number check and display format
+│   │   ├── utils/      # Phone, date and money checks and display formats
 │   │   └── App.jsx
 │   ├── package.json
 │   ├── vite.config.js
