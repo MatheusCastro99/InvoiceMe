@@ -61,7 +61,7 @@ Decided on 2026-11-19 and recorded as ADR-014: the API runs as a container on Az
 
 ## Epic 6: Last pass before InvoiceMe goes live
 
-- Security hardening: rate limiting (sign-in especially), security headers, request size limits, CORS for the production domain.
+- Security hardening: rate limiting on the API, security headers, request size limits, CORS for the production domain.
 - Operations: database backups, logging and error monitoring, a production environment and its deploy.
 - Privacy: a privacy policy and terms, account deletion and data export (users store their own customers' personal details).
 - End-to-end tests of the main flows (sign in, create a customer, create an invoice, open the PDF).

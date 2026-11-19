@@ -58,8 +58,8 @@ Confirm each check with evidence from the code (`file:line`), not from memory.
 ### Tests (ADR-010)
 - A new or changed endpoint comes with tests in `NODEAPI/tests/` for its success and error answers, importing `NODEAPI/app.js`.
 
-### Sign-in (ADR-014) (draft, for the owner's approval at G2)
-- The API verifies the access token's signature, issuer, audience and expiry. Decoding a token without verifying it, or skipping the audience check, is a finding.
+### Sign-in (ADR-014)
+- The API verifies the access token's signature, issuer, audience and expiry, and that it carries the API's scope (or app role). Decoding a token without verifying it, or skipping the audience or scope check, is a finding.
 - Every `/api/v2/` route is behind the token check, and a missing or failing token is answered with 401 through `errorMiddleware` (ADR-001).
 - The API holds no password, password hash or session store.
 - `FRONTEND/` holds no client secret, and no `VITE_` variable carries one.

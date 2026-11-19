@@ -165,7 +165,7 @@ InvoiceMe runs on Azure: the API as a container on Azure Container Apps, the fro
 Reason:
 - Epic 2 adds sign-in, and the host decides what Epic 4's containers are for, so both are decided once, before any auth code.
 - At this scale the Azure stack costs about $0, runs the API's Docker image as it is, and keeps hosting and sign-in under one subscription and one bill.
-- Entra External ID has the highest free tier of the sign-in options weighed, with email sign-in included.
+- Entra External ID is free to 50,000 MAU (as large a free tier as any sign-in option weighed), with email sign-in included.
 
 Options considered (prices read on 2026-11-19, each on the provider's own page):
 - Hosting, Azure (azure.microsoft.com/en-us/pricing/details/container-apps/ and …/app-service/static/): Container Apps gives 180,000 vCPU-s, 360,000 GiB-s and 2M requests free per subscription per month, then $0.000024 per vCPU-s and $0.000003 per GiB-s (active rate), and scales to zero with no charge; one 0.25 vCPU / 0.5 GiB replica always active is about $14/month. Static Web Apps: Free (no SLA, 100 GB, 2 custom domains) or Standard at $9/app/month. Chosen.
@@ -182,7 +182,7 @@ Options considered (prices read on 2026-11-19, each on the provider's own page):
 
 Rules:
 - The frontend gets an access token from Entra External ID through Microsoft's browser sign-in SDK, and every `/api/v2/` request sends it as `Authorization: Bearer <token>`. The package is chosen when #172 is scoped.
-- The API verifies the token itself: signature against Entra's published signing keys, issuer, audience and expiry. A missing or failing token is answered with 401 through `errorMiddleware` (ADR-001). The package is chosen when #171 is scoped.
+- The API verifies the token itself: signature against Entra's published signing keys, issuer, audience and expiry, and that it carries the API's scope (or app role). A missing or failing token is answered with 401 through `errorMiddleware` (ADR-001). The package is chosen when #171 is scoped.
 - The API stores no passwords, and the frontend holds no client secret.
 - Entra settings (tenant authority, client ids, API audience and scope) are environment variables, listed in each project's `.env.example` with no real value, and `VITE_`-prefixed on the frontend (ADR-007).
 - The test suite stays offline: it signs its tokens with a local test key and makes no call to Entra.
