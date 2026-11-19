@@ -76,11 +76,11 @@ Answers:
 - Feedback: react-toastify toasts for success and failure
 
 ## Design system
-Lives in: Tailwind utility classes in the JSX, and `FRONTEND/src/index.css` for the few custom classes. Components come from MUI (`@mui/material`, `@mui/x-date-pickers`) and `flowbite-react`, with FontAwesome icons. The six color tokens live in the `@theme` block of `FRONTEND/src/index.css`. New screens use them, and Tailwind's default sizes in the roles above. Existing pages keep their current classes until Epic 5.
+Lives in: Tailwind utility classes in the JSX, and `FRONTEND/src/index.css` for the few custom classes. Components come from MUI (`@mui/material`, `@mui/x-date-pickers`) and `flowbite-react`, with FontAwesome icons. The six color tokens live in the `@theme` block of `FRONTEND/src/index.css`. New screens use them, and Tailwind's default steps, preferring the roles above. Existing pages keep their current classes until Epic 5.
 
 Rules:
 - New screens and components take their components from MUI (ADR-011).
-- New screens and components take their colors from these tokens.
+- New screens and components take their colors from these tokens, plus `white` for text on `primary`, `primary-hover` and `danger` and for the surfaces content sits on.
 
 ## Review questions
 Before approving an interface change, ask:
