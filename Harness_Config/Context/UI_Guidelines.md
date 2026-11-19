@@ -26,6 +26,8 @@ Feels:
 | `muted` | `#475569` | supporting text, labels, captions | on white 7.58:1 |
 | `danger` | `#B42318` | delete buttons, invalid-field border and message, error text | white text on it 6.57:1 |
 
+The contrast figures assume content on a white surface; `white` is the text color on `primary`, `primary-hover` and `danger`.
+
 ### Type scale
 | Role | Classes |
 |---|---|

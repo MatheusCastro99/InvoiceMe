@@ -24,7 +24,7 @@ This lens works from the source. Base findings on it and say what the owner shou
 **Design system.**
 - Use the existing styles and tokens. A hardcoded color or size in **new or changed** interface code is a finding.
 - Known existing debt; don't report it as a regression: the custom colors in `FRONTEND/src/index.css`, the sweetalert2 button colors in `Customer.jsx` and `TableInvoice.jsx`, and the colors in `pdfStyle.jsx`.
-- A new color uses a token (`primary`, `primary-hover`, `primary-soft`, `ink`, `muted`, `danger`), and a new size uses a Tailwind default class. Anything else is raised with the owner before it is added.
+- A new color uses a token (`primary`, `primary-hover`, `primary-soft`, `ink`, `muted`, `danger`) or `white` (text on `primary`, `primary-hover` and `danger`, and surfaces), and a new size uses a Tailwind default class. Anything else is raised with the owner before it is added.
 - Prefer reusing an existing layout pattern over a one-off.
 
 **Accessibility.** This is never traded for looks.
