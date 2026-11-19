@@ -10,7 +10,7 @@ This skill adds a UX lens on top of the session context. It produces a **recomme
 ## 1. Load context
 
 - `Harness_Config/Context/UI_Guidelines.md` is **the authority**: identity, principles, palette, typography, screen purposes. Don't restate it; apply it.
-- Styles: Tailwind utility classes in the JSX, with Tailwind v4's default theme (there is no `tailwind.config` and no token file), and the few custom classes in `FRONTEND/src/index.css`. The PDF has its own styles in `FRONTEND/src/pdfStyle.jsx`.
+- Styles: Tailwind utility classes in the JSX, with Tailwind v4's default theme (there is no `tailwind.config`), the six color tokens in the `@theme` block of `FRONTEND/src/index.css`, and the few custom classes there. The PDF has its own styles in `FRONTEND/src/pdfStyle.jsx`.
 - The source of the screen or component being changed, in `FRONTEND/src/pages/` and `FRONTEND/src/components/`.
 
 This lens works from the source. Base findings on it and say what the owner should look at on screen; the builder's UI check (section 4) is where the running app is seen.
@@ -24,7 +24,7 @@ This lens works from the source. Base findings on it and say what the owner shou
 **Design system.**
 - Use the existing styles and tokens. A hardcoded color or size in **new or changed** interface code is a finding.
 - Known existing debt; don't report it as a regression: the custom colors in `FRONTEND/src/index.css`, the sweetalert2 button colors in `Customer.jsx` and `TableInvoice.jsx`, and the colors in `pdfStyle.jsx`.
-- A new color or size uses a Tailwind default class. One that Tailwind's defaults do not provide is raised with the owner before it is added.
+- A new color uses a token (`primary`, `primary-hover`, `primary-soft`, `ink`, `muted`, `danger`), and a new size uses a Tailwind default class. Anything else is raised with the owner before it is added.
 - Prefer reusing an existing layout pattern over a one-off.
 
 **Accessibility.** This is never traded for looks.

@@ -1,6 +1,6 @@
 # UI Guidelines
 
-Last updated: 2026-10-20
+Last updated: 2026-11-19
 
 ## Purpose
 The interface and experience guardrails for InvoiceMe. They keep every screen in line with the [Project Vision](../../Docs/Project_Vision.md): a customer and invoice tracking web application for small businesses.
@@ -11,7 +11,34 @@ Feels:
 - Finance-like: the look and palette of a financial tool
 
 ## Visual direction
-- Color: a finance-like palette
+- Color: "Clear emerald", six semantic tokens (below). States such as valid, invalid and selected are never shown by color alone: they also carry text or an icon.
+- Typeface: Tailwind's default system sans (`font-sans`); no web font. Money is shown in tabular figures (`tabular-nums`) and right-aligned in tables.
+- Type scale: roles on Tailwind's default sizes, with no size tokens.
+- Spacing: Tailwind's 4px steps, with no spacing tokens.
+
+### Palette
+| Token | Hex | Use | Contrast measured |
+|---|---|---|---|
+| `primary` | `#047857` | primary buttons, links, header accent, valid-field border, selected state | white text on it 5.48:1 |
+| `primary-hover` | `#065F46` | hover and pressed state of `primary` | white text on it 7.68:1 |
+| `primary-soft` | `#ECFDF5` | highlighted or selected rows, quiet info surfaces | `primary` on it 5.21:1, `ink` on it 16.95:1 |
+| `ink` | `#0F172A` | body text and headings | none measured |
+| `muted` | `#475569` | supporting text, labels, captions | on white 7.58:1 |
+| `danger` | `#B42318` | delete buttons, invalid-field border and message, error text | white text on it 6.57:1 |
+
+### Type scale
+| Role | Classes |
+|---|---|
+| Page title | `text-2xl font-semibold` |
+| Section title | `text-lg font-semibold` |
+| Body | `text-base` |
+| Label | `text-sm font-medium` |
+| Caption | `text-xs` |
+
+### Spacing
+- Inside controls: 8px (`p-2`)
+- Between fields: 16px (`gap-4`)
+- Between sections: 32px (`gap-8`)
 
 ## Screens
 
@@ -47,10 +74,11 @@ Answers:
 - Feedback: react-toastify toasts for success and failure
 
 ## Design system
-Lives in: Tailwind utility classes in the JSX, and `FRONTEND/src/index.css` for the few custom classes. Components come from MUI (`@mui/material`, `@mui/x-date-pickers`) and `flowbite-react`, with FontAwesome icons. There is no theme or token file yet.
+Lives in: Tailwind utility classes in the JSX, and `FRONTEND/src/index.css` for the few custom classes. Components come from MUI (`@mui/material`, `@mui/x-date-pickers`) and `flowbite-react`, with FontAwesome icons. The six color tokens live in the `@theme` block of `FRONTEND/src/index.css`. New screens use them, and Tailwind's default sizes in the roles above. Existing pages keep their current classes until Epic 5.
 
 Rules:
 - New screens and components take their components from MUI (ADR-011).
+- New screens and components take their colors from these tokens.
 
 ## Review questions
 Before approving an interface change, ask:
