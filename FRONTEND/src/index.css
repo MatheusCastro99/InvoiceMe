@@ -1,5 +1,14 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-primary: #047857;
+  --color-primary-hover: #065F46;
+  --color-primary-soft: #ECFDF5;
+  --color-ink: #0F172A;
+  --color-muted: #475569;
+  --color-danger: #B42318;
+}
+
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
