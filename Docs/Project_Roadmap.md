@@ -31,17 +31,11 @@ Independent issues, each small:
 
 ## Decision: hosting and authentication
 
-One decision, recorded as an ADR before Epic 2 starts, because the host shapes both the auth provider and what Dockerization is for. Options considered:
-
-- **A.** Azure Container Apps (API) + Azure Static Web Apps (frontend) + MongoDB Atlas + Microsoft Entra External ID (sign-in for the public, not the workforce Entra ID).
-- **B.** A simple container host (Render, Fly) + a static host + MongoDB Atlas + a hosted auth service (Auth0, Clerk).
-- **C.** Self-built email and password sign-in with JWTs, on either host. No vendor, but password reset, email verification and sign-in rate limiting become ours to build and secure.
-
-Vercel was also considered: it suits the frontend, but the Express API would need reworking for serverless, which leaves Dockerization with little purpose.
+Decided on 2026-11-19 and recorded as ADR-014: the API runs as a container on Azure Container Apps, the frontend on Azure Static Web Apps, and the data on MongoDB Atlas. People sign up and sign in with Microsoft Entra External ID. The ADR holds the options weighed (Render, Fly.io, Vercel, Cloudflare, Clerk, Auth0 and self-built sign-in) with their prices.
 
 ## Epic 2: Authentication
 
-- Sign-up, sign-in and sign-out with the chosen provider.
+- Sign-up, sign-in and sign-out with Microsoft Entra External ID.
 - The API checks every `/api/v2/` request for a signed-in user.
 - The new screens follow the palette and tokens of Epic 5, agreed in `UI_Guidelines.md` before they are built.
 
@@ -56,7 +50,7 @@ Vercel was also considered: it suits the frontend, but the Express API would nee
 ## Epic 4: Dockerization and staging
 
 - Containers for local development (API, frontend, MongoDB) with Docker Compose.
-- Production images shaped by the hosting decision.
+- A production image for Azure Container Apps.
 - A deploy pipeline from CI to a live staging environment, so the go-live epic starts from a running deployment.
 
 ## Epic 5: UI Overhaul

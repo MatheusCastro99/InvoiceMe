@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-11-14
+Last updated: 2026-11-19
 
 The standing rules every change to InvoiceMe must follow. A one-off choice is not a rule: it goes in its issue or pull request.
 
@@ -158,3 +158,41 @@ Reason:
 - A string date can't be sorted, compared or validated, and a local-time Date shifts the day across time zones.
 
 Status: Accepted, current
+
+### ADR-014
+InvoiceMe runs on Azure: the API as a container on Azure Container Apps, the frontend on Azure Static Web Apps, the data on MongoDB Atlas. People sign up and sign in with Microsoft Entra External ID (sign-in for the public, not the workforce Entra ID).
+
+Reason:
+- Epic 2 adds sign-in, and the host decides what Epic 4's containers are for, so both are decided once, before any auth code.
+- At this scale the Azure stack costs about $0, runs the API's Docker image as it is, and keeps hosting and sign-in under one subscription and one bill.
+- Entra External ID has the highest free tier of the sign-in options weighed, with email sign-in included.
+
+Options considered (prices read on 2026-11-19, each on the provider's own page):
+- Hosting, Azure (azure.microsoft.com/en-us/pricing/details/container-apps/ and …/app-service/static/): Container Apps gives 180,000 vCPU-s, 360,000 GiB-s and 2M requests free per subscription per month, then $0.000024 per vCPU-s and $0.000003 per GiB-s (active rate), and scales to zero with no charge; one 0.25 vCPU / 0.5 GiB replica always active is about $14/month. Static Web Apps: Free (no SLA, 100 GB, 2 custom domains) or Standard at $9/app/month. Chosen.
+- Hosting, Render (render.com/pricing): the free web service spins down after 15 minutes idle and takes about a minute to wake (750 h/month); Starter is $7/month (0.5 CPU, 512 MB); static sites are free.
+- Hosting, Fly.io (docs.fly.io/about/pricing): no free tier for new organizations; the smallest machine is $2.19/month.
+- Hosting, Vercel (vercel.com/pricing, /docs/frameworks/backend/express, /legal/terms §4): Express deploys with no configuration as one function (4.5 MB body, 300 s maximum on Hobby) or as a container; Hobby is for "personal or non-commercial use" only, so going live means Pro at $20/month.
+- Hosting, Cloudflare (developers.cloudflare.com: workers/platform/pricing, containers/platform/pricing, workers/runtime-apis/tcp-sockets): static assets are free; Express is not documented on Workers and a TCP socket can't be shared across requests, so the MongoDB driver's connection pool doesn't fit; Containers need Workers Paid ($5/month, which includes 25 GiB-h memory and 375 vCPU-min).
+- Data, MongoDB Atlas (mongodb.com/pricing): M0 is free (512 MB, no backups); Flex is $8–$30/month (5 GB); M10 starts at $56.94/month. Chosen at M0 for now.
+- Sign-in, Microsoft Entra External ID (azure.microsoft.com/en-us/pricing/details/microsoft-entra-external-id/): free to 50,000 MAU, then $0.03 per MAU; the SMS add-on is $0.03–$0.35 per attempt; requires an Azure subscription. Chosen.
+- Sign-in, Clerk (clerk.com/pricing): Hobby is free to 50,000 retained users, with no MFA, Clerk branding and 7-day sessions; Pro is $25/month.
+- Sign-in, Auth0 (auth0.com/pricing): Free to 25,000 MAU without Pro MFA; Essentials starts at $35/month for 500 MAU.
+- Sign-in, self-built email and password with JWTs: no vendor, but password reset, email verification and sign-in rate limiting become ours to build and secure, and the API would hold password hashes.
+- Neither Vercel (Passport is Enterprise-only and guards deployments) nor Cloudflare (Access guards apps for staff) signs in an app's own public users.
+
+Rules:
+- The frontend gets an access token from Entra External ID through Microsoft's browser sign-in SDK, and every `/api/v2/` request sends it as `Authorization: Bearer <token>`. The package is chosen when #172 is scoped.
+- The API verifies the token itself: signature against Entra's published signing keys, issuer, audience and expiry. A missing or failing token is answered with 401 through `errorMiddleware` (ADR-001). The package is chosen when #171 is scoped.
+- The API stores no passwords, and the frontend holds no client secret.
+- Entra settings (tenant authority, client ids, API audience and scope) are environment variables, listed in each project's `.env.example` with no real value, and `VITE_`-prefixed on the frontend (ADR-007).
+- The test suite stays offline: it signs its tokens with a local test key and makes no call to Entra.
+
+Consequences:
+- Epic 4 builds a production image for Azure Container Apps.
+- A scaled-to-zero API answers its first request after a cold start, unless a minimum replica is paid for.
+- Atlas M0 has no backups; Epic 6 revisits this.
+- Running the app locally with sign-in needs an Entra external tenant and app registrations, which the owner sets up and #172's README describes.
+- `JWT_SECRET` in `NODEAPI/.env.example` is used by nothing; #171 removes it.
+- Which token claim identifies the user is set in #171.
+
+Status: Accepted, pending (#171 and #172 implement it)
