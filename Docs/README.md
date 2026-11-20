@@ -258,7 +258,7 @@ POST   /api/v2/tax/calculate          # Calculate
 
 ### Prerequisites
 
-- Node.js 20.19+ required (Mongoose 9)
+- Node.js 20.19+ required (Mongoose 9); the API tests need Node 24.9+
 - MongoDB Atlas or local MongoDB instance
 - npm
 
@@ -279,13 +279,13 @@ This uses the root scripts, which run the API and the frontend together with `co
 cd NODEAPI
 npm install
 cp .env.example .env
-# Edit .env with your MongoDB URL.
+# Edit .env with your MongoDB URL and the four ENTRA_* sign-in values (see Configuration below).
 # If you do not have MongoDB Atlas, use a local MongoDB instance:
 # MONGO_URL=mongodb://127.0.0.1:27017/API-test
 npm run dev
 # Server runs on http://localhost:3000
 
-# Tests (no .env or database needed; npm install downloads a MongoDB binary the first time)
+# Tests (need Node 24.9+; no .env or database needed; npm install downloads a MongoDB binary the first time)
 npm test
 ```
 
@@ -310,7 +310,15 @@ PORT=3000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 API_VERSION=v2          # in .env.example, not read by the code yet; routes are fixed at /api/v2/
+# Sign-in (Microsoft Entra External ID): every /api/v2/ request needs an access token for this API.
+# Without all four, the API answers 500 on every /api/v2/ request.
+ENTRA_ISSUER=https://<tenant-id>.ciamlogin.com/<tenant-id>/v2.0
+ENTRA_JWKS_URI=https://<tenant-subdomain>.ciamlogin.com/<tenant-id>/discovery/v2.0/keys
+ENTRA_API_AUDIENCE=<api-client-id>
+ENTRA_API_SCOPE=<scope-name>
 ```
+
+> Sign-in: the API refuses every `/api/v2/` request without a valid access token (401 `Sign-in required`). The frontend's sign-in arrives with #172, so until then the app gets 401 on every API call. `/` and `/health` stay open.
 
 ### Frontend (.env.local)
 

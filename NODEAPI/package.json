@@ -5,12 +5,12 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "api": "node server.js",
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "migrate:v2": "node scripts/v2Migration.js"
   },
   "keywords": [
@@ -29,6 +29,7 @@
     "express": "^5.3.0",
     "express-async-handler": "^1.2.0",
     "express-validator": "^7.3.2",
+    "jose": "^6.2.18",
     "mongoose": "^9.12.1"
   },
   "devDependencies": {

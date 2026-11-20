@@ -1,9 +1,9 @@
 /**
- * Characterization tests: service routes (GET /, GET /health, GET /debug/db),
+ * Characterization tests: service routes (GET /, GET /health),
  * the unknown-route answer and malformed JSON.
  */
 
-const request = require("supertest");
+const request = require("./setup/authedRequest");
 const app = require("../app");
 
 describe("GET /", () => {
@@ -26,12 +26,11 @@ describe("GET /health", () => {
 });
 
 describe("GET /debug/db", () => {
-  it("answers the connection state and database name", async () => {
+  it("answers 404: the route was removed", async () => {
     const res = await request(app).get("/debug/db");
 
-    expect(res.status).toBe(200);
-    expect(res.body.readyState).toBe(1);
-    expect(res.body.name).toMatch(/^test-/);
+    expect(res.status).toBe(404);
+    expect(res.body).toMatchObject({ success: false, message: "Route not found" });
   });
 });
 

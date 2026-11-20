@@ -212,3 +212,14 @@ Currently, 5 states are available for auto tax calculation. They are:
 - Invoices: `dateOfService` (`MM/DD/YYYY` or `MMDDYYYY`) becomes a Date at UTC midnight; `invoiceNumber` is trimmed; the money is recomputed by today's rules into `lineItems`, `subtotalCents`, `taxCents`, `finalPriceCents` and `taxRate` (the stored rate, or the state's when it has none), and `finalPrice`, `subtotal` and `tableData` are removed. An invoice with no line rows keeps its stored subtotal and has `lineItems: []`.
 - A final price can change by a cent or more, because the old rows were computed in floating point; each invoice whose final price changes is listed as a notice.
 - A record it cannot convert (an unreadable date, a bad line row, no state, a phone number that is not 10 digits) is left as it is and listed with its `_id` and the reason. Phone numbers that collide once normalized, and equal invoice numbers, are listed and left as they are, and the unique index that they block is not built; fix them by hand and run it again. Nothing is deleted or merged, and a second run changes nothing.
+
+## v2.1
+
+### Every /api/v2/ request needs a signed-in user (#171, ADR-014):
+
+- Breaking: every `/api/v2/` route now answers 401 `Sign-in required` unless the request carries `Authorization: Bearer <token>` with a valid Microsoft Entra External ID access token. `/`, `/health` and CORS preflight need no token.
+- The check (`middlewares/authMiddleware.js`, using `jose`) verifies the signature (RS256, keys fetched from `ENTRA_JWKS_URI` and cached), the issuer, the audience, the expiry, the API's scope in `scp` and a non-empty `oid`. Every failure answers the same 401 message; a missing `ENTRA_*` variable or an unreachable key set answers 500. The user's id (`oid`) is available to controllers as `req.user.id`.
+- New environment variables: `ENTRA_ISSUER`, `ENTRA_JWKS_URI`, `ENTRA_API_AUDIENCE`, `ENTRA_API_SCOPE` (placeholders in `.env.example`). `JWT_SECRET` is removed: nothing used it.
+- Known gap: the frontend has no sign-in until #172, so until then it gets 401 on every `/api/v2/` call. There is no bypass.
+- `GET /debug/db` is removed (it answers 404 now).
+- The API tests need Node 24.9+ and run with `--experimental-vm-modules` (set in the `npm test` scripts), because Jest loads the ESM-only `jose` through `require()` only then.

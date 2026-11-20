@@ -6,7 +6,7 @@ A customer and invoice tracking web application for small businesses: it keeps t
 
 - Stack: three npm projects, no workspaces: the root (dev scripts only), `FRONTEND/` (React + Vite + Tailwind 4 + MUI, ES modules) and `NODEAPI/` (Express + Mongoose, CommonJS). Node.js 20.19 or later
 - GitHub: MatheusCastro99/InvoiceMe (public). Default branch: `master`
-- CI on every PR: "Node.js CI" (frontend lint and build, API syntax and load check, API tests, on Node 22.x and 24.x) and CodeQL
+- CI on every PR: "Node.js CI" (frontend lint and build; API syntax and load check and API tests; all on Node 24.x) and CodeQL
 - Project config for the harness: `.claude/harness.json` (checks, docs, CI checks)
 
 ## Where things are
@@ -29,7 +29,7 @@ Run project checks through the runner, never by hand: `node .claude/scripts/chec
 
 - Install: `npm install` in the root, `NODEAPI/` and `FRONTEND/`; copy `NODEAPI/.env.example` to `NODEAPI/.env`
 - Run everything: `npm run dev` from the root (API on port 3000, then the frontend on 5173)
-- Tests: `npm test` in `NODEAPI/` runs the Jest + Supertest suite on an in-memory MongoDB (no `.env` or database needed; `npm install` downloads a MongoDB binary the first time), or `node .claude/scripts/check.cjs api-test`. Also `npm run test:watch` and `npm run test:coverage`. Each sub-phase names an observable check, automated through the runner where possible.
+- Tests: `npm test` in `NODEAPI/` runs the Jest + Supertest suite on an in-memory MongoDB (needs Node 24.9+; no `.env` or database needed; `npm install` downloads a MongoDB binary the first time), or `node .claude/scripts/check.cjs api-test`. Also `npm run test:watch` and `npm run test:coverage`. Each sub-phase names an observable check, automated through the runner where possible.
 
 ## Workflow
 
@@ -55,7 +55,7 @@ Project skills: `guardrails-review` checks a change against the ADRs (the red-te
 
 The full rules and their status are in `Decisions_Consistency.md`. A pending rule is a target: new code follows it; existing code is brought in line only by an issue that says so. Frontend rules are in `.claude/rules/ui.md`.
 
-- Every `/api/v2/` request takes one path: router, validation middleware where the route has one, a controller wrapped in `express-async-handler`, the Mongoose model. Controllers, middlewares and validators throw the error classes in `NODEAPI/utils/errors.js` and never call `res.status(4xx|5xx)`; `errorMiddleware` builds every error answer. Success answers `{ success: true, data, message? }` (ADR-001).
+- Every `/api/v2/` request takes one path: the sign-in check (`authMiddleware`), router, validation middleware where the route has one, a controller wrapped in `express-async-handler`, the Mongoose model. Controllers, middlewares and validators throw the error classes in `NODEAPI/utils/errors.js` and never call `res.status(4xx|5xx)`; `errorMiddleware` builds every error answer. Success answers `{ success: true, data, message? }` (ADR-001).
 - A new endpoint adds its route in `NODEAPI/routes/` and its entry in `API_ENDPOINTS` in the same change (ADR-002).
 - The server's validators in `NODEAPI/utils/validators.js` are the source of truth; a validation change is made there first, and the client never accepts what the server rejects, or rejects what it accepts (ADR-003).
 - The server computes the tax rate and the final price, from `STATE_TAX_RATES` only; the frontend may derive only the displayed line totals and subtotal; the tax and the final price come from the server (ADR-004).

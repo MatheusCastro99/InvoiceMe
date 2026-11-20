@@ -20,9 +20,9 @@ jobs:
 
     strategy:
       matrix:
-        # Vite 8 requires Node 20.19+ / 22.12+, and Node 20 is end-of-life, so test the current LTS lines.
+        # Vite 8 requires Node 20.19+ / 22.12+; CI tests Node 24.x only, the line the API tests need.
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        node-version: [22.x, 24.x]
+        node-version: [24.x]
 
     defaults:
       run:
@@ -46,7 +46,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.x, 24.x]
+        # Node 24 only: the auth middleware loads jose (ESM only) through require(), and Jest 30.5 supports
+        # that on Node 24.9+.
+        node-version: [24.x]
 
     # mongodb-memory-server downloads its MongoDB binary here, in npm ci's postinstall or on the first test run.
     # It sits outside node_modules so the cache can be restored before npm ci wipes node_modules.

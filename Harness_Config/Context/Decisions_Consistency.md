@@ -5,7 +5,7 @@ Last updated: 2026-11-19
 The standing rules every change to InvoiceMe must follow. A one-off choice is not a rule: it goes in its issue or pull request.
 
 ### ADR-001
-Every request to a resource under `/api/v2/` takes one path: router, validation middleware where the route has one, controller wrapped in `express-async-handler`, Mongoose model where the resource is stored. Errors are thrown as the error classes in `NODEAPI/utils/errors.js` and answered by `errorMiddleware`.
+Every request to a resource under `/api/v2/` takes one path: the sign-in check (`authMiddleware`), router, validation middleware where the route has one, controller wrapped in `express-async-handler`, Mongoose model where the resource is stored. Errors are thrown as the error classes in `NODEAPI/utils/errors.js` and answered by `errorMiddleware`.
 
 Reason:
 - One path means one place to add a check, and one shape for every answer the frontend reads.
@@ -15,7 +15,7 @@ Rules:
 - A success answers `{ success: true, data, message? }`; a list may add `count` or `pagination`.
 - An error answers `{ success: false, message, statusCode, errors? }`, built by `errorMiddleware`.
 - A controller, middleware or validator never calls `res.status(4xx|5xx)` itself; it throws `ValidationError`, `NotFoundError`, `ConflictError` or another `AppError` subclass.
-- Resource routes are mounted under `/api/v2/`. Only `/`, `/health`, `/debug/db` and the 404 handler live outside it, in `app.js`.
+- Resource routes are mounted under `/api/v2/`. Only `/`, `/health` and the 404 handler live outside it, in `app.js`.
 
 Examples:
 - `routes/customerRoute.js` → `validateCustomerInput` → `postCustomer` → `CustomerModel.create`
@@ -192,7 +192,7 @@ Consequences:
 - A scaled-to-zero API answers its first request after a cold start, unless a minimum replica is paid for.
 - Atlas M0 has no backups; Epic 6 revisits this.
 - Running the app locally with sign-in needs an Entra external tenant and app registrations, which the owner sets up and #172's README describes.
-- `JWT_SECRET` in `NODEAPI/.env.example` is used by nothing; #171 removes it.
-- Which token claim identifies the user is set in #171.
+- `JWT_SECRET` in `NODEAPI/.env.example` was used by nothing; removed in #171.
+- The user is the `oid` claim (#171).
 
 Status: Accepted, pending (#171 and #172 implement it)

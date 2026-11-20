@@ -8,6 +8,10 @@
 http://localhost:3000/api/v2
 ```
 
+### Authentication
+
+Every endpoint under `/api/v2/` needs a signed-in user: send the access token in the `Authorization` header as `Bearer <token>`. A request without a valid token answers 401 and nothing runs. `GET /`, `GET /health` and CORS preflight (`OPTIONS`) need no token. See "Authentication & Security" below.
+
 ### Response Format
 
 All endpoints return JSON responses with the following structure:
@@ -473,6 +477,7 @@ All amounts are integer cents (ADR-012). `taxRate` is a percentage.
 | 200  | OK - Request succeeded                                       |
 | 201  | Created - Resource created successfully                      |
 | 400  | Bad Request - Invalid input data                             |
+| 401  | Unauthorized - Sign-in required: no valid access token       |
 | 403  | Forbidden - Request origin is not allowed (CORS)             |
 | 404  | Not Found - Resource not found                               |
 | 409  | Conflict - Duplicate resource (e.g., duplicate phone number) |
@@ -489,6 +494,7 @@ All amounts are integer cents (ADR-012). `taxRate` is a percentage.
 | Invalid zip code format                          | Zip code is malformed                       | Use format: 12345 or 12345-6789            |
 | Invalid state abbreviation                       | State code is not 2 letters                 | Use 2-letter state code (e.g., CA, NY)     |
 | A customer with this phone number already exists | Phone number is duplicate, in any format    | Use a different phone number               |
+| Sign-in required                                 | Missing, malformed, expired or invalid token, or the token lacks the API's scope | Sign in again and send `Authorization: Bearer <token>` |
 | Customer not found                               | ID doesn't exist                            | Verify the customer ID                     |
 | Invoice not found                                | Invoice ID doesn't exist                    | Verify the invoice ID                      |
 | Invalid id format                                | The id in the URL is not a valid id         | Use the id the API returned                |
@@ -500,12 +506,27 @@ All amounts are integer cents (ADR-012). `taxRate` is a percentage.
 
 ## Authentication & Security
 
-**Current Status:** No authentication required (development mode)
+**Current Status:** every `/api/v2/` request needs a signed-in user (ADR-014). Users sign in with Microsoft Entra External ID, and the API only checks the access token it is sent.
+
+**What the API checks** on `Authorization: Bearer <token>`:
+
+- the signature, against the tenant's published keys (RS256 only; any other algorithm is refused);
+- the issuer, the audience (this API) and the expiry (with 60 seconds of clock tolerance);
+- the API's scope, in the `scp` claim;
+- a non-empty `oid` claim, which becomes the signed-in user's id for the controllers (`req.user.id`).
+
+**Answers:**
+
+- A missing, malformed, expired or otherwise invalid token, a wrong issuer or audience, a missing scope or a missing `oid` all answer `401` with the same message, `Sign-in required`, in the standard error shape. The answer never says which check failed and never echoes the token.
+- A missing configuration (see below) or an unreachable key set answers `500` (`An error occurred while processing your request`), and the details go to the API log.
+
+**Configuration** (`NODEAPI/.env`, placeholders in `.env.example`): `ENTRA_ISSUER`, `ENTRA_JWKS_URI`, `ENTRA_API_AUDIENCE` and `ENTRA_API_SCOPE`. Without all four, every `/api/v2/` request answers 500.
+
+**Not signed in yet:** the frontend does not sign users in until #172, so until then it gets 401 on every `/api/v2/` call. There is no bypass.
 
 **Future Implementation:**
 
-- JWT token authentication
-- API key validation
+- Scoping each user's data to their id (Epic 3)
 - Rate limiting
 - Request logging
 
@@ -517,6 +538,7 @@ All amounts are integer cents (ADR-012). `taxRate` is a percentage.
 
 ```bash
 curl -X POST http://localhost:3000/api/v2/customers \
+  -H "Authorization: Bearer <access-token>" \
   -H "Content-Type: application/json" \
   -d '{
     "companyName": "Tech Solutions Inc",
@@ -535,7 +557,10 @@ curl -X POST http://localhost:3000/api/v2/customers \
 ```javascript
 const response = await fetch("http://localhost:3000/api/v2/tax/rate", {
   method: "POST",
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    Authorization: `Bearer ${accessToken}`,
+    "Content-Type": "application/json",
+  },
   body: JSON.stringify({ state: "CA" }),
 });
 const data = await response.json();
@@ -548,7 +573,12 @@ console.log(data.data.taxRate); // 7.25
 
 The full history is in [`VersionLog.md`](./VersionLog.md).
 
-### v2.0 (Current)
+### v2.1 (Current)
+
+- Every `/api/v2/` request needs a valid Microsoft Entra External ID access token (`Authorization: Bearer <token>`); without one it answers 401 `Sign-in required`. The frontend gets 401 on every call until #172 adds the sign-in. `/`, `/health` and CORS preflight stay open.
+- `GET /debug/db` is removed.
+
+### v2.0
 
 - Every path is now under `/api/v2/`; the version 1 paths are gone, with no alias.
 - Data stored before v2.0 is converted once by `npm run migrate:v2` (see "Migrating a database from before v2.0" in `Docs/README.md`).
