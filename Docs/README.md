@@ -214,7 +214,7 @@ InvoiceMe/
 │   │   ├── components/ # UI blocks and reusable views
 │   │   ├── pages/      # Page-level screens
 │   │   ├── config/     # API endpoints and sign-in configuration
-│   │   ├── utils/      # Sign-in session and interceptors; phone, date and money checks and display formats
+│   │   ├── utils/      # Sign-in session, interceptors and useAuth; customer list paging; phone, date and money checks and display formats
 │   │   └── App.jsx
 │   ├── .env.example
 │   ├── package.json
@@ -371,7 +371,7 @@ For local work with no Entra tenant, the API's own sign-in check can run against
 2. Paste the four `ENTRA_*` lines into `NODEAPI/.env` and start the API.
 3. Put `VITE_DEV_AUTH_TOKEN=<the printed token>` in `FRONTEND/.env.development.local` (a git-ignored file) and start the frontend. "Sign in" on `/signin` now starts a dev session ("Dev user") with no Microsoft page.
 
-The API code is the same as in production: it verifies that token like any other. The dev token is read only by `npm run dev`; a production build ignores it. The token lasts 8 hours: after that, "Sign in" reuses the expired token and the app keeps returning to the "session ended" message. Run `npm run dev:auth` again, paste the new `VITE_DEV_AUTH_TOKEN` into `FRONTEND/.env.development.local` and restart the frontend. Never commit the token or the `.env` files.
+The API code is the same as in production: it verifies that token like any other. The dev token is read only by `npm run dev`; a production build ignores it. The token lasts 8 hours: after that, "Sign in" reuses the expired token and the app keeps returning to the "session ended" message. Stop the signer (Ctrl+C), run `npm run dev:auth` again, paste the new `VITE_DEV_AUTH_TOKEN` into `FRONTEND/.env.development.local` and restart the frontend. Never commit the token or the `.env` files.
 
 ## Migrating a database from before v2.0
 

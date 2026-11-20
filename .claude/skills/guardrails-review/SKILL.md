@@ -31,7 +31,7 @@ Confirm each check with evidence from the code (`file:line`), not from memory.
 ### Frontend API calls (ADR-002, ADR-014)
 - No page or component in `FRONTEND/src/` writes an API URL as a string; search the diff outside `apiConfig.js` for `http://`, `localhost` and `/api/`.
 - A new route in `NODEAPI/routes/` has its entry in `API_ENDPOINTS` in `FRONTEND/src/config/apiConfig.js`, in the same change.
-- Every API call uses the global `axios` (`import axios from "axios"`), so the auth interceptors in `FRONTEND/src/utils/authInterceptors.js` add the token. Search the diff for `fetch(` and `axios.create(`: a call made through either goes out with no token, answers 401 and sends the user to sign-in.
+- Every API call uses the global `axios` (`import axios from "axios"`), so the auth interceptors in `FRONTEND/src/utils/authInterceptors.js` add the token. Search the diff for `fetch(` and `axios.create(`: a call made through either goes out with no token and answers 401; the interceptors never see that 401, so the user gets a failed request, not a redirect to sign-in.
 
 ### Validation (ADR-003)
 - A changed validation rule is changed in `NODEAPI/utils/validators.js`, and the route applies it through `NODEAPI/middlewares/validationMiddleware.js` or the controller's own checks.

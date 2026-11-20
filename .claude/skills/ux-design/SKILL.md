@@ -53,7 +53,7 @@ This lens works from the source. Base findings on it and say what the owner shou
 A UI sub-phase's check drives the app in the built-in browser pane. The `ui-check` agent runs it in `review`, at the handed-off SHA, on either tier (harness D26); the builder doesn't.
 
 - **Data:** a throwaway database, never the owner's. Start a `MongoMemoryServer` from `NODEAPI/node_modules/mongodb-memory-server` on a free port, from a script in the session's scratchpad, and seed what the plan needs. The check never writes to the owner's database, even to undo a change.
-- **Run:** every page needs a signed-in user, so use the dev signer (no tenant; "Sign-in setup" in `Docs/README.md`):
+- **Run:** every page needs a signed-in user, so use the dev signer (no tenant; "Sign-in setup" in `Docs/README.md`). If port 3999 is busy or `FRONTEND/.env.development.local` already exists, the owner's own signer may be running: back the file up and restore it afterwards, or stop and ask the owner.
   1. In `NODEAPI/`, run `npm run dev:auth` and keep it running. It prints the four `ENTRA_*` values and a `VITE_DEV_AUTH_TOKEN`.
   2. In `NODEAPI/`, start `server.js` with those four `ENTRA_*` values and the throwaway database, so the real `.env` database isn't used: `MONGO_URL=<the memory server's URL> PORT=3000 ENTRA_ISSUER=<...> ENTRA_JWKS_URI=<...> ENTRA_API_AUDIENCE=<...> ENTRA_API_SCOPE=<...> node server.js`.
   3. Put `VITE_DEV_AUTH_TOKEN=<the printed token>` in `FRONTEND/.env.development.local` (git-ignored), then run `npm run dev` in `FRONTEND/`.
