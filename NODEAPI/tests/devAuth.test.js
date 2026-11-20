@@ -5,7 +5,7 @@
  */
 
 const request = require("supertest");
-const { SignJWT, generateKeyPair } = require("jose");
+const { SignJWT, generateKeyPair, decodeProtectedHeader } = require("jose");
 const app = require("../app");
 const { startDevSigner } = require("../scripts/devAuth");
 
@@ -41,6 +41,15 @@ describe("dev signer (npm run dev:auth)", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
+  });
+
+  it("signs with a new key id on every run, so the API's key cache fetches the new key after a restart", async () => {
+    const second = await startDevSigner({ port: 0 });
+    try {
+      expect(decodeProtectedHeader(second.token).kid).not.toBe(decodeProtectedHeader(signer.token).kid);
+    } finally {
+      await second.close();
+    }
   });
 
   it("does not open the API to a request with no token", async () => {

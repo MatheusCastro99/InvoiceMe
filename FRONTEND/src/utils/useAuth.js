@@ -61,6 +61,13 @@ const useUnconfiguredAuth = () => ({
   signOut: async () => {},
 });
 
-const modes = { entra: useEntraAuth, dev: useDevAuth, none: useUnconfiguredAuth };
+// The dev branch is behind import.meta.env.DEV, which a production build replaces with false, so useDevAuth
+// and its sessionStorage flag are dropped from the build
+const pickAuth = () => {
+  if (import.meta.env.DEV && AUTH_MODE === "dev") {
+    return useDevAuth;
+  }
+  return AUTH_MODE === "entra" ? useEntraAuth : useUnconfiguredAuth;
+};
 
-export const useAuth = modes[AUTH_MODE];
+export const useAuth = pickAuth();

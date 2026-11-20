@@ -14,11 +14,11 @@
  */
 
 const http = require("http");
+const { randomUUID } = require("crypto");
 const { generateKeyPair, exportJWK, SignJWT } = require("jose");
 
 const DEV_PORT = 3999;
 const DEV_HOST = "127.0.0.1";
-const DEV_KEY_ID = "dev-signer-key";
 const DEV_USER_ID = "00000000-0000-4000-8000-0000000d0001";
 const DEV_AUDIENCE = "dev-api-client-id";
 const DEV_SCOPE = "dev.access";
@@ -33,7 +33,9 @@ const TOKEN_LIFETIME = "8h";
  */
 const startDevSigner = async ({ port = DEV_PORT } = {}) => {
   const { publicKey, privateKey } = await generateKeyPair("RS256");
-  const publicJwk = { ...(await exportJWK(publicKey)), kid: DEV_KEY_ID, alg: "RS256", use: "sig" };
+  // A new key id per run: the API caches signing keys by id, so after a restart it fetches the new key
+  const keyId = `dev-signer-${randomUUID()}`;
+  const publicJwk = { ...(await exportJWK(publicKey)), kid: keyId, alg: "RS256", use: "sig" };
 
   const server = http.createServer((req, res) => {
     res.setHeader("Content-Type", "application/json");
@@ -54,7 +56,7 @@ const startDevSigner = async ({ port = DEV_PORT } = {}) => {
   };
 
   const token = await new SignJWT({ oid: DEV_USER_ID, scp: DEV_SCOPE, iss: env.ENTRA_ISSUER, aud: DEV_AUDIENCE })
-    .setProtectedHeader({ alg: "RS256", kid: DEV_KEY_ID })
+    .setProtectedHeader({ alg: "RS256", kid: keyId })
     .setIssuedAt()
     .setExpirationTime(TOKEN_LIFETIME)
     .sign(privateKey);

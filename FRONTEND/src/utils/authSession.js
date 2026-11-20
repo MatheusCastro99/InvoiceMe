@@ -9,7 +9,8 @@
 import { AUTH_MODE, DEV_AUTH_TOKEN, loginRequest, msalInstance } from "../config/authConfig";
 
 const RETURN_TARGET_KEY = "invoiceme.returnTo";
-const DEV_SIGNED_IN_KEY = "invoiceme.devSignedIn";
+// Behind the DEV flag, like the dev token, so the name is not left in a production build
+const DEV_SIGNED_IN_KEY = import.meta.env.DEV ? "invoiceme.devSignedIn" : "";
 const SIGN_IN_FAILED_KEY = "invoiceme.signInFailed";
 
 export const SIGN_IN_PATH = "/signin";
@@ -96,7 +97,7 @@ export const getCurrentAccount = () =>
  * renew it without the user. Any other failure (for example the network) is thrown as it is.
  */
 export const getAccessToken = async () => {
-  if (AUTH_MODE === "dev") {
+  if (import.meta.env.DEV && AUTH_MODE === "dev") {
     if (!isDevSignedIn()) {
       throw new SessionExpiredError();
     }

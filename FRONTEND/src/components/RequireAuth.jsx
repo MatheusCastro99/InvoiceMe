@@ -13,7 +13,8 @@ export const LoadingState = ({ label }) => (
 
 /**
  * Guards the app's routes: a signed-out visitor goes to the sign-in page, and the path they asked
- * for is remembered. A sign-in comes back to "/", so the remembered path is used there, once.
+ * for is remembered. A sign-in comes back to "/" (main.jsx turns off MSAL's own return to the start
+ * page), so the remembered path is used there, once.
  */
 const RequireAuth = () => {
   const { status } = useAuth();
