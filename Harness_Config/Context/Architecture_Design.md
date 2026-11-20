@@ -41,9 +41,12 @@ InvoiceMe/
 
 ### FRONTEND/
 React single-page app built with Vite (ES modules), styled with Tailwind.
-- src/main.jsx: mounts the app inside `BrowserRouter`
+- src/main.jsx: installs the auth interceptors, finishes a sign-in that came back from Microsoft, and mounts the app inside `BrowserRouter` (and `MsalProvider` when Entra is configured)
 - src/App.jsx: the routes, the navigation bar and the toast container
 - src/config/apiConfig.js: every API endpoint URL, as `API_ENDPOINTS`, built from `VITE_API_BASE_URL`
+- src/config/authConfig.js: the sign-in settings from the `VITE_ENTRA_*` variables (ADR-014), `AUTH_MODE` (`entra`, `dev` or `none`) and the MSAL client; the dev mode exists only in a dev-server run
+- src/utils/authSession.js: the current account, the API access token, the dev sign-in flag, and the return path kept in `sessionStorage` across the redirect to Microsoft
+- src/utils/authInterceptors.js: two global axios interceptors: the bearer token on requests to `API_ENDPOINTS.BASE` only, and a 401 (or a session that cannot be renewed) sends the user to `/signin?reason=expired`
 - src/utils/phone.js: the phone check (the server's pattern, ADR-003) and the `(555) 123-4567` display format
 - src/utils/date.js: the date-of-service check (the server's rule, ADR-003), the `MM/DD/YYYY` display format and the month, all read from the `YYYY-MM-DD` string without parsing it into a `Date` (ADR-013)
 - src/utils/money.js: the dollars-to-cents parsers (the server's rules, ADR-003), the display-only line total and the `$1,234.56` display format; amounts are integer cents everywhere else (ADR-012)
