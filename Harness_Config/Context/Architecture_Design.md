@@ -34,7 +34,7 @@ InvoiceMe/
 - package.json: dev scripts only, which start the API and the frontend together
 
 ### .github/
-- workflows/node.js.yml: CI on pushes and pull requests to `master`; lints and builds the frontend on Node 22.x and 24.x, and on Node 24.x only syntax-checks the API, loads `app.js` without a database, and runs the API tests (`npm test`) on an in-memory MongoDB (the API tests need Node 24.9+, see `tests/` below)
+- workflows/node.js.yml: CI on pushes and pull requests to `master`; on Node 24.x only, lints and builds the frontend, syntax-checks the API, loads `app.js` without a database, and runs the API tests (`npm test`) on an in-memory MongoDB (the API tests need Node 24.9+, see `tests/` below)
 - workflows/codeql.yml: CodeQL code scanning
 - dependabot.yml: weekly npm updates for `FRONTEND` and `NODEAPI`, monthly for GitHub Actions
   - Accepted dev-only findings in `NODEAPI/` (`npm audit`, checked 2026-11-14): `glob` and `minimatch` (under `jest` and `nodemon`; fixed only in new majors that those tools don't declare yet, and `jest` and `nodemon` are on their latest releases) and `deepmerge` (under `jest-config`; no fixed release exists). All three are development tooling that is never shipped or run in production. Revisit when `jest` or `nodemon` release an update. `npm audit fix --force` is not used: it would downgrade `jest` to 25 and break the suite
