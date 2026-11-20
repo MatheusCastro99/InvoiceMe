@@ -231,6 +231,7 @@ describe("authMiddleware", () => {
       const { error } = await run(`Bearer ${token}`);
 
       expectServerError(error);
+      expect(loggedText()).toContain("ECONNREFUSED");
       expect(loggedText()).not.toContain(token);
     });
 

@@ -60,8 +60,9 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     }));
   } catch (err) {
     if (isKeyFetchFailure(err)) {
-      // The error's name and code only: its message may carry the key set's address or a response
-      console.error(`AUTH: signing keys unavailable: ${err.code || err.name}`);
+      // Fixed names and codes only: the error's message may carry the key set's address or a response
+      const cause = err.cause?.code ? ` (${err.cause.code})` : "";
+      console.error(`AUTH: signing keys unavailable: ${err.code || err.name}${cause}`);
       throw new InternalServerError(RESPONSE_MESSAGES.SERVER_ERROR);
     }
     throw new UnauthorizedError(RESPONSE_MESSAGES.SIGN_IN_REQUIRED);
