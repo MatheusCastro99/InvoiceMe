@@ -324,7 +324,38 @@ ENTRA_API_SCOPE=<scope-name>
 
 ```bash
 VITE_API_BASE_URL=http://localhost:3000
+# Sign-in (Microsoft Entra External ID); see "Sign-in setup" below. Without the three, /signin says sign-in isn't set up.
+VITE_ENTRA_CLIENT_ID=<spa-client-id>
+VITE_ENTRA_AUTHORITY=https://<tenant-subdomain>.ciamlogin.com/
+VITE_ENTRA_API_SCOPE=api://<api-client-id>/<scope-name>
 ```
+
+`FRONTEND/.env.example` lists these with placeholders. The frontend holds no client secret, and nothing secret belongs in a `VITE_` variable.
+
+## Sign-in setup
+
+Every page needs a signed-in user, and the API checks the access token on every `/api/v2/` request. There are two ways to run it locally.
+
+### With a Microsoft Entra External ID tenant
+
+1. In the [Microsoft Entra admin center](https://entra.microsoft.com), create an **external tenant**. Its sign-in address is `https://<tenant-subdomain>.ciamlogin.com/`.
+2. **Register the API app.** Under App registrations, add an app and note its application (client) ID. Under Expose an API, set the Application ID URI (the default `api://<api-client-id>` is fine) and add a scope, for example `access_as_user`. The API's `ENTRA_API_AUDIENCE` is the client ID and its `ENTRA_API_SCOPE` is the bare scope name.
+3. **Register the SPA app.** Add a second app with the **Single-page application** platform and the redirect URIs `http://localhost:5173/` and `http://localhost:5173/signin`. Under API permissions, add the delegated permission for the API's scope and grant admin consent. Note its client ID.
+4. **Create a user flow** for sign-up and sign-in (email and password) and add the SPA app to it.
+5. Fill both `.env` files:
+   - `NODEAPI/.env`: the four `ENTRA_*` values (`ENTRA_ISSUER`, `ENTRA_JWKS_URI`, `ENTRA_API_AUDIENCE`, `ENTRA_API_SCOPE`), as in the Backend block above.
+   - `FRONTEND/.env.local`: `VITE_ENTRA_CLIENT_ID` (the SPA app's client ID), `VITE_ENTRA_AUTHORITY` and `VITE_ENTRA_API_SCOPE` (the full `api://<api-client-id>/<scope-name>`).
+6. Run the app. "Sign in" and "Create account" on `/signin` redirect to Microsoft's hosted page; "Create account" opens the sign-up form.
+
+### Without a tenant: the local dev signer
+
+For local work with no Entra tenant, the API's own sign-in check can run against a throwaway key:
+
+1. In `NODEAPI`, run `npm run dev:auth`. It serves a throwaway public key on `127.0.0.1:3999` and prints dev values for the four `ENTRA_*` variables and a dev token (valid 8 hours). Leave it running; the key and the token go when it stops.
+2. Paste the four `ENTRA_*` lines into `NODEAPI/.env` and start the API.
+3. Put `VITE_DEV_AUTH_TOKEN=<the printed token>` in `FRONTEND/.env.development.local` (a git-ignored file) and start the frontend. "Sign in" on `/signin` now starts a dev session ("Dev user") with no Microsoft page.
+
+The API code is the same as in production: it verifies that token like any other. The dev token is read only by `npm run dev`; a production build ignores it. Never commit the token or the `.env` files.
 
 ## Migrating a database from before v2.0
 

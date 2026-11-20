@@ -38,6 +38,7 @@ Decided on 2026-11-19 and recorded as ADR-014: the API runs as a container on Az
 - Sign-up, sign-in and sign-out with Microsoft Entra External ID.
 - The API checks every `/api/v2/` request for a signed-in user.
 - The new screens follow the palette and tokens of Epic 5, agreed in `UI_Guidelines.md` before they are built.
+- The owner's walk-through against a real Entra tenant, not yet run: sign up, sign in, open every page, let a session expire (the app returns to the sign-in page with its message), and sign out. The checks run without a tenant (dev signer, signed-out screens), so this is the one check of the real sign-in.
 
 ## Epic 3: Multiple users (data ownership)
 

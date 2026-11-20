@@ -33,7 +33,11 @@ The structure and the key files are in [Architecture Design](../Harness_Config/C
 - Preview the invoice, save it, and download it as a PDF
 - List and delete invoices
 
+### Sign-in
+- Sign up, sign in and sign out with Microsoft Entra External ID; every page needs a signed-in user, and the API refuses any request without a valid access token
+- A signed-out visitor lands on the sign-in page; an ended session is explained there, and signing in again returns to the page they asked for
+
 ## Not built
 
 - Editing a saved invoice
-- User accounts and sign-in
+- Data owned per user: every signed-in user still sees the same customers and invoices
