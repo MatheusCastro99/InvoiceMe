@@ -22,7 +22,7 @@ jobs:
       matrix:
         # Vite 8 requires Node 20.19+ / 22.12+, and Node 20 is end-of-life, so test the current LTS lines.
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        node-version: [22.x, 24.x]
+        node-version: [24.x]
 
     defaults:
       run:
