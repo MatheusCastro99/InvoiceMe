@@ -223,3 +223,7 @@ Currently, 5 states are available for auto tax calculation. They are:
 - Known gap: the frontend has no sign-in until #172, so until then it gets 401 on every `/api/v2/` call. There is no bypass.
 - `GET /debug/db` is removed (it answers 404 now).
 - The API tests need Node 24.9+ and run with `--experimental-vm-modules` (set in the `npm test` scripts), because Jest loads the ESM-only `jose` through `require()` only then.
+
+### Local dev signer (#172):
+
+- `npm run dev:auth` (`scripts/devAuth.js`) runs the app without an Entra tenant: it generates a signing key in memory, serves its public key on `127.0.0.1:3999` and prints dev values for the four `ENTRA_*` variables and a signed token (8 h) for the frontend. The API code is unchanged: the sign-in check verifies that token like any other, so there is no bypass. The key and the token die with the process.

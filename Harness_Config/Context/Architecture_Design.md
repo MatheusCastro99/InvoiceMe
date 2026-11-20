@@ -71,6 +71,7 @@ Express API (CommonJS) over MongoDB with Mongoose.
 - app.js: builds the Express app, CORS, the sign-in check on `/api/v2/`, routes, the 404 handler and the error handler; it has no side effects, so it loads without a database or a network call
 - .env.example: the environment variables to copy into `.env`, including the four `ENTRA_*` sign-in variables (ADR-014)
 - scripts/v2Migration.js: the one-off data migration to the v2 shapes (`npm run migrate:v2`, `--dry-run` first); it reads and writes the raw collections, is run by hand and is never loaded by `app.js` or `server.js`
+- scripts/devAuth.js: the local dev signer (`npm run dev:auth`, #172): a throwaway signing key and JWKS on 127.0.0.1 plus a signed token, so the unchanged sign-in check works with no Entra tenant; run by hand and never loaded by `app.js` or `server.js`
 - tests/: the Jest + Supertest suite (`npm test`), run against an in-memory MongoDB; its setup is in `tests/setup/`. Jest loads the ESM-only `jose` through `require()`, which needs Node 24.9+ and `--experimental-vm-modules` (set in the `npm test` scripts). The setup also generates a signing key, serves its public half from a loopback JWKS and signs the test tokens (`tokenHelper.js`, `authedRequest.js`), so no test calls Entra
 
 ### NODEAPI/routes/

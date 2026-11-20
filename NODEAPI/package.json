@@ -11,7 +11,8 @@
     "start": "node server.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "migrate:v2": "node scripts/v2Migration.js"
+    "migrate:v2": "node scripts/v2Migration.js",
+    "dev:auth": "node scripts/devAuth.js"
   },
   "keywords": [
     "api",
