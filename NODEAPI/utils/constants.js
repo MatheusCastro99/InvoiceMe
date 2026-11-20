@@ -91,6 +91,7 @@ const RESPONSE_MESSAGES = {
   DUPLICATE_RECORD: "A record with this value already exists",
   SERVER_ERROR: "An error occurred while processing your request",
   DUPLICATE_CUSTOMER: "A customer with this phone number already exists",
+  SIGN_IN_REQUIRED: "Sign-in required",
 };
 
 // Pagination
