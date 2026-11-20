@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-11-19
+Last updated: 2026-11-20
 
 The standing rules every change to InvoiceMe must follow. A one-off choice is not a rule: it goes in its issue or pull request.
 
@@ -191,8 +191,8 @@ Consequences:
 - Epic 4 builds a production image for Azure Container Apps.
 - A scaled-to-zero API answers its first request after a cold start, unless a minimum replica is paid for.
 - Atlas M0 has no backups; Epic 6 revisits this.
-- Running the app locally with sign-in needs an Entra external tenant and app registrations, which the owner sets up and #172's README describes.
+- Running the app locally with sign-in needs an Entra external tenant and app registrations, which the owner sets up and #172's README describes. The local dev signer (`npm run dev:auth`, #172) runs the app with sign-in and no tenant.
 - `JWT_SECRET` in `NODEAPI/.env.example` was used by nothing; removed in #171.
 - The user is the `oid` claim (#171).
 
-Status: Accepted, pending (#171 and #172 implement it)
+Status: Accepted, pending (the owner's walk-through against a real Entra tenant)

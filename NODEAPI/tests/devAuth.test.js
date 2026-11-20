@@ -60,8 +60,9 @@ describe("dev signer (npm run dev:auth)", () => {
 
   it("does not open the API to a token signed by another key", async () => {
     const { privateKey } = await generateKeyPair("RS256");
+    const { kid } = decodeProtectedHeader(signer.token);
     const forged = await new SignJWT({ oid: "someone", scp: signer.env.ENTRA_API_SCOPE })
-      .setProtectedHeader({ alg: "RS256", kid: "dev-signer-key" })
+      .setProtectedHeader({ alg: "RS256", kid })
       .setIssuer(signer.env.ENTRA_ISSUER)
       .setAudience(signer.env.ENTRA_API_AUDIENCE)
       .setExpirationTime("1h")

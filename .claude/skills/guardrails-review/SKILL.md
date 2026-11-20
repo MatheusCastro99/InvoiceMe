@@ -28,9 +28,10 @@ Confirm each check with evidence from the code (`file:line`), not from memory.
 - Successful answers carry `success` and `data`; error answers from `/api/v2/` handlers come only from `NODEAPI/middlewares/errorMiddleware.js` (the 404 handler in `app.js` is the one exception).
 - New user-facing messages are added to `RESPONSE_MESSAGES` in `NODEAPI/utils/constants.js`, not written as literals.
 
-### Frontend API calls (ADR-002)
+### Frontend API calls (ADR-002, ADR-014)
 - No page or component in `FRONTEND/src/` writes an API URL as a string; search the diff outside `apiConfig.js` for `http://`, `localhost` and `/api/`.
 - A new route in `NODEAPI/routes/` has its entry in `API_ENDPOINTS` in `FRONTEND/src/config/apiConfig.js`, in the same change.
+- Every API call uses the global `axios` (`import axios from "axios"`), so the auth interceptors in `FRONTEND/src/utils/authInterceptors.js` add the token. Search the diff for `fetch(` and `axios.create(`: a call made through either goes out with no token and answers 401; the interceptors never see that 401, so the user gets a failed request, not a redirect to sign-in.
 
 ### Validation (ADR-003)
 - A changed validation rule is changed in `NODEAPI/utils/validators.js`, and the route applies it through `NODEAPI/middlewares/validationMiddleware.js` or the controller's own checks.
@@ -97,7 +98,7 @@ Sections 5 and 6 apply when this skill is used inline. The red-team agent uses i
 | **Critical** | Wrong or lost data, a crash, exposed secrets, or a broken standing rule | A connection string committed (ADR-007); a customer update that rewrites saved invoices (ADR-008); a final price computed in the frontend instead of by the server (ADR-004) | Fix before merge |
 | **Major** | A real reliability or maintainability risk | An API URL written in a page (ADR-002); a new client check that disagrees with `validators.js` (ADR-003); a controller that answers an error itself (ADR-001) | Fix before the next issue |
 | **Minor** | Friction, clarity, naming | A handler named outside the pattern (ADR-006); a leftover `console.log` | Mention; fix if cheap |
-| **Accepted trade-off** | Intentional, per the documents | The existing code that a pending rule (ADR-003, ADR-005, ADR-007, ADR-009, ADR-011, ADR-014) has not brought in line yet; the project runs locally only | Don't raise it again |
+| **Accepted trade-off** | Intentional, per the documents | The existing code that a pending rule (ADR-003, ADR-005, ADR-009, ADR-011, ADR-014) has not brought in line yet; the project runs locally only | Don't raise it again |
 
 ## 6. Output
 

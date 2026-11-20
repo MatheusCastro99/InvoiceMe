@@ -21,9 +21,9 @@ Sub-issues, done in order:
 
 Sub-issues 2–4 split the integrity gaps in [#70](https://github.com/MatheusCastro99/InvoiceMe/issues/70), which closed when the last of them merged.
 
-## Before the next epic: small fixes
+## Before the next epic: small fixes [CONCLUDED]
 
-Independent issues, each small:
+Done in [#168](https://github.com/MatheusCastro99/InvoiceMe/issues/168) (PR [#174](https://github.com/MatheusCastro99/InvoiceMe/pull/174)). Independent issues, each small:
 
 - Turn on GitHub secret scanning and push protection (the repository is already public), and scan the git history once.
 - Fix the open `npm audit` finding in the API's dependencies.
@@ -58,7 +58,7 @@ Decided on 2026-11-19 and recorded as ADR-014: the API runs as a container on Az
 
 - Redesign on all pages to hold clear green (tech) color palette.
 - Finance theme design and adoption
-- Can overlap with Epic 4. The palette and tokens are settled early, before Epic 2's screens.
+- Can overlap with Epic 4. The palette and tokens were settled early, before Epic 2's screens ([#170](https://github.com/MatheusCastro99/InvoiceMe/issues/170)).
 
 ## Epic 6: Last pass before InvoiceMe goes live
 

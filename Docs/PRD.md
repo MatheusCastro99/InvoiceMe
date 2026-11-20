@@ -13,6 +13,7 @@ InvoiceMe is a customer and invoice tracking web application for small businesse
 - **Frontend**: React single-page app, built with Vite and styled with Tailwind CSS
 - **API**: Node.js with Express
 - **Storage**: MongoDB, through Mongoose
+- **Sign-in**: Microsoft Entra External ID; the browser signs in with MSAL and the API checks every access token with `jose` (ADR-014)
 - **Runtime**: Node.js 20.19 or later
 - **Hosting**: local only; the API and the frontend run on the developer's machine
 - **CI**: GitHub Actions (frontend lint and build, API load check and API tests) and CodeQL

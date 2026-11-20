@@ -1,6 +1,6 @@
 # InvoiceMe API Documentation
 
-## API Version: v2.0
+## API Version: v2.1
 
 ### Base URL
 

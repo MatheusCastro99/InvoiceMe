@@ -222,6 +222,7 @@ Currently, 5 states are available for auto tax calculation. They are:
 - New environment variables: `ENTRA_ISSUER`, `ENTRA_JWKS_URI`, `ENTRA_API_AUDIENCE`, `ENTRA_API_SCOPE` (placeholders in `.env.example`). `JWT_SECRET` is removed: nothing used it.
 - The frontend signs users in and sends the token (#172). There is no bypass.
 - `GET /debug/db` is removed (it answers 404 now).
+- `GET /` now answers `version: "v2.1"` (it answered `v2.0`). It is only a label: no route, field or status code changes.
 - The API tests need Node 24.9+ and run with `--experimental-vm-modules` (set in the `npm test` scripts), because Jest loads the ESM-only `jose` through `require()` only then.
 
 ### Local dev signer (#172):

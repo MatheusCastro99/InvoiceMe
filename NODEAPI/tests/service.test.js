@@ -11,7 +11,7 @@ describe("GET /", () => {
     const res = await request(app).get("/");
 
     expect(res.status).toBe(200);
-    expect(res.body).toMatchObject({ success: true, status: "running", version: "v2.0" });
+    expect(res.body).toMatchObject({ success: true, status: "running", version: "v2.1" });
   });
 });
 

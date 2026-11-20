@@ -1,6 +1,6 @@
 # Architecture Design
 
-Last updated: 2026-10-28
+Last updated: 2026-11-20
 
 ## Structure
 
@@ -54,6 +54,7 @@ React single-page app built with Vite (ES modules), styled with Tailwind.
 - src/utils/customers.js: `fetchAllCustomers`, which walks every page of `GET /api/v2/customers` (100 a page, the server's cap) and returns one array; the home page and the invoice picker use it
 - src/pdfStyle.jsx: styles for the PDF invoice
 - eslint.config.js: ESLint flat config
+- .env.example: the `VITE_` variables to copy into `.env.local`: the API base URL and the `VITE_ENTRA_*` sign-in settings, with placeholders (ADR-007, ADR-014)
 
 ### FRONTEND/src/pages/
 One file per route.
@@ -108,6 +109,8 @@ flowchart LR
     A["FRONTEND<br/>React SPA (Vite)"] -- "axios, JSON over HTTP" --> B["NODEAPI<br/>Express API /api/v2"]
     B -- "Mongoose" --> C[("MongoDB<br/>Customer, Invoice")]
     A -- "@react-pdf/renderer" --> D["PDF file<br/>in the browser"]
+    A -- "MSAL: sign-in" --> E["Microsoft Entra<br/>External ID"]
+    B -- "jose: token check<br/>against Entra's keys" --> E
 ```
 
 The project runs locally only: the API on port 3000 and the frontend on Vite's dev server.
