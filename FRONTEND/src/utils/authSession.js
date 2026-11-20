@@ -49,8 +49,9 @@ export const isSafeReturnTarget = (target) =>
   !target.startsWith(`${SIGN_IN_PATH}?`) &&
   !target.startsWith(`${SIGN_IN_PATH}/`);
 
+// "/" is where a sign-in lands anyway, so it is never worth remembering
 export const rememberReturnTarget = (target) => {
-  if (isSafeReturnTarget(target)) {
+  if (target !== "/" && isSafeReturnTarget(target)) {
     writeStored(RETURN_TARGET_KEY, target);
   }
 };
@@ -72,9 +73,20 @@ export const takeSignInFailed = () => {
   return failed;
 };
 
+const devListeners = new Set();
+
 export const isDevSignedIn = () => readStored(DEV_SIGNED_IN_KEY) === "1";
 
-export const setDevSignedIn = (signedIn) => writeStored(DEV_SIGNED_IN_KEY, signedIn ? "1" : null);
+export const setDevSignedIn = (signedIn) => {
+  writeStored(DEV_SIGNED_IN_KEY, signedIn ? "1" : null);
+  devListeners.forEach((listener) => listener());
+};
+
+// For useSyncExternalStore: every component that shows the dev sign-in state hears a change
+export const subscribeDevSignedIn = (listener) => {
+  devListeners.add(listener);
+  return () => devListeners.delete(listener);
+};
 
 export const getCurrentAccount = () =>
   msalInstance ? msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0] || null : null;

@@ -42,10 +42,11 @@ InvoiceMe/
 ### FRONTEND/
 React single-page app built with Vite (ES modules), styled with Tailwind.
 - src/main.jsx: installs the auth interceptors, finishes a sign-in that came back from Microsoft, and mounts the app inside `BrowserRouter` (and `MsalProvider` when Entra is configured)
-- src/App.jsx: the routes, the navigation bar and the toast container
+- src/App.jsx: the routes (`/signin` outside the guard, the six pages inside `RequireAuth`), the navigation bar with the signed-in name and "Sign out", and the toast container
 - src/config/apiConfig.js: every API endpoint URL, as `API_ENDPOINTS`, built from `VITE_API_BASE_URL`
 - src/config/authConfig.js: the sign-in settings from the `VITE_ENTRA_*` variables (ADR-014), `AUTH_MODE` (`entra`, `dev` or `none`) and the MSAL client; the dev mode exists only in a dev-server run
 - src/utils/authSession.js: the current account, the API access token, the dev sign-in flag, and the return path kept in `sessionStorage` across the redirect to Microsoft
+- src/utils/useAuth.js: one hook for the sign-in state (`status`, `name`, `signIn`, `signUp`, `signOut`), in the mode `AUTH_MODE` picks
 - src/utils/authInterceptors.js: two global axios interceptors: the bearer token on requests to `API_ENDPOINTS.BASE` only, and a 401 (or a session that cannot be renewed) sends the user to `/signin?reason=expired`
 - src/utils/phone.js: the phone check (the server's pattern, ADR-003) and the `(555) 123-4567` display format
 - src/utils/date.js: the date-of-service check (the server's rule, ADR-003), the `MM/DD/YYYY` display format and the month, all read from the `YYYY-MM-DD` string without parsing it into a `Date` (ADR-013)
@@ -62,8 +63,10 @@ One file per route.
 - InvoicePage.jsx: `/invoice`, the invoice form: customer, line items, tax
 - PdfPage.jsx: `/pdfPage`, the invoice preview, where it is saved and downloaded as a PDF
 - ProfilePage.jsx: `/profilePage/:id`, one customer and their invoices
+- SignInPage.jsx: `/signin`, outside the guard: "Sign in" and "Create account" hand off to Microsoft's hosted page by redirect, and it shows the expired-session, failed-sign-in and not-set-up messages
 
 ### FRONTEND/src/components/
+- RequireAuth.jsx: the route guard: a signed-out visitor goes to `/signin` (the path they asked for is remembered and used once after sign-in); it also exports the loading state
 - PdfDocument.jsx: the invoice PDF, rendered in the browser with `@react-pdf/renderer`
 - Customer.jsx, CustomerInfo.jsx, CustomerProfile.jsx: customer cards and details
 - TableCustomer.jsx, TableInvoice.jsx, TableDescription.jsx: the customer, invoice and line-item tables

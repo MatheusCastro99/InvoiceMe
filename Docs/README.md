@@ -318,7 +318,7 @@ ENTRA_API_AUDIENCE=<api-client-id>
 ENTRA_API_SCOPE=<scope-name>
 ```
 
-> Sign-in: the API refuses every `/api/v2/` request without a valid access token (401 `Sign-in required`). The frontend's sign-in arrives with #172, so until then the app gets 401 on every API call. `/` and `/health` stay open.
+> Sign-in: the API refuses every `/api/v2/` request without a valid access token (401 `Sign-in required`). The frontend signs users in by redirect to Microsoft and sends the token; its settings are the `VITE_ENTRA_*` variables below. `/` and `/health` stay open.
 
 ### Frontend (.env.local)
 
