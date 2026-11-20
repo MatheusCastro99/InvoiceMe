@@ -7,7 +7,6 @@
  */
 
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const customerRoute = require("./routes/customerRoute");
 const taxRoute = require("./routes/taxRoute");
@@ -66,15 +65,6 @@ app.get("/health", (req, res) => {
     success: true,
     message: "Health check passed",
     timestamp: new Date().toISOString(),
-  });
-});
-
-// Debug endpoint: expose minimal DB connection metadata to assist debugging
-app.get('/debug/db', (req, res) => {
-  const conn = mongoose.connection;
-  res.status(200).json({
-    readyState: conn.readyState, // 0 disconnected, 1 connected
-    name: conn.name || null,
   });
 });
 

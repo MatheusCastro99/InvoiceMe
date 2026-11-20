@@ -15,7 +15,7 @@ Rules:
 - A success answers `{ success: true, data, message? }`; a list may add `count` or `pagination`.
 - An error answers `{ success: false, message, statusCode, errors? }`, built by `errorMiddleware`.
 - A controller, middleware or validator never calls `res.status(4xx|5xx)` itself; it throws `ValidationError`, `NotFoundError`, `ConflictError` or another `AppError` subclass.
-- Resource routes are mounted under `/api/v2/`. Only `/`, `/health`, `/debug/db` and the 404 handler live outside it, in `app.js`.
+- Resource routes are mounted under `/api/v2/`. Only `/`, `/health` and the 404 handler live outside it, in `app.js`.
 
 Examples:
 - `routes/customerRoute.js` → `validateCustomerInput` → `postCustomer` → `CustomerModel.create`
