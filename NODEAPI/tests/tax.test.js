@@ -2,7 +2,7 @@
  * Characterization tests: /api/v2/tax (rate by state, tax calculation in integer cents, #140).
  */
 
-const request = require("supertest");
+const request = require("./setup/authedRequest");
 const app = require("../app");
 const { RESPONSE_MESSAGES } = require("../utils/constants");
 

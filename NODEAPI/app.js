@@ -12,6 +12,7 @@ const customerRoute = require("./routes/customerRoute");
 const taxRoute = require("./routes/taxRoute");
 const invoiceRoute = require("./routes/invoiceRoute");
 const errorMiddleware = require("./middlewares/errorMiddleware");
+const authMiddleware = require("./middlewares/authMiddleware");
 const { ForbiddenError } = require("./utils/errors");
 const { RESPONSE_MESSAGES: MESSAGES } = require("./utils/constants");
 
@@ -68,7 +69,8 @@ app.get("/health", (req, res) => {
   });
 });
 
-// API Routes - v2.0
+// API Routes - v2.0: every request needs a signed-in user (ADR-014); /, /health and CORS preflight stay open
+app.use("/api/v2", authMiddleware);
 app.use("/api/v2/customers", customerRoute);
 app.use("/api/v2/tax", taxRoute);
 app.use("/api/v2/invoices", invoiceRoute);

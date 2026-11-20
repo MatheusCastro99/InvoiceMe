@@ -5,7 +5,7 @@
  */
 
 const mongoose = require("mongoose");
-const request = require("supertest");
+const request = require("./setup/authedRequest");
 const app = require("../app");
 const InvoiceModel = require("../models/invoiceModel");
 const { RESPONSE_MESSAGES } = require("../utils/constants");

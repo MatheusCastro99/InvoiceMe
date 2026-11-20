@@ -34,7 +34,7 @@ InvoiceMe/
 - package.json: dev scripts only, which start the API and the frontend together
 
 ### .github/
-- workflows/node.js.yml: CI on pushes and pull requests to `master`; lints and builds the frontend, syntax-checks the API, loads `app.js` without a database, and runs the API tests (`npm test`) on an in-memory MongoDB
+- workflows/node.js.yml: CI on pushes and pull requests to `master`; lints and builds the frontend on Node 22.x and 24.x, and on Node 24.x only syntax-checks the API, loads `app.js` without a database, and runs the API tests (`npm test`) on an in-memory MongoDB (the API tests need Node 24.9+, see `tests/` below)
 - workflows/codeql.yml: CodeQL code scanning
 - dependabot.yml: weekly npm updates for `FRONTEND` and `NODEAPI`, monthly for GitHub Actions
   - Accepted dev-only findings in `NODEAPI/` (`npm audit`, checked 2026-11-14): `glob` and `minimatch` (under `jest` and `nodemon`; fixed only in new majors that those tools don't declare yet, and `jest` and `nodemon` are on their latest releases) and `deepmerge` (under `jest-config`; no fixed release exists). All three are development tooling that is never shipped or run in production. Revisit when `jest` or `nodemon` release an update. `npm audit fix --force` is not used: it would downgrade `jest` to 25 and break the suite
@@ -68,10 +68,10 @@ One file per route.
 ### NODEAPI/
 Express API (CommonJS) over MongoDB with Mongoose.
 - server.js: loads `.env`, connects to MongoDB, builds the customer and invoice unique indexes (it exits if it cannot), then listens (port 3000 by default)
-- app.js: builds the Express app, CORS, routes, the 404 handler and the error handler; it has no side effects, so it loads without a database
-- .env.example: the environment variables to copy into `.env`
+- app.js: builds the Express app, CORS, the sign-in check on `/api/v2/`, routes, the 404 handler and the error handler; it has no side effects, so it loads without a database or a network call
+- .env.example: the environment variables to copy into `.env`, including the four `ENTRA_*` sign-in variables (ADR-014)
 - scripts/v2Migration.js: the one-off data migration to the v2 shapes (`npm run migrate:v2`, `--dry-run` first); it reads and writes the raw collections, is run by hand and is never loaded by `app.js` or `server.js`
-- tests/: the Jest + Supertest suite (`npm test`), run against an in-memory MongoDB; its setup is in `tests/setup/`
+- tests/: the Jest + Supertest suite (`npm test`), run against an in-memory MongoDB; its setup is in `tests/setup/`. Jest loads the ESM-only `jose` through `require()`, which needs Node 24.9+ and `--experimental-vm-modules` (set in the `npm test` scripts). The setup also generates a signing key, serves its public half from a loopback JWKS and signs the test tokens (`tokenHelper.js`, `authedRequest.js`), so no test calls Entra
 
 ### NODEAPI/routes/
 One router per resource under `/api/v2/`: customerRoute.js, invoiceRoute.js, taxRoute.js.
@@ -84,6 +84,7 @@ One controller per router: customerController.js, invoiceController.js, taxContr
 - invoiceModel.js: the Invoice collection; an invoice stores a copy of the customer's fields, not a reference to the customer, and its money as integer cents with `lineItems`
 
 ### NODEAPI/middlewares/
+- authMiddleware.js: on every `/api/v2/` request, verifies the Entra access token (signature, issuer, audience, expiry, scope, `oid`) and sets `req.user.id`; answers 401 `Sign-in required`, or 500 when its configuration or the key set is unavailable (ADR-014)
 - validationMiddleware.js: runs the validators on a request body before the controller
 - errorMiddleware.js: turns any error into the JSON error response
 

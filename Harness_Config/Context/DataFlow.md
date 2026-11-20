@@ -1,8 +1,8 @@
 # Data Flow
 
-Last updated: 2026-10-28
+Last updated: 2026-11-20
 
-Every request to `/api/v2/` takes the same path: a page calls the API with axios, using a URL from `API_ENDPOINTS` (`FRONTEND/src/config/apiConfig.js`); an Express router under `/api/v2/` runs the validation middleware, where the route has one, then a controller wrapped in `express-async-handler`; the controller reads or writes through a Mongoose model, for customers and invoices, and answers with `{ success, data, message? }`. Any error a controller throws or passes on reaches `errorMiddleware`, which answers with `{ success: false, message, statusCode, errors? }`. It turns a Mongoose cast or validation error into 400 and a duplicate-key error into 409; any other unexpected error answers 500 with a generic message, and the real message is only logged.
+Every request to `/api/v2/` takes the same path: a page calls the API with axios, using a URL from `API_ENDPOINTS` (`FRONTEND/src/config/apiConfig.js`); `authMiddleware` first checks the `Authorization: Bearer` access token and answers 401 `Sign-in required` without it (the flows below show the path after that check; the frontend sends no token until #172, so until then every call ends in that 401); an Express router under `/api/v2/` runs the validation middleware, where the route has one, then a controller wrapped in `express-async-handler`; the controller reads or writes through a Mongoose model, for customers and invoices, and answers with `{ success, data, message? }`. Any error a controller throws or passes on reaches `errorMiddleware`, which answers with `{ success: false, message, statusCode, errors? }`. It turns a Mongoose cast or validation error into 400 and a duplicate-key error into 409; any other unexpected error answers 500 with a generic message, and the real message is only logged.
 
 ## Save a new customer
 

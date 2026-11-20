@@ -3,7 +3,7 @@
  * the unknown-route answer and malformed JSON.
  */
 
-const request = require("supertest");
+const request = require("./setup/authedRequest");
 const app = require("../app");
 
 describe("GET /", () => {
