@@ -41,9 +41,13 @@ InvoiceMe/
 
 ### FRONTEND/
 React single-page app built with Vite (ES modules), styled with Tailwind.
-- src/main.jsx: mounts the app inside `BrowserRouter`
-- src/App.jsx: the routes, the navigation bar and the toast container
+- src/main.jsx: installs the auth interceptors, finishes a sign-in that came back from Microsoft, and mounts the app inside `BrowserRouter` (and `MsalProvider` when Entra is configured)
+- src/App.jsx: the routes (`/signin` outside the guard, the six pages inside `RequireAuth`), the navigation bar with the signed-in name and "Sign out", and the toast container
 - src/config/apiConfig.js: every API endpoint URL, as `API_ENDPOINTS`, built from `VITE_API_BASE_URL`
+- src/config/authConfig.js: the sign-in settings from the `VITE_ENTRA_*` variables (ADR-014), `AUTH_MODE` (`entra`, `dev` or `none`) and the MSAL client; the dev mode exists only in a dev-server run
+- src/utils/authSession.js: the current account, the API access token, the dev sign-in flag, and the return path kept in `sessionStorage` across the redirect to Microsoft
+- src/utils/useAuth.js: one hook for the sign-in state (`status`, `name`, `signIn`, `signUp`, `signOut`), in the mode `AUTH_MODE` picks
+- src/utils/authInterceptors.js: two global axios interceptors: the bearer token on requests to `API_ENDPOINTS.BASE` only, and a 401 (or a session that cannot be renewed) sends the user to `/signin?reason=expired`
 - src/utils/phone.js: the phone check (the server's pattern, ADR-003) and the `(555) 123-4567` display format
 - src/utils/date.js: the date-of-service check (the server's rule, ADR-003), the `MM/DD/YYYY` display format and the month, all read from the `YYYY-MM-DD` string without parsing it into a `Date` (ADR-013)
 - src/utils/money.js: the dollars-to-cents parsers (the server's rules, ADR-003), the display-only line total and the `$1,234.56` display format; amounts are integer cents everywhere else (ADR-012)
@@ -59,8 +63,10 @@ One file per route.
 - InvoicePage.jsx: `/invoice`, the invoice form: customer, line items, tax
 - PdfPage.jsx: `/pdfPage`, the invoice preview, where it is saved and downloaded as a PDF
 - ProfilePage.jsx: `/profilePage/:id`, one customer and their invoices
+- SignInPage.jsx: `/signin`, outside the guard: "Sign in" and "Create account" hand off to Microsoft's hosted page by redirect, and it shows the expired-session, failed-sign-in and not-set-up messages
 
 ### FRONTEND/src/components/
+- RequireAuth.jsx: the route guard: a signed-out visitor goes to `/signin` (the path they asked for is remembered and used once after sign-in); it also exports the loading state
 - PdfDocument.jsx: the invoice PDF, rendered in the browser with `@react-pdf/renderer`
 - Customer.jsx, CustomerInfo.jsx, CustomerProfile.jsx: customer cards and details
 - TableCustomer.jsx, TableInvoice.jsx, TableDescription.jsx: the customer, invoice and line-item tables
@@ -71,6 +77,7 @@ Express API (CommonJS) over MongoDB with Mongoose.
 - app.js: builds the Express app, CORS, the sign-in check on `/api/v2/`, routes, the 404 handler and the error handler; it has no side effects, so it loads without a database or a network call
 - .env.example: the environment variables to copy into `.env`, including the four `ENTRA_*` sign-in variables (ADR-014)
 - scripts/v2Migration.js: the one-off data migration to the v2 shapes (`npm run migrate:v2`, `--dry-run` first); it reads and writes the raw collections, is run by hand and is never loaded by `app.js` or `server.js`
+- scripts/devAuth.js: the local dev signer (`npm run dev:auth`, #172): a throwaway signing key and JWKS on 127.0.0.1 plus a signed token, so the unchanged sign-in check works with no Entra tenant; run by hand and never loaded by `app.js` or `server.js`
 - tests/: the Jest + Supertest suite (`npm test`), run against an in-memory MongoDB; its setup is in `tests/setup/`. Jest loads the ESM-only `jose` through `require()`, which needs Node 24.9+ and `--experimental-vm-modules` (set in the `npm test` scripts). The setup also generates a signing key, serves its public half from a loopback JWKS and signs the test tokens (`tokenHelper.js`, `authedRequest.js`), so no test calls Entra
 
 ### NODEAPI/routes/

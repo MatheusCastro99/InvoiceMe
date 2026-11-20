@@ -522,7 +522,7 @@ All amounts are integer cents (ADR-012). `taxRate` is a percentage.
 
 **Configuration** (`NODEAPI/.env`, placeholders in `.env.example`): `ENTRA_ISSUER`, `ENTRA_JWKS_URI`, `ENTRA_API_AUDIENCE` and `ENTRA_API_SCOPE`. Without all four, every `/api/v2/` request answers 500.
 
-**Not signed in yet:** the frontend does not sign users in until #172, so until then it gets 401 on every `/api/v2/` call. There is no bypass.
+**The frontend:** it signs users in by redirect to Microsoft's hosted page and sends the access token on every `/api/v2/` call; a 401 sends the user back to the sign-in page. There is no bypass; for local work without an Entra tenant, `npm run dev:auth` serves a throwaway key and prints a dev token the unchanged check accepts.
 
 **Future Implementation:**
 
@@ -575,7 +575,7 @@ The full history is in [`VersionLog.md`](./VersionLog.md).
 
 ### v2.1 (Current)
 
-- Every `/api/v2/` request needs a valid Microsoft Entra External ID access token (`Authorization: Bearer <token>`); without one it answers 401 `Sign-in required`. The frontend gets 401 on every call until #172 adds the sign-in. `/`, `/health` and CORS preflight stay open.
+- Every `/api/v2/` request needs a valid Microsoft Entra External ID access token (`Authorization: Bearer <token>`); without one it answers 401 `Sign-in required`. The frontend signs users in and sends the token (#172). `/`, `/health` and CORS preflight stay open.
 - `GET /debug/db` is removed.
 
 ### v2.0

@@ -93,7 +93,7 @@ Rules:
 - A new variable is added to its project's `.env.example` in the same change, without a real value.
 - Frontend variables use the `VITE_` prefix.
 
-Status: Accepted, pending (`FRONTEND/.env.example` created, listing `VITE_API_BASE_URL`)
+Status: Accepted, current
 
 ### ADR-008
 An invoice stores a copy of the customer's fields as they were when it was saved. It does not reference the customer record.
@@ -181,8 +181,8 @@ Options considered (prices read on 2026-11-19, each on the provider's own page):
 - Neither Vercel (Passport is Enterprise-only and guards deployments) nor Cloudflare (Access guards apps for staff) signs in an app's own public users.
 
 Rules:
-- The frontend gets an access token from Entra External ID through Microsoft's browser sign-in SDK, and every `/api/v2/` request sends it as `Authorization: Bearer <token>`. The package is chosen when #172 is scoped.
-- The API verifies the token itself: signature against Entra's published signing keys, issuer, audience and expiry, and that it carries the API's scope (or app role). A missing or failing token is answered with 401 through `errorMiddleware` (ADR-001). The package is chosen when #171 is scoped.
+- The frontend gets an access token from Entra External ID through Microsoft's browser sign-in SDK, and every `/api/v2/` request sends it as `Authorization: Bearer <token>`. The package is `@azure/msal-browser` 5.28 with `@azure/msal-react` 5.8.
+- The API verifies the token itself: signature against Entra's published signing keys, issuer, audience and expiry, and that it carries the API's scope (or app role). A missing or failing token is answered with 401 through `errorMiddleware` (ADR-001). The package is `jose` 6.
 - The API stores no passwords, and the frontend holds no client secret.
 - Entra settings (tenant authority, client ids, API audience and scope) are environment variables, listed in each project's `.env.example` with no real value, and `VITE_`-prefixed on the frontend (ADR-007).
 - The test suite stays offline: it signs its tokens with a local test key and makes no call to Entra.

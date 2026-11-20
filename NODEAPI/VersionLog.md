@@ -220,6 +220,10 @@ Currently, 5 states are available for auto tax calculation. They are:
 - Breaking: every `/api/v2/` route now answers 401 `Sign-in required` unless the request carries `Authorization: Bearer <token>` with a valid Microsoft Entra External ID access token. `/`, `/health` and CORS preflight need no token.
 - The check (`middlewares/authMiddleware.js`, using `jose`) verifies the signature (RS256, keys fetched from `ENTRA_JWKS_URI` and cached), the issuer, the audience, the expiry, the API's scope in `scp` and a non-empty `oid`. Every failure answers the same 401 message; a missing `ENTRA_*` variable or an unreachable key set answers 500. The user's id (`oid`) is available to controllers as `req.user.id`.
 - New environment variables: `ENTRA_ISSUER`, `ENTRA_JWKS_URI`, `ENTRA_API_AUDIENCE`, `ENTRA_API_SCOPE` (placeholders in `.env.example`). `JWT_SECRET` is removed: nothing used it.
-- Known gap: the frontend has no sign-in until #172, so until then it gets 401 on every `/api/v2/` call. There is no bypass.
+- The frontend signs users in and sends the token (#172). There is no bypass.
 - `GET /debug/db` is removed (it answers 404 now).
 - The API tests need Node 24.9+ and run with `--experimental-vm-modules` (set in the `npm test` scripts), because Jest loads the ESM-only `jose` through `require()` only then.
+
+### Local dev signer (#172):
+
+- `npm run dev:auth` (`scripts/devAuth.js`) runs the app without an Entra tenant: it generates a signing key in memory, serves its public key on `127.0.0.1:3999` and prints dev values for the four `ENTRA_*` variables and a signed token (8 h) for the frontend. The API code is unchanged: the sign-in check verifies that token like any other, so there is no bypass. The key and the token die with the process.
