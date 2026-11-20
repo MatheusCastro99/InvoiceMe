@@ -258,7 +258,7 @@ POST   /api/v2/tax/calculate          # Calculate
 
 ### Prerequisites
 
-- Node.js 20.19+ required (Mongoose 9)
+- Node.js 20.19+ required (Mongoose 9); the API tests need Node 24.9+
 - MongoDB Atlas or local MongoDB instance
 - npm
 

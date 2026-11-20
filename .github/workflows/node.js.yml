@@ -46,7 +46,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.x, 24.x]
+        # Node 24 only: the auth middleware loads jose (ESM only) through require(), and Jest 30.5 supports
+        # that on Node 24.9+. The frontend job keeps 22.x.
+        node-version: [24.x]
 
     # mongodb-memory-server downloads its MongoDB binary here, in npm ci's postinstall or on the first test run.
     # It sits outside node_modules so the cache can be restored before npm ci wipes node_modules.
