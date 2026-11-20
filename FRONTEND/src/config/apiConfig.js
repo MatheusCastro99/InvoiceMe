@@ -39,31 +39,4 @@ export const API_ENDPOINTS = {
   HEALTH: `${API_BASE_URL}/health`,
 };
 
-/**
- * Generic API Request Handler
- * Handles common error scenarios and formatting
- */
-export const apiRequest = async (url, options = {}) => {
-  try {
-    const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-      ...options,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || `API Error: ${response.status}`);
-    }
-
-    return data;
-  } catch (error) {
-    console.error("API Request Error:", error);
-    throw error;
-  }
-};
-
 export default API_ENDPOINTS;

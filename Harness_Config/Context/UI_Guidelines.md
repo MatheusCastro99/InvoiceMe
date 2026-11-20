@@ -44,6 +44,17 @@ The contrast figures assume content on a white surface; `white` is the text colo
 
 ## Screens
 
+### Sign in (`/signin`)
+Purpose: sign in or create an account; the one screen open to a signed-out visitor, and where the app sends the user when a session ends
+
+Answers:
+- How do I get to my customers and invoices?
+
+Messages (the only three; each stays on this screen):
+- Session ended: "Your session has ended. Sign in again to pick up where you left off." (comes with `?reason=expired`)
+- Sign-in failed: "Sign-in didn't finish. Please try again."
+- Not set up: "Sign-in isn't set up yet. Add the VITE_ENTRA_ settings described in the README."
+
 ### Home (`/`)
 Purpose: the list of customers, and the starting point for every other task
 
@@ -74,6 +85,7 @@ Answers:
 ## Interaction patterns
 - Confirmations: a sweetalert2 dialog before a customer or an invoice is deleted
 - Feedback: react-toastify toasts for success and failure
+- Account: while signed in, the navigation bar shows the signed-in name and a "Sign out" button
 
 ## Design system
 Lives in: Tailwind utility classes in the JSX, and `FRONTEND/src/index.css` for the few custom classes. Components come from MUI (`@mui/material`, `@mui/x-date-pickers`) and `flowbite-react`, with FontAwesome icons. The six color tokens live in the `@theme` block of `FRONTEND/src/index.css`. New screens use them, and Tailwind's default steps, preferring the roles above. Existing pages keep their current classes until Epic 5.

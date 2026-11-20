@@ -2,7 +2,7 @@
 
 A comprehensive, production-ready CRUD application for managing customers and generating invoices for a small businesses.
 
-**Version:** 2.0
+**Version:** 2.1
 **Status:** Production-ready MVP
 **Stack:** MERN (MongoDB, Express.js, React.js, Node.js) + Tailwind CSS
 
@@ -23,6 +23,7 @@ InvoiceMe is a full-stack business management app for small businesses that need
 
 Current delivery includes:
 
+- **Sign-in** with Microsoft Entra External ID: every page and every `/api/v2/` request needs a signed-in user
 - **API versioning** with `/api/v2/` routes
 - **Customer CRUD** with validation and duplicate protection
 - **Invoice creation and history** with tax-aware business logic
@@ -57,6 +58,13 @@ The project is currently in an active MVP / production-ready iteration for small
 - Generate invoice data ready for export and PDF rendering
 - Track invoice numbers to avoid duplicates
 
+**Sign-in**
+
+- Sign in, create an account and sign out through Microsoft Entra External ID
+- A sign-in page with clear messages when a session ends or sign-in fails
+- The API checks the access token on every `/api/v2/` request
+- A local dev signer for development with no tenant
+
 **User Interface**
 
 - Responsive layout for desktop and tablet usage
@@ -85,12 +93,16 @@ The project is currently in an active MVP / production-ready iteration for small
 
 ## API Testing Example
 
+Every `/api/v2/` request needs an access token. Without a tenant, `npm run dev:auth` in `NODEAPI/` prints a dev token (see "Sign-in setup"); replace `<access-token>` with it.
+
 ```bash
 # Get all customers
-curl http://localhost:3000/api/v2/customers
+curl http://localhost:3000/api/v2/customers \
+  -H "Authorization: Bearer <access-token>"
 
 # Create customer
 curl -X POST http://localhost:3000/api/v2/customers \
+  -H "Authorization: Bearer <access-token>" \
   -H "Content-Type: application/json" \
   -d '{
     "companyName": "Tech Corp",
@@ -124,9 +136,11 @@ curl -X POST http://localhost:3000/api/v2/customers \
 
 ## Version History
 
-### v2.0 (current)
+### v2.1 (current)
 
-The full history is in [`NODEAPI/VersionLog.md`](../NODEAPI/VersionLog.md).
+Every `/api/v2/` request needs a signed-in user (Microsoft Entra External ID), and the frontend has a sign-in page. A local dev signer runs the app without a tenant. The full history is in [`NODEAPI/VersionLog.md`](../NODEAPI/VersionLog.md).
+
+### v2.0
 
 **Released Features:**
 
@@ -184,8 +198,9 @@ InvoiceMe/
 │   ├── controllers/    # Business logic
 │   ├── models/         # MongoDB schemas
 │   ├── routes/         # Route handlers
-│   ├── middlewares/    # Validation and error handling
-│   ├── utils/          # Shared helpers and constants
+│   ├── middlewares/    # Sign-in check, validation and error handling
+│   ├── utils/          # Validators, error classes, tax table, money and response messages
+│   ├── scripts/        # Dev signer (dev:auth) and the v2 data migration
 │   ├── tests/          # Jest + Supertest suite; setup in tests/setup/
 │   ├── app.js          # Express app: middleware, routes, error handling
 │   ├── server.js       # Bootstrap: env, MongoDB connection, customer and invoice indexes, listen
@@ -198,9 +213,10 @@ InvoiceMe/
 │   ├── src/
 │   │   ├── components/ # UI blocks and reusable views
 │   │   ├── pages/      # Page-level screens
-│   │   ├── config/     # API configuration
-│   │   ├── utils/      # Phone, date and money checks and display formats
+│   │   ├── config/     # API endpoints and sign-in configuration
+│   │   ├── utils/      # Sign-in session and interceptors; phone, date and money checks and display formats
 │   │   └── App.jsx
+│   ├── .env.example
 │   ├── package.json
 │   ├── vite.config.js
 │   ├── eslint.config.js
@@ -355,7 +371,7 @@ For local work with no Entra tenant, the API's own sign-in check can run against
 2. Paste the four `ENTRA_*` lines into `NODEAPI/.env` and start the API.
 3. Put `VITE_DEV_AUTH_TOKEN=<the printed token>` in `FRONTEND/.env.development.local` (a git-ignored file) and start the frontend. "Sign in" on `/signin` now starts a dev session ("Dev user") with no Microsoft page.
 
-The API code is the same as in production: it verifies that token like any other. The dev token is read only by `npm run dev`; a production build ignores it. Never commit the token or the `.env` files.
+The API code is the same as in production: it verifies that token like any other. The dev token is read only by `npm run dev`; a production build ignores it. The token lasts 8 hours: after that, "Sign in" reuses the expired token and the app keeps returning to the "session ended" message. Run `npm run dev:auth` again, paste the new `VITE_DEV_AUTH_TOKEN` into `FRONTEND/.env.development.local` and restart the frontend. Never commit the token or the `.env` files.
 
 ## Migrating a database from before v2.0
 

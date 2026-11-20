@@ -27,7 +27,7 @@ Docs are read when the work needs them, never all up front.
 
 Run project checks through the runner, never by hand: `node .claude/scripts/check.cjs <fast|full|id>`. It keeps the real exit code and trims the output. Check IDs are in `.claude/harness.json`; `api-load` checks that `app.js` loads without opening a database connection.
 
-- Install: `npm install` in the root, `NODEAPI/` and `FRONTEND/`; copy `NODEAPI/.env.example` to `NODEAPI/.env`
+- Install: `npm install` in the root, `NODEAPI/` and `FRONTEND/`; copy `NODEAPI/.env.example` to `NODEAPI/.env` and `FRONTEND/.env.example` to `FRONTEND/.env.local`. With no Entra tenant, `npm run dev:auth` in `NODEAPI/` is the local signer ("Sign-in setup" in `Docs/README.md`)
 - Run everything: `npm run dev` from the root (API on port 3000, then the frontend on 5173)
 - Tests: `npm test` in `NODEAPI/` runs the Jest + Supertest suite on an in-memory MongoDB (needs Node 24.9+; no `.env` or database needed; `npm install` downloads a MongoDB binary the first time), or `node .claude/scripts/check.cjs api-test`. Also `npm run test:watch` and `npm run test:coverage`. Each sub-phase names an observable check, automated through the runner where possible.
 

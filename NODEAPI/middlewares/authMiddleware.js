@@ -7,7 +7,7 @@
  * Every refusal is a 401 with RESPONSE_MESSAGES.SIGN_IN_REQUIRED; a missing configuration or an
  * unreachable key set is a 500. No token, header or claim value goes into a message or a log.
  * Reads its configuration per request and fetches keys lazily, so loading it has no side effects.
- * API v2.0+
+ * API v2.1+
  */
 
 const asyncHandler = require("express-async-handler");

@@ -56,7 +56,7 @@ app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "InvoiceMe Business Maintenance API",
-    version: "v2.0",
+    version: "v2.1",
     status: "running",
   });
 });
@@ -69,7 +69,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-// API Routes - v2.0: every request needs a signed-in user (ADR-014); /, /health and CORS preflight stay open
+// API Routes - v2.1: every request needs a signed-in user (ADR-014); /, /health and CORS preflight stay open
 app.use("/api/v2", authMiddleware);
 app.use("/api/v2/customers", customerRoute);
 app.use("/api/v2/tax", taxRoute);
